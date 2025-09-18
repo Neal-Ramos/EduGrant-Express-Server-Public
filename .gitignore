@@ -1,0 +1,53 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+debug.log
+
+# Build output
+dist/
+build/
+.next/
+out/
+.cache/
+.vite/
+
+# IDE/editor stuff
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage/test output
+coverage/
+.nyc_output/
+
+# Optional: lock files if you're using only one package manager
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Prisma
+prisma/dev.db
+*.db-journal
+node_modules/.prisma/
+# Uncomment below ONLY if you don't want to version-control migrations
+# prisma/migrations/
+
+# Prisma Generated Client (if you're outputting to this path)
+src/generated/prisma/

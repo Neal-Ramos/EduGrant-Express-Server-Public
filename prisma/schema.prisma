@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  accountId      Int          @id @default(autoincrement())
+  email          String       @unique()
+  hashedPassword String
+  schoolId       String?
+  role           String
+  dateCreated    DateTime     @default(now())
+  ISPSU_Head     ISPSU_Head?
+  ISPSU_Staff    ISPSU_Staff?
+  Student        Student?
+}
+
+model ISPSU_Head {
+  headId       Int            @id
+  dateCreated  DateTime       @default(now())
+  fName        String
+  lName        String
+  mName        String?
+  Account      Account        @relation(fields: [headId], references: [accountId], onDelete: Cascade, onUpdate: NoAction)
+  Scholarship  Scholarship[]
+  Announcement Announcement[]
+}
+
+model ISPSU_Staff {
+  staffId              Int                    @id
+  fName                String
+  lName                String
+  mName                String?
+  dateCreated          DateTime               @default(now())
+  Application_Decision Application_Decision[]
+  Interview_Decision   Interview_Decision[]
+  Staff_Logs           Staff_Logs[]
+  Account              Account                @relation(fields: [staffId], references: [accountId], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Student {
+  studentId            Int                    @id @unique()
+  fName                String
+  lName                String
+  mName                String?
+  contactNumber        String
+  gender               String
+  address              String
+  indigenous           Boolean
+  PWD                  Boolean
+  institute            String
+  course               String
+  year                 String
+  section              String
+  familyBackground     Json?
+  dateOfBirth          DateTime
+  dateCreated          DateTime               @default(now())
+  Application          Application[]
+  Student_Notification Student_Notification[]
+  Account              Account                @relation(fields: [studentId], references: [accountId], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Auth_Code {
+  codeId      Int      @id @default(autoincrement())
+  owner       String
+  origin      String
+  code        String
+  dateExpiry  DateTime
+  dateCreated DateTime @default(now())
+}
+
+model Scholarship_Provider {
+  SPId        Int      @id
+  name        String
+  dateCreated DateTime @default(now())
+  Scholarship Scholarship @relation(fields: [SPId], references: [scholarshipId], onDelete: Cascade, onUpdate: NoAction )
+}
+
+model Scholarship {
+  scholarshipId        Int                   @id @default(autoincrement())
+  ISPSUId              Int?
+  title                String
+  amount               String?
+  description          String
+  type                 String
+  cover                String
+  logo                 String
+  supabasePath         Json
+  form                 String?
+  requiredGWA          Float?
+  limit                Int?
+  pending              Int
+  approved             Int
+  declined             Int
+  renew                Boolean
+  interview            Boolean
+  archived             Boolean
+  documents            Json
+  deadline             DateTime
+  dateCreated          DateTime              @default(now())
+  Application          Application[]
+  ISPSU_Head           ISPSU_Head?           @relation(fields: [ISPSUId], references: [headId], onDelete: SetNull, onUpdate: NoAction)
+  Scholarship_Provider Scholarship_Provider?
+}
+
+model Application {
+  applicationId        Int                   @id @default(autoincrement())
+  scholarshipId        Int?
+  ownerId              Int
+  decisionId           Int?
+  interviewId          Int?
+  status               String                @default("PENDING")
+  supabasePath         Json
+  submittedDocuments   Json
+  dateCreated          DateTime              @default(now())
+  Application_Decision Application_Decision?
+  Interview_Decision   Interview_Decision?
+  Student              Student               @relation(fields: [ownerId], references: [studentId], onDelete: Cascade, onUpdate: NoAction)
+  Scholarship          Scholarship?          @relation(fields: [scholarshipId], references: [scholarshipId], onDelete: SetNull, onUpdate: NoAction)
+}
+
+model Application_Decision {
+  decisionId  Int          @id
+  staffId     Int?
+  status      String
+  message     Json?
+  dateCreated DateTime     @default(now())
+  Application Application  @relation(fields: [decisionId], references: [applicationId], onDelete: Cascade, onUpdate: NoAction)
+  ISPSU_Staff ISPSU_Staff? @relation(fields: [staffId], references: [staffId], onDelete: SetNull, onUpdate: NoAction)
+}
+
+model Interview_Decision {
+  interviewId Int          @id @default(autoincrement())
+  staffId     Int?
+  status      String
+  dateCreated DateTime     @default(now())
+  Application Application  @relation(fields: [interviewId], references: [applicationId], onDelete: Cascade, onUpdate: NoAction)
+  ISPSU_Staff ISPSU_Staff? @relation(fields: [staffId], references: [staffId], onDelete: SetNull, onUpdate: NoAction)
+}
+
+model Staff_Logs {
+  logsId      Int         @id @default(autoincrement())
+  staffId     Int
+  action      String
+  dateCreated DateTime    @default(now())
+  ISPSU_Staff ISPSU_Staff @relation(fields: [staffId], references: [staffId], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Student_Notification {
+  notificationId Int      @id @default(autoincrement())
+  ownerId        Int
+  title          String
+  description    String
+  dateCreated    DateTime @default(now())
+  Student        Student  @relation(fields: [ownerId], references: [studentId], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Announcement {
+  announcementId Int        @id @default(autoincrement())
+  headId         Int
+  title          String
+  description    String
+  tags           Json
+  dateCreated    DateTime   @default(now())
+  ISPSU_Head     ISPSU_Head @relation(fields: [headId], references: [headId], onDelete: NoAction, onUpdate: NoAction)
+}
