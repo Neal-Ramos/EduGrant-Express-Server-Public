@@ -630,7 +630,7 @@ export const prismaGetScholarshipCount = async(accountId?: number): Promise<numb
                 {
                     AND:[
                         {phase: {gt: 1}},
-                        {Application: {some: {ownerId: accountId}}}
+                        {...(accountId? {Application: {some: {ownerId: accountId}}}:{})}
                     ]
                 }
             ]

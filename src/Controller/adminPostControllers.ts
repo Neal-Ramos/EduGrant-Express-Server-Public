@@ -12,7 +12,7 @@ import { ApproveHTML } from "../utils/HTML-ApprovedApplication";
 import { interviewHTML } from "../utils/HTML-InterviewApplication";
 import { prismaGetStaffAccounts, prismaGetStaffById, prismaSearchISPUStaff, prismaTotalCountStaff, prismaValidateStaff } from "../Models/ISPSU_StaffModels";
 import { prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from "../Models/AccountModels";
-import { prismaCreateScholarship, prismaDeleteScholarship, prismaEndScholarship, prismaFiltersScholarship, prismaGetScholarship, prismaGetScholarshipByArray, prismaGetScholarshipsById, 
+import { prismaCreateScholarship, prismaDeleteScholarship, prismaEndScholarship, prismaFiltersScholarship, prismaGetScholarship, prismaGetScholarshipByArray, prismaGetScholarshipCount, prismaGetScholarshipsById, 
   prismaRenewScholarship, prismaSearchScholarshipTitle, prismaUpdateScholarship } from "../Models/ScholarshipModels";
 import { prismaAcceptForInterview, prismaApproveApplication, prismaBlockApplicationByApplicationId, prismaCheckApproveGov, prismaDeclineApplication, prismaDeleteApplication, 
   prismaGetAllApplication, prismaGetApplication, prismaGetApplicationPath, prismaGetApplicationsCSV, prismaGetFiltersForApplicationsCSV, prismaSearchApplication } from "../Models/ApplicationModels";
@@ -187,6 +187,7 @@ export const adminTokenAuthentication = async (req: Request, res: Response, next
         res.status(401).json({success: false, message: "Account is not validated!"})
         return
     }
+    const availableScholarshipCount = await prismaGetScholarshipCount()
     const {hashedPassword, ...safeData} = ISPSU
     res.status(200).json({success:true, message:"Access Granted!", safeData:safeData});
   } catch (error) {
