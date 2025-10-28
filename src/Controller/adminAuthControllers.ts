@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { SendAuthCode } from "../Config/Resend"
-import { randomBytes } from "crypto";
-import { sign, verify } from "jsonwebtoken";
-import { TokenPayload } from "../Types/adminAuthControllerTypes";
+import { sign } from "jsonwebtoken";
 import { compare, hash } from "bcryptjs";
-import { adminCodeAuthenticationZodType, adminLoginZodType, adminTokenAuthenticationZodType, createAccountZodType } from "../Zod/ZodSchemanAdminAuth";
+import { adminCodeAuthenticationZodType, adminLoginZodType, createAccountZodType, forgetPassZodType, sendAuthCodeForgetPassZodType } from "../Zod/ZodSchemanAdminAuth";
 import { authHTML } from "../utils/HTML-AuthCode";
-import { getStaffByEmail, prismaCheckEmailExist, prismaCreateISPSU_Staff, prismaGetAccountById } from "../Models/AccountModels";
-import { deleteAuthCodeEmailOrigin, prismaSelectCodeByEmailOrigin, validateCode } from "../Models/Auth_CodeModels";
+import { getStaffByEmail, prismaCheckEmailExist, prismaCreateISPSU_Staff, prismaUpdateAccountPassword } from "../Models/AccountModels";
+import { GenerateCode } from "../Config/CodeGenerator";
+import { CreateEmailOptions } from "resend";
+import { AuthCode } from "../Models/Auth_CodeModels";
 
 export const createISPSUStaffAccount  = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
@@ -37,37 +37,38 @@ export const adminLogIn = async (req:Request, res: Response, next: NextFunction)
         const {adminEmail, adminPassword} = (req as Request & {validated: adminLoginZodType}).validated.body
 
         const correctCredenatials = await getStaffByEmail(adminEmail)
-        if(!correctCredenatials){
-            res.status(401).json({success:false, message:"Invalid Credentials"});
-            return;
+        if(!correctCredenatials || correctCredenatials.role === "Student"){
+          res.status(401).json({success:false, message:"Invalid Credentials"});
+          return;
         }
+
         const validatePassword = await compare(adminPassword, correctCredenatials.hashedPassword)
         if(!validatePassword){
-            res.status(401).json({success:false, message:"Invalid Credentials"});
-            return;
+          res.status(401).json({success:false, message:"Invalid Credentials"});
+          return;
         }
-        const checkExistCode = await prismaSelectCodeByEmailOrigin(adminEmail, "adminLogin")
-        if(checkExistCode){
-            const expiryDate = new Date(checkExistCode.dateExpiry).getTime();
-            if(expiryDate > Date.now()){
-                res.status(200).json({success: true, message:"Code Already Sent!!"});
-                return;
-            }
+        const Code = await AuthCode.Find(adminEmail, "adminLogin")
+        if(Code){
+          const {validated} = await AuthCode.validate(Code.code, Code.owner, Code.origin)
+          if(validated){
+              res.status(200).json({success: true, message:"Code Already Sent!!"});
+              return;
+          }
         }
-        const sendCode = randomBytes(3).toString("hex");
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        const sendCode = await GenerateCode(6)
+        const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
         const mailOptions = {
-            from: "service@edugrant.online",
-            to:adminEmail,
-            subject:"Admin Login Code",
-            html:authHTML(sendCode)
+          from: "service@edugrant.online",
+          to:adminEmail,
+          subject:"Admin Login Code",
+          html:authHTML(sendCode)
         }
         const sendMail = await SendAuthCode(mailOptions, "adminLogin", adminEmail, sendCode, expiresAt)
         if(sendMail.success === false){
-            res.status(500).json({success:false, message:"Email Not Sent!!", error:sendMail.message});
-            return;
+          res.status(500).json({success:false, message:"Email Not Sent!!", error:sendMail.message});
+          return;
         }
-        res.status(200).json({ success: true, message: "Email Sent!!" });
+        res.status(200).json({ success: true, message: "Email Sent!!", expiresAt, ttl: 120, resendAvailableIn: 60});
     } catch (error) {
         next(error)
     }
@@ -87,16 +88,12 @@ export const adminCodeAuthentication = async (req: Request, res: Response, next:
             res.status(401).json({success:false, message:"Invalid Credentials"});
             return;
         }
-        const codeRecord = await validateCode(code, adminEmail, "adminLogin");// check the code
-        if(!codeRecord){
-            res.status(401).json({success:false, message:"Invalid Code!"});
+        const Code = await AuthCode.validate(code, adminEmail, "adminLogin");// check the code
+        if(!Code.validated){
+            res.status(401).json({success:false, message:Code.message});
             return;
         }
-        const expiryDate = new Date(codeRecord.dateExpiry).getTime();// check code if expired
-        if(expiryDate < Date.now()){
-            res.status(403).json({success:false, message:"Code Expired!!"});
-            return;
-        }
+
         const payload = {role:validAccount.role, accountId:validAccount.accountId} // start token gen
         const SECRET = process.env.JWT_SECRET as string;
         const token = sign(payload, SECRET,{expiresIn:"7d"})
@@ -108,11 +105,8 @@ export const adminCodeAuthentication = async (req: Request, res: Response, next:
             path:"/administrator",
             domain:".edugrant.online"
         });
-        const deleteRecentCode = await deleteAuthCodeEmailOrigin(adminEmail, "adminLogin");
-        if(!deleteRecentCode){
-            res.status(500).json({success: false, message:"Server Error!!!"});
-            return;
-        }
+        await AuthCode.DeleteAll(adminEmail, "adminLogin");
+
         const {hashedPassword, ...safeData} = validAccount
         res.status(200).json({success:true, message:"Login Success!", role:validAccount.role, safeData:safeData})
     } catch (error) {
@@ -120,44 +114,59 @@ export const adminCodeAuthentication = async (req: Request, res: Response, next:
     }
 };
 
-export const adminTokenAuthentication = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
-    try {
-        const token = (req as Request & {validated: adminTokenAuthenticationZodType}).validated.cookies.AdminToken
-        if(!token){
-            res.status(401).json({success: false, message: "No Valid Token!"})
-            return
-        }
-        const verifyToken = verify(token, process.env.JWT_SECRET as string) as TokenPayload
-        if("ISPSU_Staff" !== verifyToken.role && "ISPSU_Head" !== verifyToken.role){
-            res.status(403).json({success:false, message:"Access Prohibited!"});
-            return;
-        }
-        const user = await prismaGetAccountById(typeof verifyToken.accountId === "string"? parseInt(verifyToken.accountId): verifyToken.accountId)
-        if(!user){
-            res.clearCookie("AdminToken", {
-                httpOnly:true,
-                secure:process.env.NODE_ENV === "production",
-                sameSite:process.env.NODE_ENV === "production"? "none":"lax",
-                maxAge:60000 * 60 * 24 * 7,
-                domain:".edugrant.online"
-            });
-            res.status(404).json({success: false, message: "Account Did not Find!"})
-            return
-        }
-        const {hashedPassword, ...safeData} = user
-        res.status(200).json({success:true, message:"Access Granted!", safeData:safeData});
-    } catch (error) {
-        if ((error as {name: string}).name === "TokenExpiredError" || (error as {name: string}).name === "JsonWebTokenError") {
-            res.clearCookie("AdminToken", {
-                httpOnly:true,
-                secure:process.env.NODE_ENV === "production",
-                sameSite:process.env.NODE_ENV === "production"? "none":"lax",
-                maxAge:60000 * 60 * 24 * 7,
-                domain:".edugrant.online"
-            });
-            res.status(401).json({ success: false, message: "Invalid or expired token" });
-            return;
-        }
-        next(error);
+export const sendAuthCodeForgetPass = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {email} = (req as Request & {validated: sendAuthCodeForgetPassZodType}).validated.body
+
+    const checkAccount = await prismaCheckEmailExist(email)
+    if(!checkAccount || checkAccount.role === "Student"){
+      res.status(404).json({success: false, message: "Email does not Exist!"})
+      return
     }
-};
+
+    const code = await GenerateCode(6)
+    const expiresAt = new Date(Date.now() + (2 * 60 * 1000))
+    const mailOptions: CreateEmailOptions = {
+        from: "service@edugrant.online",
+        to: checkAccount.email,
+        subject: "Change Password!",
+        html:authHTML(code)
+    }
+    const sendCode = await SendAuthCode(mailOptions, "ISPSU_ForgetPassword", checkAccount.email, code, expiresAt)
+    if(!sendCode.success){
+        res.status(500).json({success: false, messagel: "Email Not Sent!"})
+        return
+    }
+    res.status(200).json({success: true, message: "Email Sent!", expiresAt, ttl: 120, resendAvailableIn: 60})
+  } catch (error) {
+    next(error)
+  }
+}
+export const forgetPass = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {email, newPassword, code} = (req as Request & {validated: forgetPassZodType}).validated.body
+
+    const checkAccount = await prismaCheckEmailExist(email)
+    if(!checkAccount || checkAccount.role !== "Student"){
+      res.status(404).json({success: false, message: "Email does not Exist!"})
+      return
+    }
+
+    const Code = await AuthCode.validate(code, email, "ISPSU_ForgetPassword")
+    if(!Code.validated){
+      res.status(404).json({success: false, message: Code.message})
+      return
+    }
+
+    const newHashedPass = await hash(newPassword, 10)
+    const changePass = await prismaUpdateAccountPassword(email, newHashedPass)
+
+    if(!changePass){
+      res.status(500).json({success: false, message: "Server Error!"})
+      return
+    }
+    res.status(200).json({success: true, message: "Password Changed!"})
+  } catch (error) {
+    next(error)
+  }
+}

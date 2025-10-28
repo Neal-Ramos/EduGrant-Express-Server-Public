@@ -26,6 +26,9 @@ model ISPSU_Head {
   fName        String
   lName        String
   mName        String?
+  gender       String?
+  addres       String?
+  profileImg   Json?
   Account      Account        @relation(fields: [headId], references: [accountId], onDelete: Cascade, onUpdate: NoAction)
   Scholarship  Scholarship[]
   Announcement Announcement[]
@@ -36,6 +39,8 @@ model ISPSU_Staff {
   fName                String
   lName                String
   mName                String?
+  validated            Boolean                @default(false)
+  profileImg           Json?
   dateCreated          DateTime               @default(now())
   Application_Decision Application_Decision[]
   Interview_Decision   Interview_Decision[]
@@ -51,12 +56,13 @@ model Student {
   contactNumber        String
   gender               String
   address              String
-  indigenous           Boolean
-  PWD                  Boolean
+  indigenous           String                 @default("")
+  PWD                  String                 @default("")
   institute            String
   course               String
   year                 String
   section              String
+  profileImg           Json?
   familyBackground     Json?
   dateOfBirth          DateTime
   dateCreated          DateTime               @default(now())
@@ -75,89 +81,108 @@ model Auth_Code {
 }
 
 model Scholarship_Provider {
-  SPId        Int      @id
+  SPId        Int         @id
   name        String
-  dateCreated DateTime @default(now())
-  Scholarship Scholarship @relation(fields: [SPId], references: [scholarshipId], onDelete: Cascade, onUpdate: NoAction )
+  dateCreated DateTime    @default(now())
+  Scholarship Scholarship @relation(fields: [SPId], references: [scholarshipId], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Scholarship {
-  scholarshipId        Int                   @id @default(autoincrement())
-  ISPSUId              Int?
-  title                String
-  amount               String?
-  description          String
-  type                 String
-  cover                String
-  logo                 String
-  supabasePath         Json
-  form                 String?
-  requiredGWA          Float?
-  limit                Int?
-  pending              Int
-  approved             Int
-  declined             Int
-  renew                Boolean
-  interview            Boolean
-  archived             Boolean
-  documents            Json
-  deadline             DateTime
-  dateCreated          DateTime              @default(now())
-  Application          Application[]
-  ISPSU_Head           ISPSU_Head?           @relation(fields: [ISPSUId], references: [headId], onDelete: SetNull, onUpdate: NoAction)
-  Scholarship_Provider Scholarship_Provider?
+  scholarshipId         Int                    @id @default(autoincrement())
+  ISPSUId               Int?
+  title                 String
+  amount                String?
+  description           String
+  type                  String
+  cover                 String
+  logo                  String
+  supabasePath          Json
+  form                  String?
+  requiredGWA           Float?
+  limit                 Int?
+  pending               Int
+  approved              Int
+  declined              Int
+  phase                 Int                    @default(1)
+  interview             Boolean                @default(false)
+  ended                 Boolean                @default(false)
+  documents             Json
+  deadline              DateTime
+  dateCreated           DateTime               @default(now())
+  dateEnded             DateTime?
+  Application           Application[]
+  Staff_Logs            Staff_Logs[]
+  Student_Notifications Student_Notification[]
+  ISPSU_Head            ISPSU_Head?            @relation(fields: [ISPSUId], references: [headId], onDelete: SetNull, onUpdate: NoAction)
+  Scholarship_Provider  Scholarship_Provider?
 }
 
 model Application {
-  applicationId        Int                   @id @default(autoincrement())
-  scholarshipId        Int?
-  ownerId              Int
-  decisionId           Int?
-  interviewId          Int?
-  status               String                @default("PENDING")
-  supabasePath         Json
-  submittedDocuments   Json
-  dateCreated          DateTime              @default(now())
-  Application_Decision Application_Decision?
-  Interview_Decision   Interview_Decision?
-  Student              Student               @relation(fields: [ownerId], references: [studentId], onDelete: Cascade, onUpdate: NoAction)
-  Scholarship          Scholarship?          @relation(fields: [scholarshipId], references: [scholarshipId], onDelete: SetNull, onUpdate: NoAction)
+  applicationId         Int                    @id @default(autoincrement())
+  scholarshipId         Int
+  ownerId               Int
+  status                String                 @default("PENDING")
+  supabasePath          Json
+  submittedDocuments    Json
+  dateCreated           DateTime               @default(now())
+  Application_Decision  Application_Decision[]
+  Interview_Decision    Interview_Decision[]
+  Staff_Logs            Staff_Logs[]
+  Student_Notifications Student_Notification[]
+  Student               Student                @relation(fields: [ownerId], references: [studentId], onDelete: Cascade, onUpdate: NoAction)
+  Scholarship           Scholarship?           @relation(fields: [scholarshipId], references: [scholarshipId], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Application_Decision {
-  decisionId  Int          @id
-  staffId     Int?
-  status      String
-  message     Json?
-  dateCreated DateTime     @default(now())
-  Application Application  @relation(fields: [decisionId], references: [applicationId], onDelete: Cascade, onUpdate: NoAction)
-  ISPSU_Staff ISPSU_Staff? @relation(fields: [staffId], references: [staffId], onDelete: SetNull, onUpdate: NoAction)
+  decisionId       Int          @id @default(autoincrement())
+  applicationId    Int
+  staffId          Int?
+  scholarshipPhase Int
+  status           String
+  message          Json?
+  dateCreated      DateTime     @default(now())
+  Application      Application  @relation(fields: [applicationId], references: [applicationId], onDelete: Cascade, onUpdate: NoAction)
+  ISPSU_Staff      ISPSU_Staff? @relation(fields: [staffId], references: [staffId], onDelete: SetNull, onUpdate: NoAction)
 }
 
 model Interview_Decision {
   interviewId Int          @id @default(autoincrement())
   staffId     Int?
+  applicationId Int
+  scholarshipPhase Int
   status      String
+  message     Json?
   dateCreated DateTime     @default(now())
-  Application Application  @relation(fields: [interviewId], references: [applicationId], onDelete: Cascade, onUpdate: NoAction)
+  Application Application  @relation(fields: [applicationId], references: [applicationId], onDelete: Cascade, onUpdate: NoAction)
   ISPSU_Staff ISPSU_Staff? @relation(fields: [staffId], references: [staffId], onDelete: SetNull, onUpdate: NoAction)
 }
 
 model Staff_Logs {
-  logsId      Int         @id @default(autoincrement())
-  staffId     Int
-  action      String
-  dateCreated DateTime    @default(now())
-  ISPSU_Staff ISPSU_Staff @relation(fields: [staffId], references: [staffId], onDelete: NoAction, onUpdate: NoAction)
+  logsId        Int         @id @default(autoincrement())
+  staffId       Int
+  scholarshipId Int
+  applicationId Int
+  action        String
+  description   String
+  dateCreated   DateTime    @default(now())
+  scholarship   Scholarship @relation(fields: [scholarshipId], references: [scholarshipId], onDelete: Cascade, onUpdate: NoAction)
+  application   Application @relation(fields: [applicationId], references: [applicationId], onDelete: Cascade, onUpdate: NoAction)
+  ISPSU_Staff   ISPSU_Staff @relation(fields: [staffId], references: [staffId], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Student_Notification {
-  notificationId Int      @id @default(autoincrement())
+  notificationId Int         @id @default(autoincrement())
   ownerId        Int
+  applicationId  Int
+  scholarshipId  Int
   title          String
   description    String
-  dateCreated    DateTime @default(now())
-  Student        Student  @relation(fields: [ownerId], references: [studentId], onDelete: NoAction, onUpdate: NoAction)
+  status         String
+  read           Boolean     @default(false)
+  dateCreated    DateTime    @default(now())
+  application    Application @relation(fields: [applicationId], references: [applicationId], onDelete: Cascade)
+  scholarship    Scholarship @relation(fields: [scholarshipId], references: [scholarshipId], onDelete: Cascade)
+  Student        Student     @relation(fields: [ownerId], references: [studentId], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Announcement {

@@ -1,25 +1,49 @@
 import { NextFunction, Request, Response } from "express";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { filtersDataTypes, parsedRequirementsTypes } from "../Types/adminPostControllerTypes";
-import { DeleteSupabase, ResponseUploadSupabase, supabase, UploadSupabase } from "../Config/Supabase";
-import { adminAddScholarshipsZodType, approveApplicationZodType, archiveScholarshipZodType, createAnnouncementZodType, declineApplicationZodType, deleteAdminZodType, deleteAnnouncementZodType, 
-  deleteApplicationsZodType, deleteScholarshipZodType, forInterviewZondType, getAllAdminZodType, getAnnouncementZodType, getApplicationByIdZodType, getApplicationZodType, getFilterDataZodType, 
-  getScholarshipsByIdZodType, getScholarshipZodType, renewalScholarshipZodType, searchAdminZodType, searchApplicationZodType, searchScholarshipZodType, updateScholarshipZodType } from "../Zod/ZodSchemaAdminPost";
+import { Prisma } from "@prisma/client";
+import { filtersDataTypes } from "../Types/adminPostControllerTypes";
+import { DeleteSupabase, ResponseUploadSupabase, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase } from "../Config/Supabase";
+import { adminAddScholarshipsZodType, approveApplicationZodType, createAnnouncementZodType, declineApplicationZodType, deleteAdminZodType, deleteAnnouncementZodType, 
+  deleteApplicationsZodType, deleteScholarshipZodType, deleteStudentZodType, downloadApplicationCSVZodType, downloadStudentsCSVZodType, editAnnouncementZodType, endScholarshipZodType, forInterviewZondType, getAllAdminZodType, getAnnouncementByIdZodType, getAnnouncementZodType, getApplicationByIdZodType, getApplicationZodType, getFilterDataZodType, 
+  getScholarshipsByIdZodType, getScholarshipZodType, getStaffByIdZodType, getStaffLogsZodType, getStudentsByIdZodType, getStudentsZodType, renewalScholarshipZodType, searchAdminZodType, searchApplicationZodType, searchStudentZodType, updateScholarshipZodType, 
+  updateStudentAccountZodType,
+  validateStaffZodType} from "../Zod/ZodSchemaAdminPost";
 import { CreateEmailOptions } from "resend";
 import { ApproveHTML } from "../utils/HTML-ApprovedApplication";
 import { interviewHTML } from "../utils/HTML-InterviewApplication";
-import { prismaGetStaffAccounts, prismaSearchISPUStaff, prismaTotalCountStaff } from "../Models/ISPSU_StaffModels";
-import { prismaDeleteAccount, prismaGetAccountById } from "../Models/AccountModels";
-import { prismaArchiveScholarship, prismaCreateScholarship, prismaDeleteScholarship, prismaFiltersScholarship, prismaGetScholarship, prismaGetScholarshipByArray, prismaGetScholarshipsById, prismaRenewScholarship, prismaSearchScholarshipTitle, prismaSelectValidArchiveScolarship, prismaUpdateScholarship } from "../Models/ScholarshipModels";
-import { prismaAcceptForInterview, prismaApproveApplication, prismaBlockApplicationByOwnerId, prismaCheckApproveGov, prismaDeclineApplication, prismaDeleteApplication, prismaGetAllApplication, prismaGetApplication, prismaGetApplicationPath, prismaSearchApplication } from "../Models/ApplicationModels";
-import { prismaFiltersStudent } from "../Models/StudentModels";
+import { prismaGetStaffAccounts, prismaGetStaffById, prismaSearchISPUStaff, prismaTotalCountStaff, prismaValidateStaff } from "../Models/ISPSU_StaffModels";
+import { prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from "../Models/AccountModels";
+import { prismaCreateScholarship, prismaDeleteScholarship, prismaEndScholarship, prismaFiltersScholarship, prismaGetScholarship, prismaGetScholarshipByArray, prismaGetScholarshipsById, 
+  prismaRenewScholarship, prismaSearchScholarshipTitle, prismaUpdateScholarship } from "../Models/ScholarshipModels";
+import { prismaAcceptForInterview, prismaApproveApplication, prismaBlockApplicationByApplicationId, prismaCheckApproveGov, prismaDeclineApplication, prismaDeleteApplication, 
+  prismaGetAllApplication, prismaGetApplication, prismaGetApplicationPath, prismaGetApplicationsCSV, prismaGetFiltersForApplicationsCSV, prismaSearchApplication } from "../Models/ApplicationModels";
+import { prismaExportCSV, prismaFiltersStudent, prismaGetFiltersStudentCSV, prismaGetStudentById, prismaGetStudents, prismaSearchStudents } from "../Models/StudentModels";
 import { prismaGetApplicationByIdScholarshipId } from "../Models/Application_DecisionModels";
-import { prismaCreateAnnouncement, prismaDeleteAnnouncement, prismaGetAllAnnouncement } from "../Models/AnnouncementModels";
+import { prismaCreateAnnouncement, prismaDeleteAnnouncement, prismaEditAnnouncement, prismaGetAllAnnouncement, prismaGetAnnouncementById } from "../Models/AnnouncementModels";
 import { declineHTML } from "../utils/HTML-DeclinedApplication";
 import { chunkArray } from "../utils/Helper";
+import { io } from "..";
+import { prismaCreateStaffLog, prismaGetStaffLogs } from "../Models/Staff_LogsModels";
+import { hash } from "bcryptjs";
+import { ExportToExcel } from "../Config/ExcelJS";
+import { TokenPayload } from "../Types/authControllerTypes";
+import { cookieOptionsStaff } from "../Config/TokenAuth";
+import { downloadApplicationFileZodType, getFileUrlZodType } from "../Zod/ZodSchemaUserUser";
+import { error } from "console";
+import { sendApplicationUpdate } from "../Config/Resend";
+import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
+
 
 export const getAllAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
+    const userId = Number(req.tokenPayload.accountId)
+
+    const HeadId = await prismaGetAccountById(userId)
+    if(!HeadId || HeadId.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+    
     const {page, dataPerPage, sortBy, accountId, order} = (req as Request & {validated: getAllAdminZodType}).validated.query
 
     if(!page || !dataPerPage){
@@ -44,7 +68,16 @@ export const getAllAdmin = async (req: Request, res: Response, next: NextFunctio
 }
 export const searchAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void>=>{
   try {
+    const userId = Number(req.tokenPayload.accountId)
     const {page, dataPerPage, accountId, search, sortBy, order} = (req as Request & {validated: searchAdminZodType}).validated.query
+
+    const HeadId = await prismaGetAccountById(userId)
+    if(!HeadId || HeadId.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
 
     if(!page || !dataPerPage){
       res.status(400).json({success: false, message: "Incomplete Credentials!"})
@@ -68,13 +101,132 @@ export const searchAdmin = async (req: Request, res: Response, next: NextFunctio
     next(error)
   }
 }
+export const getStaffById = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const userId = Number(req.tokenPayload.accountId)
+
+    const HeadId = await prismaGetAccountById(userId)
+    if(!HeadId || HeadId.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const {staffId} = (req as Request &{validated: getStaffByIdZodType}).validated.query
+
+    const staff = await prismaGetStaffById(staffId)
+    if(!staff){
+      res.status(404).json({success: false, message: "Staff did not Found!"})
+      return
+    }
+    res.status(200).json(staff)
+  } catch (error) {
+    next(error)
+  }
+}
 export const deleteAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    let {accountId} = (req as Request & {validated: deleteAdminZodType}).validated.body
+    const id = Number(req.tokenPayload.accountId)
+
+    const HeadId = await prismaGetAccountById(id)
+    if(!HeadId || HeadId.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+    const {accountId} = (req as Request & {validated: deleteAdminZodType}).validated.body
     
     const deleteAdmin = await prismaDeleteAccount(accountId)
+    io.emit("deleteAdmin", {accountId})
 
-    res.status(200).json({success:true, message:"Admin Accounts Deleted!", affectedRows:deleteAdmin})
+    res.status(200).json({success:true, message:"Admin Accounts Deleted!", affectedRows:deleteAdmin, staffId: accountId})
+  } catch (error) {
+    next(error)
+  }
+}
+export const validateStaff = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {staffId} = (req as Request & {validated: validateStaffZodType}).validated.body
+    const headId = Number(req.tokenPayload.accountId)
+
+    const HeadId = await prismaGetAccountById(headId)
+    if(!HeadId || HeadId.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+    const checkStaffAccount = await prismaGetStaffById(staffId)
+    if(!checkStaffAccount){
+      res.status(404).json({success: false, message: "Staff Account Did not Find!"})
+      return
+    }
+
+    const validateStaff = await prismaValidateStaff(staffId, !checkStaffAccount.validated)
+    if(!validateStaff){
+        res.status(500).json({success: false, message: "Server Error!"})
+        return
+    }
+    res.status(200).json({success: true, message: "Account Updated"})
+  } catch (error) {
+    next(error)
+  }
+}
+export const adminTokenAuthentication = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const accountId = Number(req.tokenPayload.accountId)
+
+    const ISPSU = await prismaGetAccountById(accountId)
+    if(!ISPSU || 
+      ISPSU.role !== "ISPSU_Head" && ISPSU.role !== "ISPSU_Staff"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+    if(ISPSU.role === "ISPSU_Staff" && !ISPSU.ISPSU_Staff?.validated){
+      res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account is not validated!"})
+        return
+    }
+    const {hashedPassword, ...safeData} = ISPSU
+    res.status(200).json({success:true, message:"Access Granted!", safeData:safeData});
+  } catch (error) {
+    next(error)
+  }
+}
+export const getDashboard = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const accountId = Number(req.tokenPayload.accountId)
+
+    const ISPSU = await prismaGetAccountById(accountId)
+    if(!ISPSU || ISPSU.role !== "ISPSU_Staff" && ISPSU.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const getDashboardData = await prismaGetHeadDashboard()
+    res.status(200).json(getDashboardData)
+  } catch (error) {
+    next(error)
+  }
+}
+export const headDashboard = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    // const {accountId} = (req as Request &{validated: headDashboardZodType}).validated.query
+    const token = (req as Request &{tokenPayload: TokenPayload}).tokenPayload
+
+    const checkAccount = await prismaGetAccountById(token.accountId)
+    if(!checkAccount){
+      res.status(401).json({success: false, message: "Account Did not Find!"})
+      return
+    }
+    if(checkAccount.role !== "ISPSU_Head"){
+      res.status(401).json({success: false, message: "Account is Not Valid!"})
+      return
+    }
+
+    const getData = await prismaGetHeadDashboard()
+    res.status(200).json(getData)
   } catch (error) {
     next(error)
   }
@@ -95,43 +247,51 @@ export const adminAddScholarships = async (req: Request, res: Response, next: Ne
         scholarshipAmount,
         scholarshipLimit,
         gwa,
-        adminId,
         isForInterview,
       } = (req as Request & {validated: adminAddScholarshipsZodType}).validated.body;
 
-      const checkAccount = await prismaGetAccountById(adminId)
-      if(!checkAccount){
-        res.status(404).json({success: false, message: "Account Did Not Found!"})
+      const adminId = Number(req.tokenPayload.accountId)
+
+      const ISPSU_Head = await prismaGetAccountById(adminId)
+      if(!ISPSU_Head || ISPSU_Head.role !== "ISPSU_Head"){
+          res.clearCookie("AdminToken", cookieOptionsStaff);
+          res.status(401).json({success: false, message: "Account Did not Find!"})
+          return
+      }
+      if(!scholarshipDocuments.documents){
+        res.status(422).json({success: false, message: "Missing Field scholarshipDocuments.documents"})
         return
       }
-      if(checkAccount.role !== "ISPSU_Head"){
-        res.status(401).json({success: false, message: "This Account Is not Allowed To Add Scholarship"})
+      const docs:{label: string}[] = scholarshipDocuments.documents
+      if(new Set(docs.map(d => d.label)).size !== docs.length){
+        res.status(422).json({success: false, message: "Dupplicate Requirement Label!"})
         return
       }
     
       const sponsorLogo = (req.files as Express.Multer.File[]).find(file => file.fieldname === 'sponsorLogo');
       const coverImg = (req.files as Express.Multer.File[]).find(file => file.fieldname === 'coverImg');
       const form = (req.files as Express.Multer.File[]).find(file => file.fieldname === 'scholarshipForm');
-      if ( !sponsorLogo || !coverImg || !form ) {
+      if ( !sponsorLogo || !coverImg) {
         res.status(422).json({success: false, message: 'Incomplete Image!'});
         return;
       }
   
       const sponsorResult: ResponseUploadSupabase = await UploadSupabase(sponsorLogo, "scholarship-files");
       const coverResult: ResponseUploadSupabase = await UploadSupabase(coverImg, "scholarship-files");
-      const formResult: ResponseUploadSupabase = await UploadSupabase(form, "scholarship-files");
+      const formResult: ResponseUploadSupabase|undefined = form? await UploadSupabase(form, "scholarship-files"):undefined
 
       const insertScholarshipsData = await prismaCreateScholarship(
         scholarshipType, newScholarTitle, newScholarProvider,  newScholarDeadline, newScholarDescription,
-        scholarshipDocuments, scholarshipAmount, scholarshipLimit, gwa, adminId, 
+        scholarshipDocuments.documents, scholarshipAmount, scholarshipLimit, gwa, adminId, 
         sponsorResult, coverResult, formResult, isForInterview
       );
       if(!insertScholarshipsData){
-        await DeleteSupabase([sponsorResult.publicUrl, coverResult.publicUrl, formResult.publicUrl])
         res.status(500).json({success: false, message: "Database Error"});
+        await DeleteSupabase([sponsorResult.path, coverResult.path, formResult?.path||''])
         return;
       }
       res.status(200).json({success: true,message: 'Scholarship Added!'});
+      io.emit("adminAddScholarships", {newScholarship: insertScholarshipsData})
     } catch (error) {
       next(error)
     }
@@ -139,48 +299,33 @@ export const adminAddScholarships = async (req: Request, res: Response, next: Ne
 
 export const getScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const {filters, page, dataPerPage, sortBy, order, status} = (req as Request & {validated: getScholarshipZodType}).validated.query
-    if(filters && !Array.isArray(filters)){
-      res.status(422).json({success: false, message: "Invalid Array Format!"})
-      return
+    const {filters, page, dataPerPage, sortBy, order, status, search} = (req as Request & {validated: getScholarshipZodType}).validated.query
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
     }
     
-    const getScholarshipsData = await prismaGetScholarship(page, dataPerPage, sortBy, order, status , filters);
-    const metaFilters: any = {}
-    filters?.forEach((element:filtersDataTypes) => {
-      metaFilters[element.id] = element.value
-    });
+    const getScholarshipsData = await prismaGetScholarship(page, dataPerPage, sortBy, order, status , filters, undefined, search);
+
     const meta = {
+      count: {
+        countActive: getScholarshipsData.countActive,
+        countRenew: getScholarshipsData.countRenew,
+        countExpired: getScholarshipsData.countExpired,
+      },
       page: page? page: "none",
       pageSize: dataPerPage? dataPerPage: "none",
       totalRows:getScholarshipsData.totalCount,
       totalPage:Math.ceil(getScholarshipsData.totalCount/(dataPerPage || getScholarshipsData.totalCount)),
       sortBy:sortBy? sortBy:"default",
       order:order? order:"default",
-      filters:JSON.stringify(metaFilters)
+      filters: (filters as {id: string, value: string[]}[])?.map(f => f.id)
     }
     res.status(200).json({data:getScholarshipsData.scholarship, meta});
-  } catch (error) {
-    next(error)
-  }
-}
-
-export const searchScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
-  try {
-    const {status, search, page, dataPerPage, sortBy, order} = (req as Request & {validated: searchScholarshipZodType}).validated.query
-
-    const dataSearch = await prismaSearchScholarshipTitle(page, dataPerPage, search, sortBy, order, status)
-    const meta = {
-      page: page,
-      pageSize: dataPerPage,
-      totalRows:dataSearch.totalCount,
-      totalPage:Math.ceil(dataSearch.totalCount/(dataPerPage || dataSearch.totalCount)),
-      sortBy:sortBy? sortBy:"default",
-      order:order? order:"default",
-      filters:JSON.stringify({
-      })
-    }
-    res.status(200).json({success: true, data:dataSearch.searchResults, meta})
   } catch (error) {
     next(error)
   }
@@ -189,12 +334,21 @@ export const searchScholarship = async (req: Request, res: Response, next: NextF
 export const getScholarshipsById = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
     const {scholarshipId} = (req as Request & {validated: getScholarshipsByIdZodType}).validated.query
-      const getScholarshipsByIdData = await prismaGetScholarshipsById(scholarshipId);
-      if(!getScholarshipsByIdData){
-        res.status(404).json({success: false, message: "Scholarship Did not Found!!!"});
-        return;
-      }
-      res.status(200).json({success:true, message:"Get Success!", scholarship: getScholarshipsByIdData});
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const getScholarshipsByIdData = await prismaGetScholarshipsById(scholarshipId);
+    if(!getScholarshipsByIdData){
+      res.status(404).json({success: false, message: "Scholarship Did not Found!!!"});
+      return;
+    }
+    res.status(200).json({success:true, message:"Get Success!", scholarship: getScholarshipsByIdData});
   } catch (error) {
       next(error)
   }
@@ -202,7 +356,7 @@ export const getScholarshipsById = async (req: Request, res: Response, next: Nex
 
 export const updateScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    const {
+    let {
       scholarshipId,
       newScholarProvider,
       newScholarTitle,
@@ -212,21 +366,23 @@ export const updateScholarship = async (req: Request, res: Response, next: NextF
       scholarshipLimit,
       gwa,
       scholarshipDocuments,
-      accountId
     } = (req as Request & {validated: updateScholarshipZodType}).validated.body;
 
-    const checkAccount = await prismaGetAccountById(accountId)
-    if(!checkAccount){
-      res.status(404).json({success: false, message: "Account Did Not Found!"})
-      return
-    }
-    if(checkAccount.role !== "ISPSU_Head"){
-      res.status(401).json({success: false, message: "This Account Is not Allowed To Update Scholarship"})
-      return
+    const accountId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(accountId)
+    if(!user || user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
     }
     const scholarship = await prismaGetScholarshipsById(scholarshipId)
     if(!scholarship){
       res.status(404).json({success: false, message: "Scholarship Did no Found!"})
+      return
+    }
+    if(scholarship.ended === true){
+      res.status(400).json({success: false, message: "Ended Scholarship Cannot be Edited!"})
       return
     }
     const newSupabasePath = {
@@ -254,6 +410,18 @@ export const updateScholarship = async (req: Request, res: Response, next: NextF
       scholarshipForm.form = scholarshipForm.path
     }
 
+    type ScholarshipDocs = Record<string, {
+      label: string;
+      requirementType: string;
+      formats?: string[];
+    }>;
+    const phase: string = `phase-${scholarship.phase}`
+    const newDoc = scholarship.documents as ScholarshipDocs
+
+    if(scholarshipDocuments.documents[phase]){
+      newDoc[phase] = scholarshipDocuments.documents[phase]
+    }
+
     const update = await prismaUpdateScholarship(
       scholarshipId,
       newScholarProvider,
@@ -261,7 +429,7 @@ export const updateScholarship = async (req: Request, res: Response, next: NextF
       newScholarDeadline,
       scholarshipAmount,
       newScholarDescription,
-      scholarshipDocuments,
+      newDoc,
       scholarshipLimit,
       gwa,
       scholarshipLogo,
@@ -270,18 +438,23 @@ export const updateScholarship = async (req: Request, res: Response, next: NextF
       newSupabasePath
     )
     if(!update){
+      res.status(500).json({success: false, message: "Scholarship Not Updated!"})
+      const deletePaths: string[] = []
       if(scholarshipLogo){
-        await DeleteSupabase([scholarshipLogo.path])
+        deletePaths.push(scholarshipLogo.path)
       }
       if(scholarshipCover){
-        await DeleteSupabase([scholarshipCover.path])
+        deletePaths.push(scholarshipCover.path)
       }
       if(scholarshipForm){
-        await DeleteSupabase([scholarshipForm.path])
+        deletePaths.push(scholarshipForm.path)
       }
+      deletePaths.length&& await DeleteSupabase(deletePaths).catch(error => console.log(`Delete Files Error: ${error}`))
+      return
     }
-    await DeleteSupabase(deleteOldFiles)
-    res.status(200).json({success: true, message: "Scholarship Updated!"})
+    await DeleteSupabase(deleteOldFiles).catch(error => console.log(`Delete Files Error: ${error}`))
+    res.status(200).json({success: true, message: "Scholarship Updated!", updatedScholarship: update})
+    io.emit("updateScholarship", {update})
   } catch (error) {
     next(error);
   }
@@ -289,16 +462,15 @@ export const updateScholarship = async (req: Request, res: Response, next: NextF
 
 export const renewalScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    const {accountId, scholarshipId, newRequirements} = (req as Request & {validated: renewalScholarshipZodType}).validated.body
+    const { scholarshipId, renewDeadline, renewDocuments, isForInterview} = (req as Request & {validated: renewalScholarshipZodType}).validated.body
 
-    const checkAccount = await prismaGetAccountById(accountId)
-    if(!checkAccount){
-      res.status(404).json({success: false, message: "Account Did Not Found!"})
-      return
-    }
-    if(checkAccount.role !== "ISPSU_Head"){
-      res.status(401).json({success: false, message: "This Account Is not Allowed To Renew Scholarship"})
-      return
+    const accountId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(accountId)
+    if(!user || user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
     }
     const scholarship = await prismaGetScholarshipsById(scholarshipId)
     if(!scholarship){
@@ -311,48 +483,49 @@ export const renewalScholarship = async (req: Request, res: Response, next: Next
       return;
     }
     if(deadline > new Date()){
-      res.status(409).json({success: false, message: "Scholarship Is Currently Active!"})
+      res.status(400).json({success: false, message: "Scholarship Is Currently Active!"})
+      return
+    }
+    if(scholarship.ended === true){
+      res.status(400).json({success: false, message: "Ended Scholarship Cannot be Renewed"})
       return
     }
     
-    const updatedRequirements: object = {...(scholarship.documents as Record<string, unknown>||{documents:{}}),renewDocuments:newRequirements}
-    const renewScholar = await prismaRenewScholarship(accountId, scholarshipId, updatedRequirements)
+    const updatedRequirements = scholarship.documents as Record<string, {[k: string]: string}>
+    updatedRequirements[`phase-${scholarship.phase+1}`] = renewDocuments
+
+    const renewScholar = await prismaRenewScholarship(accountId, scholarshipId, updatedRequirements, renewDeadline, isForInterview)
     if(!renewScholar){
       res.status(500).json({success: false, message: "Server Error!"})
       return
     }
-    res.status(200).json({success: false, message: "Scholarship Renewed!"})
+    const emitTo: string[] = renewScholar.Application.map(f => f.ownerId.toString())
+    res.status(200).json({success: false, message: "Scholarship Renewed!", renewedScholarship: renewScholar})
+    io.to(["ISPSU_Head", "ISPSU_Staff", ...emitTo]).emit("renewScholarship", {renewScholar})
   } catch (error) {
     next(error)
   }
 }
 
-export const archiveScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
+export const endScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void>=>{
   try {
-    const {accountId, scholarshipId} = (req as Request &{validated: archiveScholarshipZodType}).validated.body
-    if(!Array.isArray(scholarshipId.data) || (scholarshipId.data as unknown[]).every(element => typeof element === "number")){
-      res.status(422).json({success: false, message: "Invalid Array Format!"})
+    const {scholarshipId} = (req as Request & {validated: endScholarshipZodType}).validated.body
+    const accountId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(accountId)
+    if(!user || user.role !== "ISPSU_Head"){
+      res.clearCookie("AdminToken", cookieOptionsStaff);
+      res.status(404).json({success: false, message: "Account Did not Find!"})
       return
     }
 
-    const checkAccount = await prismaGetAccountById(accountId)
-    const checkScholarship = await prismaGetScholarshipByArray(scholarshipId.data)
-    if(!checkAccount || !checkScholarship){
-      res.status(404).json({success: false, message: "Data Did Not Found!"})
-      return
-    }
-    if(checkAccount.role !== "ISPSU_Head"){
-      res.status(401).json({success: false, message: "This Account Is not Allowed To Archive Scholarship"})
-      return
-    }
-
-    const archiveScholarship = await prismaSelectValidArchiveScolarship(scholarshipId.data)
-    
-    if(!archiveScholarship){
+    const endScholar = await prismaEndScholarship(scholarshipId)
+    if(!endScholar){
       res.status(500).json({success: false, message: "Server Error!"})
       return
     }
-    res.status(200).json({success: true, message: "Scholarship Archived!"})
+    res.status(200).json({success: true, message: "Scholarship Ended!", endedScholarship: endScholar})
+    io.emit("endScholarship", {endedScholarship: endScholar.endedScholarship, endedApplications: endScholar.endenApplications})
   } catch (error) {
     next(error)
   }
@@ -360,17 +533,15 @@ export const archiveScholarship = async (req: Request, res: Response, next: Next
 
 export const deleteScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void>=>{
   try {
-    const {accountId, scholarshipId} = (req as Request & {validated: deleteScholarshipZodType}).validated.body
+    const {scholarshipId} = (req as Request & {validated: deleteScholarshipZodType}).validated.body
+    const userId = Number(req.tokenPayload.accountId)
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
 
-    const checkAccount = await prismaGetAccountById(accountId)
-    if(!checkAccount){
-      res.status(404).json({success: false, message: "Account Did Not Found!"})
-      return
-    }
-    if(checkAccount.role !== "ISPSU_Head"){
-      res.status(401).json({success: false, message: "This Account Is not Allowed To Delete Scholarship"})
-      return
-    }
     const scholarship = await prismaGetScholarshipByArray(scholarshipId)
     if(!scholarship){
       res.status(404).json({success: false, message:"Scholarship Did Not Find!"})
@@ -379,26 +550,35 @@ export const deleteScholarship = async (req: Request, res: Response, next: NextF
     const deleteData: string[] = Object.values(scholarship.supabasePath as {})
     const DeleteScholarship = await prismaDeleteScholarship(scholarshipId);
     if(!DeleteScholarship){
-      res.status(401).json({success: false, message: "The Scholarship is Already Deleted!!"});
+      res.status(400).json({success: false, message: "The Scholarship is Already Deleted!!"});
       return;
     }
-    await DeleteSupabase(deleteData)
-    res.status(200).json({success: true, message: "Scholarship Deleted!!"})
+    await DeleteSupabase(deleteData).catch(error => console.log(error))
+    let scholarshipStatus: string = ""
+    if(scholarship.phase > 1 && new Date(scholarship.deadline).getTime() > Date.now()){
+      scholarshipStatus = "RENEW"
+    }
+    else if(scholarship.ended === true){
+      scholarshipStatus = "ENDED"
+    }
+    else if(new Date(scholarship.deadline).getTime() > Date.now()){
+      scholarshipStatus = "ACTIVE"
+    }
+    else if(new Date(scholarship.deadline).getTime() < Date.now()){
+      scholarshipStatus = "EXPIRED"
+    }
+
+    res.status(200).json({success: true, message: "Scholarship Deleted!!", scholarshipId, scholarshipStatus})
+    io.emit("deleteScholarship", {deletedScholarship: scholarship, deletedApplicationsIds: scholarship.Application.map(f => f.applicationId), scholarshipStatus})
 
     const applicationIDs: {id: number, supabasePath: {[key: string]: string}}[] = scholarship.Application.map(e => ({id:e.applicationId, supabasePath:e.supabasePath as {[key: string]: string}}))
     const batchIDs = chunkArray(applicationIDs, 20)
-    const prisma = new PrismaClient()
     
     for(let i = 0; i < batchIDs.length; i++){
       const batch = batchIDs[i]
 
       await Promise.all(batch.map(async (app)=> {
-        await prisma.application.delete({
-          where:{
-            applicationId: app.id
-          }
-        })
-        await DeleteSupabase(Object.values(app.supabasePath))
+        await SupabaseDeletePrivateFile(Object.values(app.supabasePath))
       }))
     }
   } catch (error) {
@@ -411,13 +591,41 @@ export const deleteScholarship = async (req: Request, res: Response, next: NextF
 export const getApplicationById = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
     const {applicationId} = (req as Request & {validated: getApplicationByIdZodType}).validated.query
-    const getData = await prismaGetApplication(applicationId)
-    if(!getData){
-      res.status(400).json({success: false, message: "Data Did not found"})
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const application = await prismaGetApplication(applicationId)
+    if(!application){
+      res.status(404).json({success: false, message: "Data Did not found"})
       return
     }
-    const {} = getData
-    res.status(200).json({success: true, data: getData})
+    const k: any = {}
+    for(const [key, value] of Object.entries(application.submittedDocuments as RecordApplicationFilesTypes)){
+      k[key] = {
+        documents : value,
+        Application_Decision : application.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
+        Interview_Decision : application.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
+      }
+    }
+    res.status(200).json({success: true, data: {
+        applicationId: application.applicationId,
+        scholarshipId: application.scholarshipId,
+        ownerId: application.ownerId,
+        status: application.status,
+        supabasePath: application.supabasePath,
+        submittedDocuments: k,
+        Application_Decision: application.Application_Decision,
+        Interview_Decision: application.Interview_Decision,
+        Student: application.Student,
+        Scholarship: application.Scholarship,
+        dateCreated: application.dateCreated,
+    }})
   } catch (error) {
     next(error)
   }
@@ -426,6 +634,14 @@ export const getApplicationById = async (req: Request, res: Response, next: Next
 export const searchApplication = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
     const {search, status, sortBy, order, page, dataPerPage} = (req as Request & {validated: searchApplicationZodType}).validated.query
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
 
     const allowedStatusFilter = ["DECLINED", "PENDING", "APPROVED"]
 
@@ -451,6 +667,14 @@ export const searchApplication = async (req: Request, res: Response, next: NextF
 export const getFilterData = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
     const {scholarshipStatus, applicationStatus} = (req as Request & {validated: getFilterDataZodType}).validated.query
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
     
     const getScholarshipsFilters = await prismaFiltersScholarship(scholarshipStatus)
     const getFilterData = await prismaFiltersStudent(applicationStatus)
@@ -463,16 +687,15 @@ export const getFilterData = async (req: Request, res: Response, next: NextFunct
 
 export const approveApplication = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    const {applicationId, adminId, scholarshipId} = (req as Request & {validated: approveApplicationZodType}).validated.body
+    const {applicationId, scholarshipId, rejectMessage} = (req as Request & {validated: approveApplicationZodType}).validated.body
+    const userId = Number(req.tokenPayload.accountId)
 
-    const validStaff = await prismaGetAccountById(adminId)
-    if(!validStaff){
-      res.status(404).json({success: false, message: "Staff Did not Find!"})
-      return
-    }
-    if(validStaff.role !== "ISPSU_Staff"){
-      res.status(401).json({success: false, message: "This Account is Not Staff!"})
-      return
+    const user = await prismaGetAccountById(userId)
+
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
     }
     const checkApplication = await prismaGetApplicationByIdScholarshipId(applicationId,scholarshipId)
     if(!checkApplication){
@@ -483,8 +706,8 @@ export const approveApplication = async (req: Request, res: Response, next: Next
       res.status(404).json({success: false, message: "Scholarship Did not Find"})
       return
     }
-    if(["APPROVED", "DECLINED", "BLOCKED"].includes(checkApplication.status)){
-      res.status(409).json({success: false, message: "Application Already Approved/Declined!"})
+    if(!["PENDING", "INTERVIEW"].includes(checkApplication.status)){
+      res.status(400).json({success: false, message: `Application Already ${checkApplication.status}`})
       return
     }
     const scholarship = await prismaGetScholarshipsById(scholarshipId)
@@ -492,42 +715,43 @@ export const approveApplication = async (req: Request, res: Response, next: Next
       res.status(404).json({success: false, message: "Scholarship Did No Find!"})
       return
     }
+    if(scholarship.ended){
+      res.status(400).json({success: false, message: "Scholarship Ended Cannot process Anymore!"})
+      return
+    }
     if(scholarship.interview === true && checkApplication.status !== "INTERVIEW"){
-      res.status(409).json({success: false, message: "This Student is Not Interviewed Yet!"})
+      res.status(400).json({success: false, message: "This Student is Not Interviewed Yet!"})
       return
     }
     const checkApproveGov = await prismaCheckApproveGov(checkApplication.ownerId)
     if(checkApproveGov && scholarship.type === "government"){
-      res.status(409).json({success: false, message: "This Student already have a Government Scholarship!"})
-      await prismaDeleteApplication([applicationId])
-      const removeFiles = await DeleteSupabase(Object.values(checkApproveGov.supabasePath as {[key: string]: string}))
+      res.status(400).json({success: false, message: "This Student already have a Government Scholarship!", action: "Application Blocked!", })
+      await prismaBlockApplicationByApplicationId(applicationId)
       return
     }
 
-    const approve = await prismaApproveApplication(applicationId,adminId)
-    if(!approve){
+    const {Application, notification, BlockedApplications} = await prismaApproveApplication(applicationId,userId,rejectMessage, scholarship.phase)
+    if(!Application){
       res.status(500).json({success: false, message: "Server Error!"})
       return
     }
-    const student = await prismaGetAccountById(approve.ownerId)
-    const applicantName: string = `${student?.Student?.lName}, ${student?.Student?.fName} ${student?.Student?.mName}`
-    const applicantStudentId: string = `${student?.schoolId}`
-    const applicantEmail: string = `${student?.email}`
+    const applicantName: string = `${checkApplication?.Student?.lName}, ${checkApplication?.Student?.fName} ${checkApplication?.Student?.mName}`
+    const applicantStudentId: string = `${checkApplication.Student.Account.schoolId}`
+    const applicantEmail: string = `${checkApplication.Student.Account.email}`
     const mailOptions: CreateEmailOptions = {
       from:"service@edugrant.online",
-      to:student?.email || "",
+      to:applicantEmail,
       subject:"Approved Application",
       html:ApproveHTML(applicantName, applicantStudentId, applicantEmail),
     }
-    // sendApplicationUpdate(mailOptions)
-    res.status(200).json({success: true, message: "Application Approved!"})
+    sendApplicationUpdate(mailOptions)
+    res.status(200).json({success: true, message: "Application Approved!", approvedApplication: Application, BlockedApplications, notification: notification})
+    io.to(["ISPSU_Staff", "ISPSU_Head", checkApplication.ownerId.toString()]).emit("approveApplication", {
+      approvedApplication: Application, BlockedApplications, notification: notification
+    })
   } catch (error: any) {
     if(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034"){
-      res.status(409).json({success: false, message: "This Application Has Been Processed!"})
-      return
-    }
-    if(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034"){
-      res.status(409).json({success: false, message: "This Application Has Been Processed!"})
+      res.status(400).json({success: false, message: "This Application Has Been Processed!"})
       return
     }
     next(error)
@@ -536,15 +760,24 @@ export const approveApplication = async (req: Request, res: Response, next: Next
 
 export const forInterview = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    const {applicationId, scholarshipId, accountId} = (req as Request &{validated: forInterviewZondType}).validated.body
+    const {applicationId, scholarshipId, rejectMessage} = (req as Request &{validated: forInterviewZondType}).validated.body
+
+    const accountId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(accountId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
 
     const checkApplication = await prismaGetApplicationByIdScholarshipId(applicationId, scholarshipId)
     if(!checkApplication){
       res.status(404).json({success: false, message: "Application Did not Find!"})
       return
     }
-    if(["INTERVIEW", "DECLINED", "BLOCKED", "APPROVED"].includes(checkApplication.status)){
-      res.status(409).json({success: false, message: `Application Is Already ${checkApplication.status}`})
+    if(!["PENDING"].includes(checkApplication.status)){
+      res.status(400).json({success: false, message: `Application Is Already ${checkApplication.status}`})
       return
     }
     const checkScholarship = await prismaGetScholarshipsById(scholarshipId)
@@ -552,85 +785,93 @@ export const forInterview = async (req: Request, res: Response, next: NextFuncti
         res.status(404).json({success: false, message: "This Sholarship No Longet Exist"})
         return
     }
+    if(checkScholarship.ended){
+      res.status(400).json({success: false, message: "Scholarship Ended Cannot process Anymore!"})
+      return
+    }
     if(checkScholarship.interview === false){
-      res.status(409).json({success: false, message: "This Sholarship Does not Required Interview!"})
-      return
-    }
-    const validStaff = await prismaGetAccountById(accountId)
-    if(!validStaff){
-      res.status(404).json({success: false, message: "Staff Did not Find!"})
-      return
-    }
-    if(validStaff.role !== "ISPSU_Staff"){
-      res.status(401).json({success: false, message: "This Account is Not Staff!"})
+      res.status(400).json({success: false, message: "This Sholarship Does not Required Interview!"})
       return
     }
 
-    const setInterview = await prismaAcceptForInterview(applicationId, accountId)
-    if(!setInterview){
+    const {interviewApplication, notification} = await prismaAcceptForInterview(applicationId, accountId, rejectMessage, checkScholarship.phase)
+    if(!interviewApplication){
       res.status(500).json({success: false, message: "Server Error!"})
       return
     }
-    const student = await prismaGetAccountById(setInterview.ownerId)
-    const applicantName: string = `${student?.Student?.lName}, ${student?.Student?.fName} ${student?.Student?.mName}`
-    const applicantStudentId: string = `${student?.schoolId}`
-    const applicantEmail: string = `${student?.email}`
+    const applicantName: string = `${checkApplication.Student.lName}, ${checkApplication.Student.fName} ${checkApplication.Student.mName}`
+    const applicantStudentId: string = `${checkApplication.Student.Account.schoolId}`
+    const applicantEmail: string = `${checkApplication.Student.Account.email}`
     const mailOptions: CreateEmailOptions = {
       from:"service@edugrant.online",
-      to:student?.email || "",
+      to:checkApplication.Student.Account.email || "",
       subject:"Approved Application",
       html:interviewHTML(applicantName, applicantStudentId, applicantEmail),
     }
-    // sendApplicationUpdate(mailOptions)
-    res.status(200).json({success: true, message: "Application Is now For Interview!"})
+    sendApplicationUpdate(mailOptions)
+    res.status(200).json({success: true, message: "Application Is now For Interview!", interviewedApplication: interviewApplication, notification: notification})
+    io.to(["ISPSU_Staff", "ISPSU_Head", checkApplication.Student.studentId.toString()]).emit("forInterview", {interviewApplication: interviewApplication, notification: notification})
   } catch (error) {
+    if(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034"){
+      res.status(400).json({success: false, message: "This Application Has Been Processed!"})
+      return
+    }
     next(error)
   }
 }
 
 export const declineApplication = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    const {applicationId, scholarshipId, adminId, rejectMessage} = (req as Request & {validated: declineApplicationZodType}).validated.body
+    const {applicationId, scholarshipId, rejectMessage} = (req as Request & {validated: declineApplicationZodType}).validated.body
+    const adminId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(adminId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
 
     const checkApplication = await prismaGetApplicationByIdScholarshipId(applicationId, scholarshipId)
     if(!checkApplication){
       res.status(404).json({success: false, message:"Application Did not Find"})
       return
     }
-    if(!["PENDING", "INTERVIEW", "BLOCKED"].includes(checkApplication.status)){
-      res.status(404).json({success: false, message: "Application Already Approved/Declined!"})
-      return
-    }
-    const validStaff = await prismaGetAccountById(adminId)
-    if(!validStaff){
-      res.status(404).json({success: false, message: "Staff Did not Find!"})
-      return
-    }
-    if(validStaff.role !== "ISPSU_Staff"){
-      res.status(401).json({success: false, message: "This Account is Not Staff!"})
+    if(!["PENDING", "INTERVIEW"].includes(checkApplication.status)){
+      res.status(400).json({success: false, message: `Application Already ${checkApplication.status}`})
       return
     }
 
-    const declineApplication = await prismaDeclineApplication(applicationId, adminId, rejectMessage)
+    const scholarship = await prismaGetScholarshipsById(scholarshipId)
+    if(!scholarship){
+      res.status(404).json({success: false, message: "Scholarship Did No Find!"})
+      return
+    }
+    if(scholarship.ended){
+      res.status(400).json({success: false, message: "Scholarship Ended Cannot process Anymore!"})
+      return
+    }
+
+    const {declineApplication, notification} = await prismaDeclineApplication(applicationId, adminId, rejectMessage, scholarship.phase)
     if(!declineApplication){
       res.status(500).json({success: false, message: "Server Error"})
       return
     }
-    const student = await prismaGetAccountById(declineApplication.Student.studentId)
-    const applicantName: string = `${student?.Student?.fName}, ${student?.Student?.lName} ${student?.Student?.mName}`
-    const applicantStudentId: string = `${student?.schoolId}`
-    const applicantEmail: string = `${student?.email}`
+    const applicantName: string = `${checkApplication.Student.fName}, ${checkApplication.Student.lName} ${checkApplication.Student.mName}`
+    const applicantStudentId: string = `${checkApplication.Student.Account.schoolId}`
+    const applicantEmail: string = `${checkApplication.Student.Account.email}`
     const mailOptions: CreateEmailOptions = {
       from:"service@edugrant.online",
-      to:student?.email || "",
+      to:applicantEmail || "",
       subject:"Approved Application",
       html:declineHTML(applicantName, applicantStudentId, applicantEmail),
     }
-    // sendApplicationUpdate(mailOptions)
-    res.status(200).json({success: true, message: "Application Declined!"})
+    sendApplicationUpdate(mailOptions)
+    res.status(200).json({success: true, message: "Application Declined!", declinedApplication: declineApplication})
+    io.to(["ISPSU_Staff", "ISPSU_Head", checkApplication.Student.studentId.toString()]).emit("declineApplication", {declineApplication, notification: notification})
   } catch (error) {
     if(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034"){
-      res.status(409).json({success: false, message: "This Application Has Been Processed!"})
+      res.status(400).json({success: false, message: "This Application Has Been Processed!"})
       return
     }
     next(error)
@@ -639,17 +880,27 @@ export const declineApplication = async (req: Request, res: Response, next: Next
 
 export const getApplication = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    const {status, page, dataPerPage, sortBy, order, filter, scholarshipId} = (req as Request & {validated: getApplicationZodType}).validated.query
+    const {status, page, dataPerPage, sortBy, order, filters, scholarshipId} = (req as Request & {validated: getApplicationZodType}).validated.query
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
     
-    const getApplication = await prismaGetAllApplication(status, page, dataPerPage, sortBy, order, filter, scholarshipId)
+    const getApplication = await prismaGetAllApplication(status, page, dataPerPage, sortBy, order, filters, scholarshipId)
+    
     const meta = {
+      counts: getApplication.countsByStatus,
       page: page,
       pageSize: dataPerPage,
-      totalRows:getApplication.totalCount,
-      totalPage:Math.ceil(getApplication.totalCount/(dataPerPage? dataPerPage: getApplication.totalCount)),
+      totalRows:getApplication.applicationsCount,
+      totalPage:Math.ceil(getApplication.applicationsCount/(dataPerPage? dataPerPage: getApplication.applicationsCount)),
       sortBy:sortBy? sortBy:"default",
       order:order? order:"default",
-      filters:JSON.stringify(filter?.map(data => data.id))
+      filters:filters?.map(data => data.id)
     }
     res.status(200).json({success: true, data: getApplication.applications.flat(3), meta})
     return
@@ -661,6 +912,14 @@ export const getApplication = async (req: Request, res: Response, next: NextFunc
 export const deleteApplications = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
     const {applicationId} = (req as Request & {validated: deleteApplicationsZodType}).validated.body
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
     
     if(!Array.isArray(applicationId)){
       res.status(400).json({success: false, message: "Invalid Format!"})
@@ -682,8 +941,77 @@ export const deleteApplications = async (req: Request, res: Response, next: Next
       res.status(500).json({success: false, message: "Server Error!"})
       return
     }
-    await DeleteSupabase(SupabasePaths)
-    res.status(200).json({success: true, message: "Applications Deleted!", affectedRows:deleteApplications})
+    io.to(["ISPSU_Head", "ISPSU_Staff", ...(deleteApplications.map(e => e.toString()))]).emit("deleteApplications", {deleteApplications})
+    res.status(200).json({success: true, message: "Applications Deleted!", applicationIds:deleteApplications})
+    await SupabaseDeletePrivateFile(SupabasePaths).catch(error => console.log(error))
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getFileUrl = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {path, applicationId} = (req as Request & {validated: getFileUrlZodType}).validated.body
+    const adminId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(adminId)
+    if(!user || user.role !== "ISPSU_Head" && user.role !== "ISPSU_Staff"){
+      res.clearCookie("AdminToken", cookieOptionsStaff);
+      res.status(401).json({success: false, message: "Account Did not Find!"})
+      return
+    }
+
+    const checkApplication = await prismaGetApplication(applicationId)
+    if(!checkApplication){
+      res.status(404).json({success: false, message: "Application Did not Find!"})
+      return
+    }
+    if(!(checkApplication.supabasePath as string[]).find(f => f === path)){
+      res.status(404).json({success: false, message: "This Path is not from this Application!"})
+      return
+    }
+
+    const URL = await SupabaseCreateSignedUrl(path)
+    if(!URL.success || !URL.signedURLs){
+      res.status(500).json({success: false, message: URL.message})
+      return
+    }
+
+    res.status(200).json({success: true, message: "URL Genarated!", signedURL: URL.signedURLs})
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const downloadApplicationFile = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {path, applicationId} = (req as Request & {validated: downloadApplicationFileZodType}).validated.body
+    const adminId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(adminId)
+    if(!user || user.role !== "ISPSU_Head" && user.role !== "ISPSU_Staff"){
+      res.clearCookie("AdminToken", cookieOptionsStaff);
+      res.status(401).json({success: false, message: "Account Did not Find!"})
+      return
+    }
+
+    const checkApplication = await prismaGetApplication(applicationId)
+    if(!checkApplication){
+      res.status(404).json({success: false, message: "Application Did not Find!"})
+      return
+    }
+    if(!(checkApplication.supabasePath as string[]).find(f => f === path)){
+      res.status(404).json({success: false, message: "This Path is not from this Application!"})
+      return
+    }
+
+    const {downloadURL, success, message} = await SupabaseDownloadFile(path)
+    if(!success){
+      res.status(500).json({success: false, message})
+      return
+    }
+
+    window.open(downloadURL)
   } catch (error) {
     next(error)
   }
@@ -691,9 +1019,18 @@ export const deleteApplications = async (req: Request, res: Response, next: Next
 
 export const createAnnouncement = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    const {adminId, announcementTitle, announcementDescription, announcementTags} = (req as Request & {validated: createAnnouncementZodType}).validated.body
-    if(!Array.isArray(announcementTags.data)){
-      res.status(422).json({success: false, message:"Invalid Array Format!"})
+    const { announcementTitle, announcementDescription, announcementTags} = (req as Request & {validated: createAnnouncementZodType}).validated.body
+    const adminId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(adminId)
+    if(!user || user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    if(announcementTags && !Array.isArray(announcementTags.data)){
+      res.status(400).json({success: false, message:"Invalid Array Format!"})
       return
     }
     
@@ -702,7 +1039,8 @@ export const createAnnouncement = async (req: Request, res: Response, next: Next
       res.status(500).json({success: false, message:"Database Error!"})
       return
     }
-    res.status(201).json({success: true, message: "Announcement Created!"})
+    res.status(200).json({success: true, message: "Announcement Created!"})
+    io.emit("createAnnouncement", {newAnnouncement})
   } catch (error) {
     next(error)
   }
@@ -710,8 +1048,17 @@ export const createAnnouncement = async (req: Request, res: Response, next: Next
 
 export const getAnnouncement = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    const {page, dataPerPage, sortBy, order, status} = (req as Request & {validated: getAnnouncementZodType}).validated.query
-    const getData = await prismaGetAllAnnouncement(page, dataPerPage, sortBy, order, status)
+    const {page, dataPerPage, sortBy, order, status, search} = (req as Request & {validated: getAnnouncementZodType}).validated.query
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const getData = await prismaGetAllAnnouncement(page, dataPerPage, sortBy, order, status, search)
 
     const meta = {
       page: page,
@@ -728,19 +1075,345 @@ export const getAnnouncement = async (req: Request, res: Response, next: NextFun
     next(error)
   }
 }
+export const getAnnouncementById = async (req: Request, res: Response, next:NextFunction): Promise<void>=> {
+  try {
+    const { announcementId} = (req as Request &{validated: getAnnouncementByIdZodType}).validated.query
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const annoucement = await prismaGetAnnouncementById(announcementId)
+    res.status(200).json({success: true, annoucement})
+  } catch (error) {
+    next(error)
+  }
+}
 export const deleteAnnouncement = async (req: Request, res: Response, next:NextFunction): Promise<void>=> {
   try {
     const {announcementId} = (req as Request & {validated: deleteAnnouncementZodType}).validated.body
-    if(!Array.isArray(announcementId.data)){
-      res.status(422).json({success: false, message: "Invalid string[] Format!"})
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const deleteAnnouncement = await prismaDeleteAnnouncement(announcementId)
+    if(!deleteAnnouncement){
+      res.status(500).json({success: false, message:"Server Error!"})
       return
     }
-    const deleteAnnouncement = await prismaDeleteAnnouncement(announcementId.data)
-      if(!deleteAnnouncement){
-        res.status(500).json({success: false, message:"Server Error!"})
+    res.status(200).json({success: true, message:"Announcement Deleted!", announcementId})
+    io.emit("deleteAnnouncement", {deleteAnnouncement})
+  } catch (error) {
+    next(error)
+  }
+}
+export const editAnnouncement = async(req: Request, res: Response, next: NextFunction): Promise<void>=>{
+  try {
+    const { announcementId, title, description, tags} = (req as Request &{validated: editAnnouncementZodType}).validated.body
+
+    const userId = Number(req.tokenPayload.accountId)
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
         return
-      }
-      res.status(200).json({success: true, message:"Announcement Deleted!"})
+    }
+
+    const update = await prismaEditAnnouncement(announcementId, title, description, tags)
+    if(!update){
+      res.status(500).json({success: false, message: "Server Error!"})
+      return
+    }
+    res.status(200).json({success: true, message: "Announcement Updated!", announcement: update})
+  } catch (error) {
+    next(error)
+  }
+}
+export const getStaffLogs = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const { page, dataPerPage, sortBy, order, ownderId, filters} = (req as Request &{validated: getStaffLogsZodType}).validated.query
+    const accountId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(accountId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const isStaff = user.role === "ISPSU_Staff"? accountId:undefined
+    const isHead: boolean = user.role === "ISPSU_Head"
+    const {logs, totalCount} = await prismaGetStaffLogs(isHead, page, dataPerPage, sortBy, order, isStaff, filters)
+
+    const meta = {
+      page: page || "default",
+      pageSize: dataPerPage || "default",
+      totalRows:totalCount,
+      totalPage:dataPerPage? Math.ceil(totalCount/dataPerPage):1,
+      sortBy:sortBy? sortBy:"default",
+      order:order? order:"default",
+      filters:JSON.stringify({})
+    }
+
+    res.status(200).json({success: true, Staff_Logs: logs, meta})
+  } catch (error) {
+    next(error)
+  }
+}
+export const updateStudentAccount = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const { ownerId, email, newPassword, schoolId, fName, lName, mName, contactNumber, gender, address, indigenous, PWD, institute, course, 
+      year, section, dateOfBirth} = (req as Request &{validated: updateStudentAccountZodType}).validated.body
+
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const checkStudentAccount = await prismaGetStudentById(ownerId)
+    if(!checkStudentAccount){
+      res.status(404).json({success: false, message: "Account Not Found!"})
+      return
+    }
+    if(checkStudentAccount.Account.role !== "Student"){
+      res.status(400).json({success: false, message: "Account is Not a Student Account!"})
+      return
+    }
+    let newHashedPass = undefined
+    if(newPassword){
+      newHashedPass = await hash(newPassword, 10)
+    }
+    const update = await prismaHEADUpdateStudentAccount(ownerId, email, newHashedPass, schoolId, fName, lName, mName, contactNumber, gender, address, indigenous, PWD, institute, course, 
+      year, section, dateOfBirth)
+    if(!update){
+      res.status(404).json({success: false, message: "Account Not Found!"})
+      return
+    }
+    const {hashedPassword, ...updatedStudent} = update
+
+    res.status(200).json({success: true, message: "Account Updated!", updatedStudent})
+  } catch (error) {
+    next(error)
+  }
+}
+export const deleteStudent = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const { ownerId} = (req as Request &{validated: deleteStudentZodType}).validated.body
+
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const checkStudentAccount = await prismaGetStudentById(ownerId)
+    if(!checkStudentAccount){
+      res.status(404).json({success: false, message: "Account Not Found!"})
+      return
+    }
+    if(checkStudentAccount.Account.role !== "Student"){
+      res.status(400).json({success: false, message: "Account is Not a Student Account!"})
+      return
+    }
+
+    const deleteStudent = await prismaDeleteAccount([ownerId])
+    if(!deleteStudent){
+      res.status(500).json({success: false, message: "Server Error!"})
+      return
+    }
+
+    res.status(200).json({success: true, message: "Student Account Deleted!"})
+    for(const value of checkStudentAccount.Application){
+      await SupabaseDeletePrivateFile(value.supabasePath as string[]).catch(error => console.log(error))
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+export const getStudents = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {page, dataPerPage, sortBy, order, ownderId, filters} = (req as Request &{validated: getStudentsZodType}).validated.query
+
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const students = await prismaGetStudents(page, dataPerPage, sortBy, order, ownderId, filters)
+
+    const meta = {
+      page: page || "default",
+      pageSize: dataPerPage || "default",
+      totalRows:students.totalCount,
+      totalPage:dataPerPage? Math.ceil(students.totalCount/dataPerPage):1,
+      sortBy:sortBy? sortBy:"default",
+      order:order? order:"default",
+      filters:JSON.stringify({})
+    }
+
+    res.status(200).json({students: students.students, meta})
+  } catch (error) {
+    next(error)
+  }
+}
+export const getStudentsById = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {ownerId} = (req as Request &{validated: getStudentsByIdZodType}).validated.query
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const checkStudentAccount = await prismaGetStudentById(ownerId)
+    if(!checkStudentAccount){
+      res.status(404).json({success: false, message: "Account Not Found!"})
+      return
+    }
+    if(checkStudentAccount.Account.role !== "Student"){
+      res.status(400).json({success: false, message: "Account is Not a Student Account!"})
+      return
+    }
+
+    res.status(200).json({success: true, student: checkStudentAccount})
+  } catch (error) {
+    next(error)
+  }
+}
+export const searchStudent = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {search, page, dataPerPage, sortBy, order, ownderId, filters} = (req as Request &{validated: searchStudentZodType}).validated.query
+
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const students = await prismaSearchStudents(search, page, dataPerPage, sortBy, order, ownderId, filters)
+
+    const meta = {
+      page: page || "default",
+      pageSize: dataPerPage || "default",
+      totalRows:students.totalCount,
+      totalPage:dataPerPage? Math.ceil(students.totalCount/dataPerPage):1,
+      sortBy:sortBy? sortBy:"default",
+      order:order? order:"default",
+      filters:JSON.stringify({})
+    }
+
+    res.status(200).json({students: students.students, meta})
+  } catch (error) {
+    next(error)
+  }
+}
+export const getFiltersCSV = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const getFiltersForApplicationsCSV = await prismaGetFiltersForApplicationsCSV()
+    const dataSelections = [ "status", "title", "name", "fName", "lName", "mName", "contactNumber", "gender", "address", "indigenous", "PWD", "institute", "course", "year", "section", "dateOfBirth", "schoolId", "email",
+    ]
+
+    res.status(200).json({success: true, filters: getFiltersForApplicationsCSV, dataSelections})
+  } catch (error) {
+    next(error)
+  }
+}
+export const downloadApplicationCSV = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {filters, dataSelections} = (req as Request &{validated: downloadApplicationCSVZodType}).validated.query
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const ApplicationsCSV = await prismaGetApplicationsCSV(dataSelections, filters)
+    if(ApplicationsCSV.length === 0){
+      res.status(404).json({success: false, message: "No Record Found!"})
+      return
+    }
+
+    await ExportToExcel(ApplicationsCSV, "Applications", res)
+  } catch (error) {
+    next(error)
+  }
+}
+export const getFiltersStudentsCSV = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+
+    const filters = await prismaGetFiltersStudentCSV()
+
+    res.status(200).json({success: true, filters})
+  } catch (error) {
+    next(error)
+  }
+}
+export const downloadStudentsCSV = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {filters, dataSelections} = (req as Request &{validated: downloadStudentsCSVZodType}).validated.query
+    const userId = Number(req.tokenPayload.accountId)
+
+    const user = await prismaGetAccountById(userId)
+    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+        res.clearCookie("AdminToken", cookieOptionsStaff);
+        res.status(401).json({success: false, message: "Account Did not Find!"})
+        return
+    }
+    
+    const StudentsCSV = await prismaExportCSV(filters, dataSelections)
+    if(StudentsCSV.length === 0){
+      res.status(404).json({success: false, message: "No Record Found!"})
+      return
+    }
+
+    await ExportToExcel(StudentsCSV, "Student Records", res)
   } catch (error) {
     next(error)
   }

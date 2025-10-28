@@ -1,5 +1,6 @@
 import z, { array } from "zod";
-import { toDate, toInt, toJSON } from "./Validator";
+import { toDate, toFloat, toInt, toJSON } from "./Validator";
+const labelRegex = /^[A-Za-z0-9 ()_.\-]+$/;
 
 export const deleteAdminZodSchema = z.object({
   body: z.object({
@@ -16,6 +17,13 @@ export const deleteAdminZodSchema = z.object({
   }),
 });
 export type deleteAdminZodType = z.infer<typeof deleteAdminZodSchema>;
+
+export const validateStaffZodSchema = z.object({
+  body: z.object({
+    staffId: toInt()
+  }),
+});
+export type validateStaffZodType = z.infer<typeof validateStaffZodSchema>;
 
 export const getAllAdminZodSchema = z.object({
   query: z.object({
@@ -40,11 +48,18 @@ export const searchAdminZodSchema = z.object({
 });
 export type searchAdminZodType = z.infer<typeof searchAdminZodSchema>;
 
+export const getStaffByIdZodSchema = z.object({
+  query: z.object({
+    staffId: toInt()
+  })
+})
+export type getStaffByIdZodType = z.infer<typeof getStaffByIdZodSchema>
+
 export const approveApplicationZodSchema = z.object({
   body: z.object({
     applicationId: toInt(),
-    adminId: toInt(),
     scholarshipId: toInt(),
+    rejectMessage: toJSON(),
   }),
 });
 export type approveApplicationZodType = z.infer<
@@ -55,7 +70,8 @@ export const forInterviewZodSchema = z.object({
   body: z.object({
     applicationId: toInt(),
     accountId: toInt(),
-    scholarshipId: toInt()
+    scholarshipId: toInt(),
+    rejectMessage: toJSON()
   })
 })
 export type forInterviewZondType = z.infer<typeof forInterviewZodSchema>
@@ -63,7 +79,6 @@ export type forInterviewZondType = z.infer<typeof forInterviewZodSchema>
 export const declineApplicationZodSchema = z.object({
   body: z.object({
     applicationId: toInt(),
-    adminId: toInt(),
     scholarshipId: toInt(),
     rejectMessage: toJSON(),
   }),
@@ -84,7 +99,17 @@ export const deleteApplicationsZodSchema = z.object({
 });
 export type deleteApplicationsZodType = z.infer<
   typeof deleteApplicationsZodSchema
->;
+>
+
+export const getFileUrlZodSchemaZodSchema = z.object({
+  body: z.object({
+    applicationId: toInt(),
+    path: z.string()
+  }),
+})
+export type getFileUrlZodSchemaZodType = z.infer<
+  typeof getFileUrlZodSchemaZodSchema
+>
 
 export const getApplicationByIdZodSchema = z.object({
   query: z.object({
@@ -103,7 +128,7 @@ export const getApplicationZodSchema = z.object({
     status: z.string().optional(),
     sortBy: z.string().optional(),
     order: z.string().optional(),
-    filter: toJSON()
+    filters: toJSON()
       .transform((val, cxt) => {
         if (!Array.isArray(val)) {
           cxt.addIssue({ code: "custom", message: "Invalid Array Format!" });
@@ -132,7 +157,6 @@ export type searchApplicationZodType = z.infer<
 
 export const adminAddScholarshipsZodSchema = z.object({
   body: z.object({
-    adminId: toInt(),
     scholarshipType: z.string(),
     newScholarTitle: z.string(),
     newScholarProvider: z.string(),
@@ -141,7 +165,7 @@ export const adminAddScholarshipsZodSchema = z.object({
     isForInterview: z.string(),
     scholarshipAmount: z.string().optional(),
     scholarshipLimit: toInt().optional(),
-    gwa: toInt().optional(),
+    gwa: toFloat().optional(),
     scholarshipDocuments: toJSON(),
   }),
 });
@@ -158,9 +182,8 @@ export const updateScholarshipZodSchema = z.object({
     newScholarDeadline: toDate(),
     scholarshipAmount: z.string().optional(),
     scholarshipLimit: toInt().optional(),
-    gwa: toInt().optional(),
+    gwa: toFloat().optional(),
     scholarshipDocuments: toJSON(),
-    accountId: toInt(),
   }),
 });
 export type updateScholarshipZodType = z.infer<
@@ -169,25 +192,24 @@ export type updateScholarshipZodType = z.infer<
 
 export const renewalScholarshipZodSchema = z.object({
   body: z.object({
-    accountId: toInt(),
     scholarshipId: toInt(),
-    newRequirements: toJSON()
+    renewDocuments: toJSON(),
+    renewDeadline: toDate(),
+    isForInterview: z.enum(["true", "false"]),
   })
 })
 export type renewalScholarshipZodType = z.infer<typeof renewalScholarshipZodSchema>
 
-export const archiveScholarshipZodSchema = z.object({
+export const endScholarshipZodSchema = z.object({
   body: z.object({
-    accountId: toInt(),
-    scholarshipId: toJSON()
+    scholarshipId: toInt(),
   })
 })
-export type archiveScholarshipZodType = z.infer<typeof archiveScholarshipZodSchema>
+export type endScholarshipZodType = z.infer<typeof endScholarshipZodSchema>
 
 export const deleteScholarshipZodSchema = z.object({
   body: z.object({
     scholarshipId: toInt(),
-    accountId: toInt(),
   }),
 });
 export type deleteScholarshipZodType = z.infer<
@@ -202,6 +224,7 @@ export const getScholarshipZodSchema = z.object({
     order: z.string().optional(),
     status: z.string().optional(),
     filters: toJSON().optional(),
+    search: z.string().optional()
   }),
 });
 export type getScholarshipZodType = z.infer<typeof getScholarshipZodSchema>;
@@ -215,20 +238,6 @@ export type getScholarshipsByIdZodType = z.infer<
   typeof getScholarshipsByIdZodSchema
 >;
 
-export const searchScholarshipZodSchema = z.object({
-  query: z.object({
-    dataPerPage: toInt().optional(),
-    page: toInt().optional(),
-    search: z.string().optional(),
-    sortBy: z.string().optional(),
-    order: z.string().optional(),
-    status: z.string().optional(),
-  }),
-});
-export type searchScholarshipZodType = z.infer<
-  typeof searchScholarshipZodSchema
->;
-
 export const getFilterDataZodSchema = z.object({
   query: z.object({
     applicationStatus: z.string().optional(),
@@ -239,10 +248,9 @@ export type getFilterDataZodType = z.infer<typeof getFilterDataZodSchema>;
 
 export const createAnnouncementZodSchema = z.object({
   body: z.object({
-    adminId: toInt(),
     announcementTitle: z.string(),
-    announcementDescription: z.string(),
-    announcementTags: toJSON(),
+    announcementDescription: z.string().optional(),
+    announcementTags: toJSON().optional(),
   }),
 });
 export type createAnnouncementZodType = z.infer<
@@ -251,10 +259,20 @@ export type createAnnouncementZodType = z.infer<
 
 export const deleteAnnouncementZodSchema = z.object({
     body: z.object({
-        announcementId: toJSON()
+        announcementId: toInt()
     })
 })
 export type deleteAnnouncementZodType = z.infer<typeof deleteAnnouncementZodSchema>
+
+export const editAnnouncementZodSchema = z.object({
+  body: z.object({
+    announcementId: toInt(),
+    title: z.string().optional(),
+    description: z.string().optional(),
+    tags: toJSON().optional(),
+  })
+})
+export type editAnnouncementZodType = z.infer<typeof editAnnouncementZodSchema>
 
 export const getAnnouncementZodSchema = z.object({
     query: z.object({
@@ -263,6 +281,105 @@ export const getAnnouncementZodSchema = z.object({
         sortBy: z.string().optional(),
         order: z.string().optional(),
         status: z.string().optional(),
+        search: z.string().optional()
     })
 })
 export type getAnnouncementZodType = z.infer<typeof getAnnouncementZodSchema>
+
+export const getAnnouncementByIdZodSchema = z.object({
+  query:z.object({
+    announcementId: toInt()
+  })
+})
+export type getAnnouncementByIdZodType = z.infer<typeof getAnnouncementByIdZodSchema>
+
+export const getStaffLogsZodSchema = z.object({
+  query:z.object({
+    page: toInt().optional(),
+    dataPerPage: toInt().optional(),
+    sortBy: z.string().optional(),
+    order: z.string().optional(),
+    ownderId: toInt().optional(),
+    filters: toJSON().optional()
+  })
+})
+export type getStaffLogsZodType = z.infer<typeof getStaffLogsZodSchema>
+
+export const updateStudentAccountZodSchema = z.object({
+  body: z.object({
+    ownerId: toInt(),
+    email: z.string().optional(),
+    newPassword: z.string().optional(),
+    schoolId: z.string().optional(),
+    fName: z.string().optional(),
+    lName: z.string().optional(),
+    mName: z.string().optional(),
+    contactNumber: z.string().optional(),
+    gender: z.string().optional(),
+    address: z.string().optional(),
+    indigenous: z.string().optional(),
+    PWD: z.string().optional(),
+    institute: z.string().optional(),
+    course: z.string().optional(),
+    year: z.string().optional(),
+    section: z.string().optional(),
+    dateOfBirth: toDate().optional(),
+  })
+})
+export type updateStudentAccountZodType = z.infer<typeof updateStudentAccountZodSchema>
+
+export const deleteStudentZodSchema = z.object({
+  body: z.object({
+    ownerId: toInt()
+  })
+})
+export type deleteStudentZodType = z.infer<typeof deleteStudentZodSchema>
+
+export const getStudentsZodSchema = z.object({
+  query: z.object({
+    page: toInt().optional(),
+    dataPerPage: toInt().optional(),
+    sortBy: z.string().optional(),
+    order: z.string().optional(),
+    ownderId: toInt().optional(),
+    filters: toJSON().optional()
+  })
+})
+export type getStudentsZodType = z.infer<typeof getStudentsZodSchema>
+
+export const getStudentsByIdZodSchema = z.object({
+  query: z.object({
+    ownerId: toInt()
+  })
+})
+export type getStudentsByIdZodType = z.infer<typeof getStudentsByIdZodSchema>
+
+export const searchStudentZodSchema = z.object({
+  query: z.object({
+    accountId: toInt(),
+    search: z.string(),
+    page: toInt().optional(),
+    dataPerPage: toInt().optional(),
+    sortBy: z.string().optional(),
+    order: z.string().optional(),
+    ownderId: toInt().optional(),
+    filters: toJSON().optional()
+  })
+})
+export type searchStudentZodType = z.infer<typeof searchStudentZodSchema>
+
+export const downloadApplicationCSVZodSchema = z.object({
+  query: z.object({
+    filters: toJSON().optional(),
+    dataSelections: toJSON()
+  })
+})
+export type downloadApplicationCSVZodType = z.infer<typeof downloadApplicationCSVZodSchema>
+
+export const downloadStudentsCSVZodSchema = z.object({
+  query: z.object({
+    filters: toJSON().optional(),
+    dataSelections: toJSON()
+  })
+})
+export type downloadStudentsCSVZodType = z.infer<typeof downloadStudentsCSVZodSchema>

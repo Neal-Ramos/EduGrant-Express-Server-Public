@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "admin_accounts" ALTER COLUMN "dateCreate" SET DEFAULT CURRENT_TIMESTAMP,
-ALTER COLUMN "lastLogin" DROP NOT NULL;

@@ -1,4 +1,4 @@
-import z, { boolean } from "zod";
+import z, { boolean, email } from "zod";
 import { toDate } from "./Validator";
 
 export const registerAccountZodSchema = z.object({
@@ -15,8 +15,8 @@ export const registerAccountZodSchema = z.object({
     course: z.string(),
     year: z.string(),
     section: z.string(),
-    pwd: z.string(),
-    indigenous: z.string(),
+    pwd: z.string().optional(),
+    indigenous: z.string().optional(),
     studentPassword: z.string(),
     verificationCode: z.string(),
     studentDateofBirth: toDate(),
@@ -73,3 +73,19 @@ export const tokenValidationZodSchema = z.object({
   })
 })
 export type tokenValidationZodType = z.infer<typeof tokenValidationZodSchema>
+
+export const forgotPasswordZodSchema = z.object({
+  body: z.object({
+    newPassword: z.string(),
+    email: z.string(),
+    code: z.string()
+  })
+})
+export type forgotPasswordZodType = z.infer<typeof forgotPasswordZodSchema>
+
+export const forgotPasswordSendAuthCodeZodSchema = z.object({
+  body: z.object({
+    email: z.string(),
+  })
+})
+export type forgotPasswordSendAuthCodeZodType = z.infer<typeof forgotPasswordSendAuthCodeZodSchema>

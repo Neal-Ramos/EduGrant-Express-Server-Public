@@ -39,7 +39,7 @@ export const ApproveHTML = (applicantName: string, applicantStudentId: string, a
               <div>
                 <span class="status-pill">Approved</span>
                 <h2>Congratulations — your application was approved!</h2>
-                <p>Application ID: <strong>${applicantStudentId}</strong></p>
+                <p>Student ID: <strong>${applicantStudentId}</strong></p>
                 <p>We are pleased to inform you that your scholarship application has been approved. Our team will contact you soon with further details about the next steps.</p>
               </div>
             </td>

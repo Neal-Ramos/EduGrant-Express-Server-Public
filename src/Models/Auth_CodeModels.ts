@@ -2,42 +2,62 @@ import { Auth_Code, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const prismaSelectCodeByEmailOrigin = async(email: string, origin: string): Promise<Auth_Code | null>=>{
-    const selectCode = await prisma.auth_Code.findFirst({
-        where:{
-            owner: email,
-            origin: origin
+export class AuthCode {
+    code: string
+    owner: string
+    origin: string
+
+    constructor(code: string, owner: string, origin: string){
+        this.code = code
+        this.owner = owner
+        this.origin = origin
+    }
+
+    static async Find(owner: string, origin?: string): Promise<Auth_Code|null>{
+        return await prisma.auth_Code.findFirst({
+            where:{
+                owner: owner,
+                origin: origin
+            }
+        })
+    }
+    static async Create(origin: string, receiver: string, sendCode: string, expiresAt: Date): Promise<Auth_Code>{
+        await prisma.auth_Code.deleteMany({
+            where:{
+                owner: receiver
+            }
+        })
+        return await prisma.auth_Code.create({
+            data:{
+                origin: origin,
+                owner: receiver,
+                code: sendCode,
+                dateExpiry: expiresAt
+            }
+        })
+    }
+    static async validate(code: string, owner: string, origin: string): Promise<{validated: boolean, message: string, AuthCode?: Auth_Code}>{
+        const AuthCode = await prisma.auth_Code.findFirst({
+            where:{
+                code: code,
+                owner: owner,
+                origin: origin
+            }
+        })
+        if(!AuthCode){
+            return {validated: false, message: "Invalid Code!"}
         }
-    });
-    return selectCode;
-}
-export const validateCode = async(code: string, email: string, origin: string): Promise<Auth_Code | null>=>{
-    const validate = await prisma.auth_Code.findFirst({
-        where:{
-            code: code,
-            owner: email,
-            origin: origin
+        if(new Date(AuthCode.dateExpiry).getTime() < Date.now()){
+            return {validated: false, message: "Code Expired!"}
         }
-    });
-    return validate;
-}
-export const deleteAuthCodeEmailOrigin = async(email: string, origin: string): Promise<number>=>{
-    const deleteCode = await prisma.auth_Code.deleteMany({
-        where:{
-            owner: email,
-            origin: origin
-        }
-    });
-    return deleteCode.count;
-}
-export const prismaCreateAuthCode = async(origin: string, adminEmail: string, sendCode: string, expiresAt: Date): Promise<Auth_Code>=> {
-    const newAuthCode = await prisma.auth_Code.create({
-        data:{
-            origin: origin,
-            owner: adminEmail,
-            code: sendCode,
-            dateExpiry: expiresAt
-        }
-    })
-    return newAuthCode
+        return {validated: true, message: "Code Valid!", AuthCode}
+    }
+    static async DeleteAll(owner: string, origin? :string): Promise<number>{
+        return (await prisma.auth_Code.deleteMany({
+            where:{
+                owner: owner,
+                origin: origin
+            }
+        })).count
+    }
 }

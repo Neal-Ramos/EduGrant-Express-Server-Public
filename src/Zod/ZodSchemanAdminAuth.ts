@@ -36,6 +36,22 @@ export const adminTokenAuthenticationZodSchema = z.object({
 })
 export type adminTokenAuthenticationZodType = z.infer<typeof adminTokenAuthenticationZodSchema>
 
+export const sendAuthCodeForgetPassZodSchema = z.object({
+  body: z.object({
+    email: z.string(),
+  })
+});
+export type sendAuthCodeForgetPassZodType = z.infer<typeof sendAuthCodeForgetPassZodSchema>;
+
+export const forgetPassZodSchema = z.object({
+  body: z.object({
+    email: z.string(),
+    newPassword: z.string(),
+    code: z.string()
+  })
+});
+export type forgetPassZodType = z.infer<typeof forgetPassZodSchema>;
+
 export const superAdminTokenAuthenticationZodSchema = z.object({
     cookies: z.object({
         AdminToken: z.string()

@@ -1,4 +1,5 @@
-import { ISPSU_Staff, PrismaClient } from "@prisma/client";
+import { ISPSU_Staff, Prisma, PrismaClient } from "@prisma/client";
+import { ResponseUploadSupabase } from "../Config/Supabase";
 
 const prisma = new PrismaClient();
 
@@ -24,11 +25,12 @@ export const prismaGetStaffAccounts = async (page?: number, dataPerPage?: number
     ...(dataPerPage? { take: dataPerPage } : undefined),
     ...(page && dataPerPage ? { skip: (page - 1) * dataPerPage } : undefined),
     where: {
-      ...(id ? { staffId: id } : undefined),
+      staffId: id? id:undefined,
+      Account: {role: "ISPSU_Staff"}
     },
-    orderBy: {
-      ...(allowedSortByFields.includes(sortBy || '')? {[sortBy as string]: (allowedOrderByFields.includes(order || '')? order : 'asc')}:undefined),
-    }
+    orderBy: [
+      ...(allowedSortByFields.includes(sortBy || '')? [{[sortBy as string]: (allowedOrderByFields.includes(order || '')? order : 'asc')}]:[]),
+    ]
   });
   return staffAccounts;
 }
@@ -47,9 +49,9 @@ export const prismaSearchISPUStaff = async(search: string, page: number|undefine
         const staffAccounts = await tx.iSPSU_Staff.findMany({
           ...(dataPerPage? { take: dataPerPage } : undefined),
           ...(page && dataPerPage ? { skip: (page - 1) * dataPerPage } : undefined),
-          orderBy:{
-              ...(allowedSortByFields.includes(sortBy || '')? {[sortBy as string]: (allowedOrderByFields.includes(order || '')? order : 'asc')}:undefined),
-          },
+          orderBy:[
+              ...(allowedSortByFields.includes(sortBy || '')? [{[sortBy as string]: (allowedOrderByFields.includes(order || '')? order : 'asc')}]:[]),
+          ],
           where:{
               OR: [
                   {fName: {contains: search, mode: 'insensitive'}},
@@ -70,4 +72,50 @@ export const prismaSearchISPUStaff = async(search: string, page: number|undefine
         return {staffAccounts, totalCount}
     })
     return searchResult
+}
+type prismaGetStaffById = Prisma.ISPSU_StaffGetPayload<{
+  include:{
+    Staff_Logs: true
+  }
+}>
+export const prismaGetStaffById = async(accountId: number): Promise<prismaGetStaffById|null>=> {
+  const staff = await prisma.iSPSU_Staff.findUnique({
+    where:{
+      staffId: accountId
+    },
+    include:{
+      Account:{select:{email: true}},
+      Staff_Logs: true,
+    }
+  })
+  return staff
+}
+export const prismaUpdateStaffInfo = async(accountId: number, fName?: string, mName?: string, lName?: string, newProfileImg?: ResponseUploadSupabase): Promise<ISPSU_Staff|undefined>=> {
+  const update = await prisma.iSPSU_Staff.update({
+    where:{
+      staffId: accountId
+    },
+    data:{
+      fName: fName,
+      lName: lName,
+      mName: mName,
+      profileImg: {
+        path: newProfileImg?.path,
+        publicUrl: newProfileImg?.publicUrl
+      }
+    }
+  })
+
+  return update
+}
+export const prismaValidateStaff = async(staffId: number, validatedValue: boolean): Promise<ISPSU_Staff|null>=>{
+  const validateStaff = await prisma.iSPSU_Staff.update({
+    where:{
+      staffId: staffId
+    },
+    data:{
+      validated: validatedValue
+    }
+  })
+  return validateStaff
 }

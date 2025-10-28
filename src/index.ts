@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-dotenv.config();
 import express, {Request, Response, NextFunction} from "express";
 import helmet from "helmet";
 import cors from "cors";
@@ -8,6 +7,7 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import hpp from "hpp";
 import xss from "xss";
+dotenv.config();
 
 import UserAuthRoutes from "./Routes/userAuthRoutes";
 import UserPostRoutes from "./Routes/userPostRoutes";
@@ -16,6 +16,9 @@ import AdminAuthRoutes from "./Routes/adminAuthRoutes";
 import AdminPostRoutes from "./Routes/adminPostRoutes";
 import AdminUserRoutes from "./Routes/adminUserRoutes";
 import { healthCheckMiddleware } from "./Config/healthCheckMiddleware";
+import { Server } from "socket.io";
+import { createServer } from "http";
+import PublicRoutes from "./Routes/publicRoutes";
 
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -50,6 +53,7 @@ app.use((req, res, next) => {
 // app.use(apiLimiter)
 app.use(healthCheckMiddleware)
 
+app.use(PublicRoutes)
 
 app.use("/user",UserAuthRoutes);
 app.use("/user",UserPostRoutes);
@@ -83,7 +87,35 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
+const server = createServer(app)
+const io = new Server(server, {
+    cors:{
+        origin:corsOptions.origin,
+        credentials: true
+    }
+})
+io.on("connection", (socket) => {// Start Connection BOOOOOOOIIIII
+    socket.on("register", (data: {role: string, id: number}) => {
+        if(!data?.role || !data?.id){
+            return
+        }
+        if(data.role === "ISPSU_Staff" || data.role === "ISPSU_Head"){
+            socket.join(data.id.toString())
+            socket.join(data.role)
+        }
+        if(data.role === "Student"){
+            socket.join(data.id.toString())
+            socket.join("Student")
+        }
+        console.log(`User Connected: ID = ${data.id} Role = ${data.role}`)
+    })
+    socket.on("disconnect", () => {
+        
+    })
+})
+export {io, server}
+
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server Listening to ${PORT}`);
 });

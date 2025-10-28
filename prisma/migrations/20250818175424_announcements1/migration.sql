@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "announcements" ALTER COLUMN "startDate" SET DEFAULT CURRENT_TIMESTAMP;

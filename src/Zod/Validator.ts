@@ -18,6 +18,16 @@ export const validate = <T extends ZodObject<any>>(schema: T) => (req: Request, 
     next()
 }
 
+export const toFloat = () => {
+    return z.union([z.string(), z.number()]).transform((val, cxt) => {
+        const n = typeof val === "string"? Number(val):val
+        if(Number.isNaN(n)){
+            cxt.addIssue({code: "custom", message:"Invalid Float!"}) 
+            return z.NEVER
+        }
+        return n
+    })
+}
 export const toInt = () => {
     return z.union([z.string(), z.number()]).transform((val, cxt) => {
         const n = typeof val === "string"? Number(val):val

@@ -1,14 +1,13 @@
 import { Router } from "express";
-import {registerAccount, loginAccounts, sendAuthCodeRegister, tokenValidation, sendAuthCodeLogin} from "../Controller/authControllers";
+import {registerAccount, loginAccounts, sendAuthCodeRegister, sendAuthCodeLogin, forgotPassword, forgotPasswordSendAuthCode} from "../Controller/authControllers";
 import { validate } from "../Zod/Validator";
-import { loginAccountsZodSchema, registerAccountZodSchema, sendAuthCodeLoginZodSchema, sendAuthCodeRegisterZodSchema, tokenValidationZodSchema } from "../Zod/ZodSchemaUserAuth";
+import { forgotPasswordSendAuthCodeZodSchema, forgotPasswordZodSchema, loginAccountsZodSchema, registerAccountZodSchema, sendAuthCodeLoginZodSchema, sendAuthCodeRegisterZodSchema } from "../Zod/ZodSchemaUserAuth";
 const UserAuthRoutes = Router();
 
 UserAuthRoutes.post("/registerAccount", validate(registerAccountZodSchema), registerAccount);
 UserAuthRoutes.post("/loginAccounts", validate(loginAccountsZodSchema), loginAccounts);
 UserAuthRoutes.post("/sendAuthCodeRegister", validate(sendAuthCodeRegisterZodSchema), sendAuthCodeRegister); 
 UserAuthRoutes.post("/sendAuthCodeLogin", validate(sendAuthCodeLoginZodSchema), sendAuthCodeLogin)
-
-UserAuthRoutes.get("/tokenValidation", validate(tokenValidationZodSchema), tokenValidation);
-
+UserAuthRoutes.post("/forgotPassword", validate(forgotPasswordZodSchema), forgotPassword)
+UserAuthRoutes.post("/forgotPasswordSendAuthCode", validate(forgotPasswordSendAuthCodeZodSchema), forgotPasswordSendAuthCode)
 export default UserAuthRoutes
