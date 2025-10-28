@@ -189,7 +189,7 @@ export const adminTokenAuthentication = async (req: Request, res: Response, next
     }
     const availableScholarshipCount = await prismaGetScholarshipCount()
     const {hashedPassword, ...safeData} = ISPSU
-    res.status(200).json({success:true, message:"Access Granted!", safeData:safeData});
+    res.status(200).json({success:true, message:"Access Granted!", safeData:safeData, availableScholarshipCount});
   } catch (error) {
     next(error)
   }
