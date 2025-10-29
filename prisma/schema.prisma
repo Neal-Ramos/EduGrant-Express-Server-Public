@@ -14,6 +14,7 @@ model Account {
   hashedPassword String
   schoolId       String?
   role           String
+  webTours       Json     @default("{\"dashboardTour\":false}")
   dateCreated    DateTime     @default(now())
   ISPSU_Head     ISPSU_Head?
   ISPSU_Staff    ISPSU_Staff?

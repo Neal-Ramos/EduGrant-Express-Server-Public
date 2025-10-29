@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { adminLogout, changeStaffCred, editHead, editStaff, editStaffCredSendAuthCode, editStaffInfoAccount } from "../Controller/adminUserControllers";
+import { adminLogout, changeStaffCred, editHead, editStaff, editStaffCredSendAuthCode, editStaffInfoAccount, updateTour } from "../Controller/adminUserControllers";
 import { AdminTokenAuth } from "../Config/TokenAuth";
 import { validate } from "../Zod/Validator";
-import { adminLogoutZodSchema, changeStaffCredZodSchema, editHeadZodSchema, editStaffCredSendAuthCodeZodSchema, editStaffInfoZodSchema, editStaffZodSchema } from "../Zod/ZodSchemaAdminUser";
+import { adminLogoutZodSchema, changeStaffCredZodSchema, editHeadZodSchema, editStaffCredSendAuthCodeZodSchema, editStaffInfoZodSchema, editStaffZodSchema, updateTourZodSchema } from "../Zod/ZodSchemaAdminUser";
 import upload from "../Config/upload";
 
 const AdminUserRoutes = Router();
@@ -14,5 +14,6 @@ AdminUserRoutes.post("/editStaff", upload.any(), validate(editStaffZodSchema), e
 AdminUserRoutes.post("/editStaffAccount", upload.any(), validate(editStaffInfoZodSchema), editStaffInfoAccount)
 AdminUserRoutes.post("/editStaffCredSendAuthCode", validate(editStaffCredSendAuthCodeZodSchema), editStaffCredSendAuthCode)
 AdminUserRoutes.post("/changeStaffCred", validate(changeStaffCredZodSchema), changeStaffCred)
+AdminUserRoutes.post("/updateTour", validate(updateTourZodSchema), updateTour)
 
 export default AdminUserRoutes;

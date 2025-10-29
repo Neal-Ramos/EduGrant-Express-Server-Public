@@ -356,3 +356,13 @@ export const prismaHEADUpdateStudentAccount = async(ownerId: number, email?: str
     })
     return update
 }
+export const prismaUpdateWebTour = async(accountId: number, webTour: Record<string, boolean>): Promise<Account|null>=> {
+    return await prisma.account.update({
+        where:{
+            accountId: accountId
+        },
+        data:{
+            webTours: webTour
+        }
+    })
+}

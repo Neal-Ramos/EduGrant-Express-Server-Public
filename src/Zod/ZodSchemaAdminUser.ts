@@ -59,3 +59,10 @@ export const changeStaffCredZodSchema = z.object({
     })
 })
 export type changeStaffCredZodType = z.infer<typeof changeStaffCredZodSchema>
+
+export const updateTourZodSchema = z.object({
+    body: z.object({
+        dashboardTour: z.string()
+    })
+})
+export type updateTourZodType = z.infer<typeof updateTourZodSchema>

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { adminLogoutZodType, changeStaffCredZodType, editHeadZodType, editStaffCredSendAuthCodeZodType, editStaffInfoZodType, editStaffZodType } from "../Zod/ZodSchemaAdminUser";
-import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateHeadAccount, prismaUpdateStaffAccount } from "../Models/AccountModels";
+import { adminLogoutZodType, changeStaffCredZodType, editHeadZodType, editStaffCredSendAuthCodeZodType, editStaffInfoZodType, editStaffZodType, updateTourZodType } from "../Zod/ZodSchemaAdminUser";
+import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateHeadAccount, prismaUpdateStaffAccount, prismaUpdateWebTour } from "../Models/AccountModels";
 import { compare, hash } from "bcryptjs";
 import { prismaUpdateStaffInfo } from "../Models/ISPSU_StaffModels";
 import { GenerateCode } from "../Config/CodeGenerator";
@@ -239,6 +239,35 @@ export const changeStaffCred = async(req: Request, res: Response, next: NextFunc
             return
         }
         res.status(200).json({success: true, message: "Account Login Info Updated"})
+    } catch (error) {
+        next(error)
+    }
+}
+export const updateTour = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+    try {
+        const {dashboardTour} = (req as Request &{validated: updateTourZodType}).validated.body
+        const accountId = Number(req.tokenPayload.accountId)
+
+        const checkStaff = await prismaGetAccountById(accountId)
+        if(!checkStaff){
+            res.status(401).json({success: false, message: "Account Did not Find!"})
+            return
+        }
+        if(checkStaff.role !== "ISPSU_Staff" && checkStaff.role !== "ISPSU_Head"){
+            res.status(401).json({success: false, message: "This Account Cannot be Edit Here!"})
+            return
+        }
+
+        const webTour = checkStaff.webTours as Record<string, boolean>
+        webTour.dashboardTour = dashboardTour === "true"? true:false
+
+        const updateWebTour = await prismaUpdateWebTour(accountId, webTour)
+        if(!updateWebTour){
+            res.status(500).json({success: false, message: "Server Error!"})
+            return
+        }
+
+        res.status(500).json({success: true, message: "Tour Updated!"})
     } catch (error) {
         next(error)
     }

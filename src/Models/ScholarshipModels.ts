@@ -624,7 +624,7 @@ export const prismaEndScholarship = async(scholarshipId: number): Promise<{ended
 export const prismaGetScholarshipCount = async(accountId?: number): Promise<number>=>{
     return await prisma.scholarship.count({
         where:{
-            deadline: {lt: new Date()},
+            deadline: {gt: new Date()},
             OR:[
                 {phase: 1},
                 {
