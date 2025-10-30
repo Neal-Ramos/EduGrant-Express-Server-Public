@@ -621,19 +621,34 @@ export const prismaEndScholarship = async(scholarshipId: number): Promise<{ended
     ])
     return {endedScholarship, endenApplications}
 }
-export const prismaGetScholarshipCount = async(accountId?: number): Promise<number>=>{
-    return await prisma.scholarship.count({
-        where:{
-            deadline: {gt: new Date()},
-            OR:[
-                {phase: 1},
-                {
-                    AND:[
-                        {phase: {gt: 1}},
-                        {...(accountId? {Application: {some: {ownerId: accountId}}}:{})}
-                    ]
-                }
-            ]
-        }
-    })
+export const prismaStudentCountsInToken = async(accountId?: number): 
+Promise<{availableScholarshipCount: number, applicationCount: number, announcementCount: number, ISPSU_StaffCount: number}>=>{
+    const [availableScholarshipCount, applicationCount, announcementCount, ISPSU_StaffCount] = await Promise.all([
+        prisma.scholarship.count({
+            where:{
+                deadline: {gt: new Date()},
+                OR:[
+                    {phase: 1},
+                    {
+                        AND:[
+                            {phase: {gt: 1}},
+                            {...(accountId? {Application: {some: {ownerId: accountId}}}:{})}
+                        ]
+                    }
+                ]
+            }
+        }),
+        prisma.application.count({
+            where:{
+                ...(accountId? {ownerId: accountId}:{})
+            }
+        }),
+        prisma.announcement.count({
+            
+        }),
+        prisma.iSPSU_Staff.count({
+
+        })
+    ])
+    return {availableScholarshipCount, applicationCount, announcementCount, ISPSU_StaffCount}
 }

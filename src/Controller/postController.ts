@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from "express"
 import { filtersDataTypes } from "../Types/adminPostControllerTypes";
 import { ResponseUploadSupabase, ResponseUploadSupabasePrivate, SupabaseDeletePrivateFile, UploadSupabase, UploadSupabasePrivate } from "../Config/Supabase"
 import { applyScholarshipZodType, getAllScholarshipZodType, getAnnouncementsByIdZodType, getAnnouncementsZodType, getApplicationHistoryZodType, getApplicationsZodType, getNotificationsZodType, getScholarshipsByIdZodType, getStudentApplicationByIdZodType, getStudentByIdZodType, searchScholarshipZodType } from "../Zod/ZodSchemaUserPost"
-import { prismaGetRenewScholarship, prismaGetScholarship, prismaGetScholarshipCount, prismaGetScholarshipsById, prismaSearchScholarshipTitle } from "../Models/ScholarshipModels";
+import { prismaGetRenewScholarship, prismaGetScholarship, prismaGetScholarshipsById, prismaSearchScholarshipTitle, prismaStudentCountsInToken } from "../Models/ScholarshipModels";
 import { prismaCheckApplicationDuplicate, prismaCheckApproveGov, prismaCreateApplication, prismaGetAllAccountApplication, prismaGetApplication, prismaGetApplicationHistory, prismaRenewApplication, prismaSearchApplication } from "../Models/ApplicationModels";
 import { prismaGetAccountById } from "../Models/AccountModels";
 import { prismaGetAllAnnouncement, prismaGetAnnouncementById } from "../Models/AnnouncementModels";
@@ -11,7 +11,6 @@ import { DocumentEntry, RecordApplicationFilesTypes, RecordDocumentEntry } from 
 import { cookieOptionsStudent } from "../Config/TokenAuth";
 import { normalizeString } from "../Config/normalizeString";
 import { io } from "..";
-import { error } from "console";
 
 export const getAllScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
@@ -259,10 +258,11 @@ export const tokenValidation = async(req: Request, res: Response, next: NextFunc
             res.status(401).json({ success: false, message: "Invalid or expired token" });
             return;
         }
-        const availableScholarshipCount = await prismaGetScholarshipCount(accountId)
         const {hashedPassword ,...safeData} = userData
+        const counts = await prismaStudentCountsInToken(accountId)
         const unreadNotifications = await prismaGetUnreadNotificationsCount(accountId)
-        res.status(200).json({success: true, userData:safeData, unreadNotifications, availableScholarshipCount})
+        const {ISPSU_StaffCount, ...forStudent} = counts
+        res.status(200).json({success: true, userData:safeData, unreadNotifications, ...forStudent})
     } catch (error) {
         next(error)
     }
