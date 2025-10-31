@@ -220,8 +220,13 @@ export const prismaUpdateHeadAccount = async(accountId: number, address?: string
     })
     return update
 }
+type prismaUpdateStaffAccount = Prisma.AccountGetPayload<{
+    include:{
+        ISPSU_Staff: true,
+    }
+}>
 export const prismaUpdateStaffAccount = async(accountId: number, fName?: string, lName?: string, mName?: string, email?: string, 
-    hashedPassword?: string, validate?: string, profileURL?: ResponseUploadSupabase): Promise<AccountWithISPSU_Staff|null>=> {
+    hashedPassword?: string, validate?: string, profileURL?: ResponseUploadSupabase): Promise<prismaUpdateStaffAccount|null>=> {
     const newValidate = validate === "true"?
      true : validate === "false"?
       false : undefined
@@ -248,9 +253,7 @@ export const prismaUpdateStaffAccount = async(accountId: number, fName?: string,
             }
         },
         include:{
-            ISPSU_Head: true,
             ISPSU_Staff: true,
-            Student: true
         }
     })
     return update

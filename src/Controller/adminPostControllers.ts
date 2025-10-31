@@ -12,8 +12,8 @@ import { ApproveHTML } from "../utils/HTML-ApprovedApplication";
 import { interviewHTML } from "../utils/HTML-InterviewApplication";
 import { prismaGetStaffAccounts, prismaGetStaffById, prismaSearchISPUStaff, prismaTotalCountStaff, prismaValidateStaff } from "../Models/ISPSU_StaffModels";
 import { prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from "../Models/AccountModels";
-import { prismaCreateScholarship, prismaDeleteScholarship, prismaEndScholarship, prismaFiltersScholarship, prismaGetScholarship, prismaGetScholarshipByArray, prismaGetScholarshipCount, prismaGetScholarshipsById, 
-  prismaRenewScholarship, prismaSearchScholarshipTitle, prismaUpdateScholarship } from "../Models/ScholarshipModels";
+import { prismaCreateScholarship, prismaDeleteScholarship, prismaEndScholarship, prismaFiltersScholarship, prismaGetScholarship, prismaGetScholarshipByArray, prismaGetScholarshipsById, 
+  prismaRenewScholarship, prismaSearchScholarshipTitle, prismaStudentCountsInToken, prismaUpdateScholarship } from "../Models/ScholarshipModels";
 import { prismaAcceptForInterview, prismaApproveApplication, prismaBlockApplicationByApplicationId, prismaCheckApproveGov, prismaDeclineApplication, prismaDeleteApplication, 
   prismaGetAllApplication, prismaGetApplication, prismaGetApplicationPath, prismaGetApplicationsCSV, prismaGetFiltersForApplicationsCSV, prismaSearchApplication } from "../Models/ApplicationModels";
 import { prismaExportCSV, prismaFiltersStudent, prismaGetFiltersStudentCSV, prismaGetStudentById, prismaGetStudents, prismaSearchStudents } from "../Models/StudentModels";
@@ -119,7 +119,8 @@ export const getStaffById = async(req: Request, res: Response, next: NextFunctio
       res.status(404).json({success: false, message: "Staff did not Found!"})
       return
     }
-    res.status(200).json(staff)
+    const {hashedPassword, ...safeData} = staff
+    res.status(200).json({success: true, safeData})
   } catch (error) {
     next(error)
   }
@@ -161,7 +162,7 @@ export const validateStaff = async (req: Request, res: Response, next: NextFunct
       return
     }
 
-    const validateStaff = await prismaValidateStaff(staffId, !checkStaffAccount.validated)
+    const validateStaff = await prismaValidateStaff(staffId, !checkStaffAccount.ISPSU_Staff?.validated)
     if(!validateStaff){
         res.status(500).json({success: false, message: "Server Error!"})
         return
@@ -187,7 +188,7 @@ export const adminTokenAuthentication = async (req: Request, res: Response, next
         res.status(401).json({success: false, message: "Account is not validated!"})
         return
     }
-    const availableScholarshipCount = await prismaGetScholarshipCount()
+    const availableScholarshipCount = await prismaStudentCountsInToken()
     const {hashedPassword, ...safeData} = ISPSU
     res.status(200).json({success:true, message:"Access Granted!", safeData:safeData, availableScholarshipCount});
   } catch (error) {

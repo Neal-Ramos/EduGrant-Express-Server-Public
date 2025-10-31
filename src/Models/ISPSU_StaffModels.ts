@@ -73,19 +73,18 @@ export const prismaSearchISPUStaff = async(search: string, page: number|undefine
     })
     return searchResult
 }
-type prismaGetStaffById = Prisma.ISPSU_StaffGetPayload<{
+type prismaGetStaffById = Prisma.AccountGetPayload<{
   include:{
-    Staff_Logs: true
+    ISPSU_Staff: true,
   }
 }>
 export const prismaGetStaffById = async(accountId: number): Promise<prismaGetStaffById|null>=> {
-  const staff = await prisma.iSPSU_Staff.findUnique({
+  const staff = await prisma.account.findUnique({
     where:{
-      staffId: accountId
+      accountId: accountId
     },
     include:{
-      Account:{select:{email: true}},
-      Staff_Logs: true,
+      ISPSU_Staff: true,
     }
   })
   return staff
