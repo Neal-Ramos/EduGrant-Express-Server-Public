@@ -11,26 +11,28 @@ export const prismaTotalCountStaff = async (accountId?: number): Promise<number>
   });
   return count;
 }
-export const prismaGetStaffAccounts = async (page?: number, dataPerPage?: number, sortBy?: string, id?: number | null, order?: string): Promise<any[]> => {
-    const allowedSortByFields: string[] = [
-        'fName',
-        'lName',
-        'mName',
-        'validated',
-        'dateCreated'
-    ]
-    const allowedOrderByFields: string[] = ["asc", "desc"];
+type prismaGetStaffAccounts = Prisma.AccountGetPayload<{
+  include:{
+    ISPSU_Staff: true
+  }
+}>
+export const prismaGetStaffAccounts = async (page?: number, dataPerPage?: number, sortBy?: string, id?: number | null, order?: string): Promise<prismaGetStaffAccounts[]> => {
+  const allowedSortByFields: string[] = ['fName','lName','mName','validated','dateCreated']
+  const allowedOrderByFields: string[] = ["asc", "desc"];
 
-  const staffAccounts = await prisma.iSPSU_Staff.findMany({
+  const staffAccounts = await prisma.account.findMany({
     ...(dataPerPage? { take: dataPerPage } : undefined),
     ...(page && dataPerPage ? { skip: (page - 1) * dataPerPage } : undefined),
     where: {
-      staffId: id? id:undefined,
-      Account: {role: "ISPSU_Staff"}
+      accountId: id? id:undefined,
+      role: "ISPSU_Staff"
     },
     orderBy: [
       ...(allowedSortByFields.includes(sortBy || '')? [{[sortBy as string]: (allowedOrderByFields.includes(order || '')? order : 'asc')}]:[]),
-    ]
+    ],
+    include:{
+      ISPSU_Staff: true
+    }
   });
   return staffAccounts;
 }
