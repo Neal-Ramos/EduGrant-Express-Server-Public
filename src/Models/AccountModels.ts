@@ -41,6 +41,9 @@ export const prismaCreateISPSU_Staff = async (email: string, firstName: string, 
                         lName: lastName,
                     }
                 }
+            },
+            include:{
+                ISPSU_Staff: true
             }
         })
         return createHeadAccount

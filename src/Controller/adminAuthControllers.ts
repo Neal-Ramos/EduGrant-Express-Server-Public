@@ -9,29 +9,6 @@ import { GenerateCode } from "../Config/CodeGenerator";
 import { CreateEmailOptions } from "resend";
 import { AuthCode } from "../Models/Auth_CodeModels";
 
-export const createISPSUStaffAccount  = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
-    try {
-        let {email, firstName, middleName, lastName, phone, password} = (req as Request & {validated: createAccountZodType}).validated.body
-
-        const emailDuplicate = await prismaCheckEmailExist(email)
-        if(emailDuplicate){
-            res.status(401).json({success:false, message: "Email Already Exist"})
-            return
-        }
-
-        password = await hash(password, 10)
-        const insertAdminToDB = await prismaCreateISPSU_Staff(email, firstName, middleName, lastName, phone, password)
-        if(!insertAdminToDB){
-            res.status(500).json({success: false, message: "Database Error!"})
-            return
-        }
-        res.status(200).json({success: true, message: "ISPSU Staff Account Created!"})
-        return
-    } catch (error) {
-        next(error)
-    }
-}
-
 export const adminLogIn = async (req:Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
         const {adminEmail, adminPassword} = (req as Request & {validated: adminLoginZodType}).validated.body

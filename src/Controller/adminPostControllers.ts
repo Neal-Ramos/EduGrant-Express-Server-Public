@@ -11,7 +11,7 @@ import { CreateEmailOptions } from "resend";
 import { ApproveHTML } from "../utils/HTML-ApprovedApplication";
 import { interviewHTML } from "../utils/HTML-InterviewApplication";
 import { prismaGetStaffAccounts, prismaGetStaffById, prismaSearchISPUStaff, prismaTotalCountStaff, prismaValidateStaff } from "../Models/ISPSU_StaffModels";
-import { prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from "../Models/AccountModels";
+import { prismaCheckEmailExist, prismaCreateISPSU_Staff, prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from "../Models/AccountModels";
 import { prismaCreateScholarship, prismaDeleteScholarship, prismaEndScholarship, prismaFiltersScholarship, prismaGetScholarship, prismaGetScholarshipByArray, prismaGetScholarshipsById, 
   prismaRenewScholarship, prismaSearchScholarshipTitle, prismaStudentCountsInToken, prismaUpdateScholarship } from "../Models/ScholarshipModels";
 import { prismaAcceptForInterview, prismaApproveApplication, prismaBlockApplicationByApplicationId, prismaCheckApproveGov, prismaDeclineApplication, prismaDeleteApplication, 
@@ -31,6 +31,7 @@ import { downloadApplicationFileZodType, getFileUrlZodType } from "../Zod/ZodSch
 import { error } from "console";
 import { sendApplicationUpdate } from "../Config/Resend";
 import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
+import { createAccountZodType } from "../Zod/ZodSchemanAdminAuth";
 
 
 export const getAllAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
@@ -124,6 +125,29 @@ export const getStaffById = async(req: Request, res: Response, next: NextFunctio
   } catch (error) {
     next(error)
   }
+}
+export const createISPSUStaffAccount  = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
+    try {
+        let {email, firstName, middleName, lastName, phone, password} = (req as Request & {validated: createAccountZodType}).validated.body
+
+        const emailDuplicate = await prismaCheckEmailExist(email)
+        if(emailDuplicate){
+            res.status(401).json({success:false, message: "Email Already Exist"})
+            return
+        }
+
+        password = await hash(password, 10)
+        const insertAdminToDB = await prismaCreateISPSU_Staff(email, firstName, middleName, lastName, phone, password)
+        if(!insertAdminToDB){
+            res.status(500).json({success: false, message: "Database Error!"})
+            return
+        }
+        const {hashedPassword, ...newAccount} = insertAdminToDB
+        res.status(200).json({success: true, message: "ISPSU Staff Account Created!", newAccount})
+        return
+    } catch (error) {
+        next(error)
+    }
 }
 export const deleteAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {

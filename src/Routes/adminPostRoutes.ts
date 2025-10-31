@@ -9,7 +9,8 @@ import { getAllAdmin, adminAddScholarships, getScholarship, updateScholarship, d
     endScholarship,
     validateStaff,
     getFileUrl,
-    downloadApplicationFile, } from "../Controller/adminPostControllers";
+    downloadApplicationFile,
+    createISPSUStaffAccount, } from "../Controller/adminPostControllers";
 import { AdminTokenAuth } from "../Config/TokenAuth";
 import { adminAddScholarshipsZodSchema, approveApplicationZodSchema, createAnnouncementZodSchema, declineApplicationZodSchema, deleteAdminZodSchema, deleteAnnouncementZodSchema, 
     deleteApplicationsZodSchema, deleteScholarshipZodSchema, deleteStudentZodSchema, downloadApplicationCSVZodSchema, downloadStudentsCSVZodSchema, editAnnouncementZodSchema, endScholarshipZodSchema, forInterviewZodSchema, getAllAdminZodSchema, getAnnouncementByIdZodSchema, getAnnouncementZodSchema, getApplicationByIdZodSchema, getApplicationZodSchema, 
@@ -19,12 +20,14 @@ import { adminAddScholarshipsZodSchema, approveApplicationZodSchema, createAnnou
     validateStaffZodSchema} from "../Zod/ZodSchemaAdminPost";
 import { validate } from "../Zod/Validator";
 import { downloadApplicationFileZodSchema, getFileUrlZodSchema } from "../Zod/ZodSchemaUserUser";
+import { createAccountZodSchema } from "../Zod/ZodSchemanAdminAuth";
 
 const AdminPostRoutes = Router();
 
 AdminPostRoutes.use(AdminTokenAuth);
 //admin
 AdminPostRoutes.post("/deleteAdmin", validate(deleteAdminZodSchema), deleteAdmin)
+AdminPostRoutes.post("/createAccount", validate(createAccountZodSchema), createISPSUStaffAccount);
 AdminPostRoutes.post("/validateStaff", validate(validateStaffZodSchema), validateStaff)
 
 AdminPostRoutes.get("/adminTokenAuthentication", adminTokenAuthentication)
