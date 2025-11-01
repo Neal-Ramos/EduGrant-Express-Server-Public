@@ -358,6 +358,9 @@ export const prismaHEADUpdateStudentAccount = async(ownerId: number, email?: str
                     dateOfBirth: dateOfBirth,
                 }
             }
+        },
+        include:{
+            Student: true
         }
     })
     return update
