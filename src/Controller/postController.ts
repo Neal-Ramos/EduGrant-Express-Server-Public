@@ -259,10 +259,9 @@ export const tokenValidation = async(req: Request, res: Response, next: NextFunc
             return;
         }
         const {hashedPassword ,...safeData} = userData
-        const counts = await prismaStudentCountsInToken(accountId)
+        const {availableScholarshipCount, announcementCount, applicationCountPerStatus} = await prismaStudentCountsInToken(accountId)
         const unreadNotifications = await prismaGetUnreadNotificationsCount(accountId)
-        const {ISPSU_StaffCount, ...forStudent} = counts
-        res.status(200).json({success: true, userData:safeData, unreadNotifications, ...forStudent})
+        res.status(200).json({success: true, userData:safeData, unreadNotifications, availableScholarshipCount, announcementCount, applicationCountPerStatus})
     } catch (error) {
         next(error)
     }

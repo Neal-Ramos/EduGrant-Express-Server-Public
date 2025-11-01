@@ -212,9 +212,9 @@ export const adminTokenAuthentication = async (req: Request, res: Response, next
         res.status(401).json({success: false, message: "Account is not validated!"})
         return
     }
-    const availableScholarshipCount = await prismaStudentCountsInToken()
+    const {availableScholarshipCount, applicationCount, announcementCount, ISPSU_StaffCount} = await prismaStudentCountsInToken()
     const {hashedPassword, ...safeData} = ISPSU
-    res.status(200).json({success:true, message:"Access Granted!", safeData:safeData, availableScholarshipCount});
+    res.status(200).json({success:true, message:"Access Granted!", safeData:safeData, availableScholarshipCount, applicationCount, announcementCount, ISPSU_StaffCount});
   } catch (error) {
     next(error)
   }
