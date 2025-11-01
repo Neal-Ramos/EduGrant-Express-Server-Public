@@ -108,6 +108,9 @@ export const prismaUpdateStaffInfo = async(accountId: number, fName?: string, mN
           }
         }
       }
+    },
+    include:{
+      ISPSU_Staff: true
     }
   })
 
