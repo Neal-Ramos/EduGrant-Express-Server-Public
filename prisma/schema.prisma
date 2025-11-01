@@ -160,7 +160,7 @@ model Interview_Decision {
 
 model Staff_Logs {
   logsId        Int         @id @default(autoincrement())
-  staffId       Int
+  staffId       Int?
   scholarshipId Int
   applicationId Int
   action        String
@@ -168,7 +168,7 @@ model Staff_Logs {
   dateCreated   DateTime    @default(now())
   scholarship   Scholarship @relation(fields: [scholarshipId], references: [scholarshipId], onDelete: Cascade, onUpdate: NoAction)
   application   Application @relation(fields: [applicationId], references: [applicationId], onDelete: Cascade, onUpdate: NoAction)
-  ISPSU_Staff   ISPSU_Staff @relation(fields: [staffId], references: [staffId], onDelete: NoAction, onUpdate: NoAction)
+  ISPSU_Staff   ISPSU_Staff? @relation(fields: [staffId], references: [staffId], onDelete: SetNull, onUpdate: NoAction)
 }
 
 model Student_Notification {

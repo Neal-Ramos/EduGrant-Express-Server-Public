@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { filtersDataTypes } from "../Types/adminPostControllerTypes";
 import { DeleteSupabase, ResponseUploadSupabase, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase } from "../Config/Supabase";
 import { adminAddScholarshipsZodType, approveApplicationZodType, createAnnouncementZodType, declineApplicationZodType, deleteAdminZodType, deleteAnnouncementZodType, 
-  deleteApplicationsZodType, deleteScholarshipZodType, deleteStudentZodType, downloadApplicationCSVZodType, downloadStudentsCSVZodType, editAnnouncementZodType, endScholarshipZodType, forInterviewZondType, getAllAdminZodType, getAnnouncementByIdZodType, getAnnouncementZodType, getApplicationByIdZodType, getApplicationZodType, getFilterDataZodType, 
+  deleteApplicationsZodType, deleteISPSU_StaffZodType, deleteScholarshipZodType, deleteStudentZodType, downloadApplicationCSVZodType, downloadStudentsCSVZodType, editAnnouncementZodType, endScholarshipZodType, forInterviewZondType, getAllAdminZodType, getAnnouncementByIdZodType, getAnnouncementZodType, getApplicationByIdZodType, getApplicationZodType, getFilterDataZodType, 
   getScholarshipsByIdZodType, getScholarshipZodType, getStaffByIdZodType, getStaffLogsZodType, getStudentsByIdZodType, getStudentsZodType, renewalScholarshipZodType, searchAdminZodType, searchApplicationZodType, searchStudentZodType, updateScholarshipZodType, 
   updateStudentAccountZodType,
   validateStaffZodType} from "../Zod/ZodSchemaAdminPost";
@@ -192,6 +192,41 @@ export const validateStaff = async (req: Request, res: Response, next: NextFunct
         return
     }
     res.status(200).json({success: true, message: "Account Updated"})
+  } catch (error) {
+    next(error)
+  }
+}
+export const deleteISPSU_Staff = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
+  try {
+    const {staffId} = (req as Request & {validated: deleteISPSU_StaffZodType}).validated.body
+    const headId = Number(req.tokenPayload.accountId)
+
+    const HeadId = await prismaGetAccountById(headId)
+    if(!HeadId || HeadId.role !== "ISPSU_Head"){
+      res.clearCookie("AdminToken", cookieOptionsStaff);
+      res.status(401).json({success: false, message: "Account Did not Find!"})
+      return
+    }
+
+    const checkStaff = await prismaGetAccountById(staffId)
+    if(!checkStaff){
+      res.status(404).json({success: false, message: "Staff Did not Find!"})
+      return
+    }
+    if(checkStaff.role !== "ISPSU_Staff"){
+      res.status(400).json({success: false, message: "This Account Is not a Staff!"})
+      return
+    }
+
+    const deleteStaff = await prismaDeleteAccount([staffId])
+    if(!deleteStaff){
+      res.status(500).json({success: false, message: "Server Error!"})
+      return
+    }
+    res.status(200).json({success: false, message: "Staff Deleted!"})
+    if((checkStaff.ISPSU_Staff?.profileImg as {path: string})?.path){
+      await DeleteSupabase([(checkStaff.ISPSU_Staff?.profileImg as {path: string})?.path]).catch(error => console.log(error))
+    }
   } catch (error) {
     next(error)
   }

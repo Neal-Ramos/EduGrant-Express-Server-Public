@@ -25,6 +25,13 @@ export const validateStaffZodSchema = z.object({
 });
 export type validateStaffZodType = z.infer<typeof validateStaffZodSchema>;
 
+export const deleteISPSU_StaffZodSchema = z.object({
+  body: z.object({
+    staffId: toInt()
+  }),
+});
+export type deleteISPSU_StaffZodType = z.infer<typeof deleteISPSU_StaffZodSchema>;
+
 export const getAllAdminZodSchema = z.object({
   query: z.object({
     page: toInt().optional(),
