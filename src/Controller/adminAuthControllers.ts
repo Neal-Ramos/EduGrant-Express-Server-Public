@@ -18,6 +18,10 @@ export const adminLogIn = async (req:Request, res: Response, next: NextFunction)
           res.status(401).json({success:false, message:"Invalid Credentials"});
           return;
         }
+        if(!correctCredenatials.ISPSU_Staff?.validated && correctCredenatials.role === "ISPSU_Staff"){
+          res.status(401).json({success:false, message:"Account Not Validated!"});
+          return;
+        }
 
         const validatePassword = await compare(adminPassword, correctCredenatials.hashedPassword)
         if(!validatePassword){
