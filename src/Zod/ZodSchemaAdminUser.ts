@@ -11,9 +11,9 @@ export type adminLogoutZodType = z.infer<typeof adminLogoutZodSchema>
 export const editHeadZodSchema = z.object({
     body: z.object({
         address: z.string().optional(),
-        firstName: z.string().optional(),
-        lastName: z.string().optional(),
-        middleName: z.string().optional(),
+        fName: z.string().optional(),
+        lName: z.string().optional(),
+        mName: z.string().optional(),
         gender: z.string().optional(),
     })
 })

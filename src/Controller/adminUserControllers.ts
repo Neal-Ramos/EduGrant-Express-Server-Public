@@ -28,7 +28,7 @@ export const adminLogout = async (req: Request, res: Response, next: NextFunctio
 };
 export const editHead = async(req: Request, res: Response, next: NextFunction): Promise<void>=>{
     try {
-        const {address, firstName, lastName, middleName, gender} = (req as Request &{validated: editHeadZodType}).validated.body
+        const {address, fName, lName, mName, gender} = (req as Request &{validated: editHeadZodType}).validated.body
         const file = (req.files as Express.Multer.File[]).find(f => f.fieldname === "profileImg")
         const HeadID = Number(req.tokenPayload.accountId)
 
@@ -54,7 +54,7 @@ export const editHead = async(req: Request, res: Response, next: NextFunction): 
             pathForDelete.push(prevImgPath)
         }
 
-        const update = await prismaUpdateHeadAccount(HeadID, address, firstName, lastName, middleName, gender, newProfileImg)
+        const update = await prismaUpdateHeadAccount(HeadID, address, fName, lName, mName, gender, newProfileImg)
         if(!update){
             res.status(500).json({success: false, message: "Server Error!"})
             return
