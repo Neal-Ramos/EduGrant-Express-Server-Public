@@ -1,10 +1,10 @@
 import { Router } from "express";
 import upload from "../Config/upload";
-import { applyRenewScholarship, applyScholarship, getAllScholarship, getAnnouncements, getAnnouncementsById, getApplicationHistory, getApplications, getNotifications, 
+import { applyRenewScholarship, applyScholarship, downloadScholarshipForm, getAllScholarship, getAnnouncements, getAnnouncementsById, getApplicationHistory, getApplications, getNotifications, 
     getScholarshipsbyId, getStudentApplicationById, getStudentById, searchScholarship, tokenValidation } from "../Controller/postController";
 import { TokenAuth } from "../Config/TokenAuth";
 import { validate } from "../Zod/Validator";
-import { applyRenewScholarshipZodSchema, applyScholarshipZodSchema, getAllScholarshipZodSchema, getAnnouncementsByIdZodSchema, getAnnouncementsZodSchema, 
+import { applyRenewScholarshipZodSchema, applyScholarshipZodSchema, downloadScholarshipFormZodSchema, getAllScholarshipZodSchema, getAnnouncementsByIdZodSchema, getAnnouncementsZodSchema, 
     getApplicationHistoryZodSchema, 
     getApplicationsZodSchema, getNotificationsZodSchema, getScholarshipsByIdZodSchema, getStudentApplicationByIdZodSchema, getStudentByIdZodSchema, 
     searchScholarshipZodSchema} from "../Zod/ZodSchemaUserPost";
@@ -14,6 +14,7 @@ const UserPostRoutes = Router();
 UserPostRoutes.use(TokenAuth);
 UserPostRoutes.post("/applyScholarship", upload.any(),validate(applyScholarshipZodSchema) ,applyScholarship);
 UserPostRoutes.post("/renewScholarship", upload.any(),validate(applyRenewScholarshipZodSchema) ,applyRenewScholarship);
+UserPostRoutes.post("/downloadScholarshipForm", validate(downloadScholarshipFormZodSchema) ,downloadScholarshipForm);
 
 UserPostRoutes.get("/tokenValidation", tokenValidation);
 

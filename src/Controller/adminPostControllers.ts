@@ -1032,12 +1032,11 @@ export const downloadApplicationFile = async (req: Request, res: Response, next:
     }
 
     const {downloadURL, success, message} = await SupabaseDownloadFile(path)
-    if(!success){
+    if(!success || !downloadURL){
       res.status(500).json({success: false, message})
       return
     }
-
-    window.open(downloadURL)
+    res.redirect(downloadURL)
   } catch (error) {
     next(error)
   }

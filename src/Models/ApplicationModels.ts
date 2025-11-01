@@ -616,9 +616,14 @@ type prismaCreateApplication = Prisma.ApplicationGetPayload<{
                     select:{
                         name: true
                     }
+                },
+                Application:{
+                    select:{applicationId: true}
                 }
             }
         },
+        Interview_Decision: true,
+        Application_Decision: true
     }
 }>
 export const prismaCreateApplication = async (fileRequirements: RecordApplicationFilesTypes, supabasePath: string[], accountId: number, scholarshipId: number): 
@@ -655,6 +660,8 @@ Promise<prismaCreateApplication> => {
                         }
                     }
                 },
+                Interview_Decision: true,
+                Application_Decision: true
             }
         });
         await tx.scholarship.update({

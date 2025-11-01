@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from "express"
 import { filtersDataTypes } from "../Types/adminPostControllerTypes";
 import { ResponseUploadSupabase, ResponseUploadSupabasePrivate, SupabaseDeletePrivateFile, UploadSupabase, UploadSupabasePrivate } from "../Config/Supabase"
-import { applyScholarshipZodType, getAllScholarshipZodType, getAnnouncementsByIdZodType, getAnnouncementsZodType, getApplicationHistoryZodType, getApplicationsZodType, getNotificationsZodType, getScholarshipsByIdZodType, getStudentApplicationByIdZodType, getStudentByIdZodType, searchScholarshipZodType } from "../Zod/ZodSchemaUserPost"
+import { applyScholarshipZodType, downloadScholarshipFormZodType, getAllScholarshipZodType, getAnnouncementsByIdZodType, getAnnouncementsZodType, getApplicationHistoryZodType, getApplicationsZodType, getNotificationsZodType, getScholarshipsByIdZodType, getStudentApplicationByIdZodType, getStudentByIdZodType, searchScholarshipZodType } from "../Zod/ZodSchemaUserPost"
 import { prismaGetRenewScholarship, prismaGetScholarship, prismaGetScholarshipsById, prismaSearchScholarshipTitle, prismaStudentCountsInToken } from "../Models/ScholarshipModels";
 import { prismaCheckApplicationDuplicate, prismaCheckApproveGov, prismaCreateApplication, prismaGetAllAccountApplication, prismaGetApplication, prismaGetApplicationHistory, prismaRenewApplication, prismaSearchApplication } from "../Models/ApplicationModels";
 import { prismaGetAccountById } from "../Models/AccountModels";
@@ -170,8 +170,29 @@ export const applyScholarship = async (req: Request, res: Response, next: NextFu
             return;
         }
         const inGov = checkAccount.Student?.Application.find(f => f.Scholarship?.type === "government")? true:false
-        res.status(200).json({success:true, inGov, application: insertApplication})
-        io.to(["ISPSU_Head", "ISPSU_Staff", insertApplication.ownerId.toString()]).emit("applyScholarship", {newApplication: insertApplication, inGov, success: true})
+        const k: any = {}
+        for(const [key, value] of Object.entries(insertApplication.submittedDocuments as RecordApplicationFilesTypes)){
+            k[key] = {
+                documents : value,
+                Application_Decision : insertApplication.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
+                Interview_Decision : insertApplication.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
+            }
+        }
+        const newApplication = {
+            applicationId: insertApplication.applicationId,
+            scholarshipId: insertApplication.scholarshipId,
+            ownerId: insertApplication.ownerId,
+            status: insertApplication.status,
+            supabasePath: insertApplication.supabasePath,
+            submittedDocuments: k,
+            Application_Decision: insertApplication.Application_Decision,
+            Interview_Decision: insertApplication.Interview_Decision,
+            Student: insertApplication.Student,
+            Scholarship: insertApplication.Scholarship,
+            dateCreated: insertApplication.dateCreated,
+        }
+        res.status(200).json({success:true, inGov, newApplication})
+        io.to(["ISPSU_Head", "ISPSU_Staff", insertApplication.ownerId.toString()]).emit("applyScholarship", {newApplication, inGov, success: true})
     } catch (error) {
         next(error)
     }
@@ -245,6 +266,32 @@ export const applyRenewScholarship = async(req: Request, res: Response, next: Ne
         const inGov = checkAccount.Student?.Application.find(f => f.Scholarship?.type === "government")? true:false
         res.status(200).json({success: true, message: "Application Submitted!", inGov, newApplication: renewApplication})
         io.to(["ISPSU_Head", "ISPSU_Staff"]).emit("applyRenewScholarship", inGov, {newApplication: renewApplication, success: true})
+    } catch (error) {
+        next(error)
+    }
+}
+export const downloadScholarshipForm = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+    try {
+        const {scholarshipId} = (req as Request&{validated: downloadScholarshipFormZodType}).validated.body
+        const accountId = Number(req.tokenPayload.accountId)
+
+        const checkAccount = await prismaGetAccountById(accountId)
+        if(!checkAccount || checkAccount.role !== "Student"){
+            res.clearCookie("token", cookieOptionsStudent);
+            res.status(404).json({success: false, message: "Account Did not Find!"})
+            return
+        }
+
+        const checkScholarship = await prismaGetScholarshipsById(scholarshipId)
+        if(!checkScholarship){
+            res.status(404).json({success: false, message: "Scholarship Did not Find!"})
+            return
+        }
+        if(!checkScholarship.form){
+            res.status(400).json({success: false, message: "This Scholarship Does not Required a Form!"})
+            return
+        }
+        res.redirect(`${checkScholarship.form}&download=1`)
     } catch (error) {
         next(error)
     }

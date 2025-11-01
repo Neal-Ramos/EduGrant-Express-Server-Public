@@ -15,6 +15,13 @@ export const applyRenewScholarshipZodSchema = z.object({
     })
 })
 
+export const downloadScholarshipFormZodSchema = z.object({
+    body: z.object({
+        scholarshipId: toInt()
+    })
+})
+export type downloadScholarshipFormZodType = z.infer<typeof downloadScholarshipFormZodSchema>
+
 export const getStudentByIdZodSchema = z.object({
     query: z.object({
         accountId: toInt()
