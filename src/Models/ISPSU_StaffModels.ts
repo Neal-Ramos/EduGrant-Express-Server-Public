@@ -1,4 +1,4 @@
-import { ISPSU_Staff, Prisma, PrismaClient } from "@prisma/client";
+import { Account, ISPSU_Staff, Prisma, PrismaClient } from "@prisma/client";
 import { ResponseUploadSupabase } from "../Config/Supabase";
 
 const prisma = new PrismaClient();
@@ -91,18 +91,22 @@ export const prismaGetStaffById = async(accountId: number): Promise<prismaGetSta
   })
   return staff
 }
-export const prismaUpdateStaffInfo = async(accountId: number, fName?: string, mName?: string, lName?: string, newProfileImg?: ResponseUploadSupabase): Promise<ISPSU_Staff|undefined>=> {
-  const update = await prisma.iSPSU_Staff.update({
+export const prismaUpdateStaffInfo = async(accountId: number, fName?: string, mName?: string, lName?: string, newProfileImg?: ResponseUploadSupabase): Promise<Account|undefined>=> {
+  const update = await prisma.account.update({
     where:{
-      staffId: accountId
+      accountId: accountId
     },
     data:{
-      fName: fName,
-      lName: lName,
-      mName: mName,
-      profileImg: {
-        path: newProfileImg?.path,
-        publicUrl: newProfileImg?.publicUrl
+      ISPSU_Staff:{
+        update:{
+          fName: fName,
+          lName: lName,
+          mName: mName,
+          profileImg: {
+            path: newProfileImg?.path,
+            publicUrl: newProfileImg?.publicUrl
+          }
+        }
       }
     }
   })

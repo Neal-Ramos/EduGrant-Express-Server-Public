@@ -147,7 +147,8 @@ export const editStaffInfoAccount = async(req: Request, res: Response, next: Nex
             res.status(500).json({success: false, message: "Server Error!"})
             return
         }
-        res.status(200).json({success: true, message: "Staff Info Updated!", updatedStaffInfo})
+        const {hashedPassword, ...safeDate} = updatedStaffInfo
+        res.status(200).json({success: true, message: "Staff Info Updated!", updatedStaffInfo: safeDate})
     } catch (error) {
         
     }
