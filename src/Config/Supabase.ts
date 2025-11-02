@@ -80,7 +80,7 @@ export const SupabaseCreateSignedUrl = async(path: string): Promise<{success: bo
 
 export const SupabaseDownloadFile = async(path: string): Promise<{success: boolean, message: string, downloadURL?: string}>=> {
     try {
-        const {data, error} = await supabase.storage.from("Student-Files").createSignedUrl(path, 10)
+        const {data, error} = await supabase.storage.from("Student-Files").createSignedUrl(path, 60)
         if(error){
             return {success: false, message: "Create Sign URL Error!"}
         }

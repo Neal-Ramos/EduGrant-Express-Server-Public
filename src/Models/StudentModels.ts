@@ -9,7 +9,7 @@ type AccountWithRelations = Prisma.StudentGetPayload<{
     }
 }>
 
-export const prismaFiltersStudent = async(status: string|undefined): Promise<{}>=> {
+export const prismaFiltersStudent = async(status?: string): Promise<{}>=> {
 
     const StudentFilter = await prisma.student.findMany({
         distinct:['course', 'year', 'section'],
