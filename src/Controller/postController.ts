@@ -287,11 +287,27 @@ export const downloadScholarshipForm = async(req: Request, res: Response, next: 
             res.status(404).json({success: false, message: "Scholarship Did not Find!"})
             return
         }
-        if(!checkScholarship.form){
+        const path = (checkScholarship.supabasePath as {form?: string}).form
+        if(!checkScholarship.form || !path){
             res.status(400).json({success: false, message: "This Scholarship Does not Required a Form!"})
             return
         }
-        res.redirect(`${checkScholarship.form}&download=1`)
+        
+        const fetchSupabase = await fetch(checkScholarship.form)
+        const contentType = fetchSupabase.headers.get("content-type") || "application/octet-stream"
+        const arrayBuffer = await fetchSupabase.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
+
+        const fileName = path.split("/").pop() || "downloaded-file"
+        res.setHeader(
+        "Content-Type",
+        contentType
+        );
+        res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${fileName}"`
+        );
+        res.send(buffer)
     } catch (error) {
         next(error)
     }
