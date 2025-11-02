@@ -1071,7 +1071,22 @@ export const downloadApplicationFile = async (req: Request, res: Response, next:
       res.status(500).json({success: false, message})
       return
     }
-    res.redirect(downloadURL)
+
+    const fetchSupabase = await fetch(downloadURL)
+    const contentType = fetchSupabase.headers.get("content-type") || "application/octet-stream"
+    const arrayBuffer = await fetchSupabase.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+
+    const fileName = path.split("/").pop() || "downloaded-file"
+    res.setHeader(
+      "Content-Type",
+      contentType
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${fileName}"`
+    );
+    res.send(buffer)
   } catch (error) {
     next(error)
   }

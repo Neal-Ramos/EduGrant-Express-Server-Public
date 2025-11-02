@@ -85,7 +85,7 @@ export const SupabaseDownloadFile = async(path: string): Promise<{success: boole
             return {success: false, message: "Create Sign URL Error!"}
         }
         
-        return {success: true, message: "Signed URL Ready", downloadURL: `${data.signedUrl}&download=1`}
+        return {success: true, message: "Signed URL Ready", downloadURL: `${data.signedUrl}`}
     } catch (error) {
         console.error("Error creating signed URLs:", error)
         return { success: false, message: "Failed to create signed URLs" }
