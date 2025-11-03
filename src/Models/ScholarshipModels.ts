@@ -622,7 +622,7 @@ export const prismaEndScholarship = async(scholarshipId: number): Promise<{ended
     return {endedScholarship, endenApplications}
 }
 export const prismaStudentCountsInToken = async(accountId?: number): 
-Promise<{availableScholarshipCount: number, applicationCount: number, announcementCount: number, ISPSU_StaffCount: number, applicationCountPerStatus: Record<string, number>[]}>=>{
+Promise<{availableScholarshipCount: number, applicationCount: number, announcementCount: number, ISPSU_StaffCount: number, applicationCountPerStatus: Record<string, number>}>=>{
     const [availableScholarshipCount, applicationCount, announcementCount, ISPSU_StaffCount, applicationGroupStatusCount] = await Promise.all([
         prisma.scholarship.count({
             where:{
@@ -659,8 +659,8 @@ Promise<{availableScholarshipCount: number, applicationCount: number, announceme
             }
         })
     ])
-    const applicationCountPerStatus: Record<string, number>[] = []
-    applicationGroupStatusCount.forEach(e => applicationCountPerStatus.push({[e.status]: e._count.status}))
+    const applicationCountPerStatus: Record<string, number> = {}
+    applicationGroupStatusCount.forEach(e => applicationCountPerStatus[e.status] = e._count.status)
 
     return {availableScholarshipCount, applicationCount, announcementCount, ISPSU_StaffCount, applicationCountPerStatus}
 }
