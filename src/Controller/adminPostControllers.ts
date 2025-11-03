@@ -668,11 +668,10 @@ export const getApplicationById = async (req: Request, res: Response, next: Next
     }
     const k: any = {}
     for(const [key, value] of Object.entries(application.submittedDocuments as RecordApplicationFilesTypes)){
-      k[key] = {
-        documents : value,
-        Application_Decision : application.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
-        Interview_Decision : application.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
-      }
+      k[key] = [...value,
+        {Application_Decision : application.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key)||[]},
+        {Interview_Decision : application.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)||[]}
+      ]
     }
     res.status(200).json({success: true, data: {
         applicationId: application.applicationId,
