@@ -474,9 +474,10 @@ export const getStudentApplicationById = async (req: Request, res: Response, nex
         const inGov = checkAccount.Student?.Application.find(f => f.Scholarship?.type === "government")? true:false
         const k: any = {}
         for(const [key, value] of Object.entries(application.submittedDocuments as RecordApplicationFilesTypes)){
-            k[key] = [...value,
-                {Application_Decision : application.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key)||[]},
-                {Interview_Decision : application.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)||[]}
+            k[key] = [
+                ...value,
+                {Application_Decision : application.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key)},
+                {Interview_Decision : application.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)}
             ]
         }
 
