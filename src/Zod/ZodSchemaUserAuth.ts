@@ -3,23 +3,23 @@ import { toDate } from "./Validator";
 
 export const registerAccountZodSchema = z.object({
   body: z.object({
-    studentId: z.string(),
-    studentEmail: z.string(),
-    studentContact: z.string(),
-    studentFirstName: z.string(),
-    studentMiddleName: z.string().optional(),
-    studentLastName: z.string(),
-    studentGender: z.string(),
-    studentAddress: z.string(),
-    institute: z.string(),
-    course: z.string(),
-    year: z.string(),
-    section: z.string(),
+    studentId: z.string().min(1),
+    studentEmail: z.email(),
+    studentContact: z.string().min(10),
+    studentFirstName: z.string().min(1),
+    studentMiddleName: z.string().min(1).optional(),
+    studentLastName: z.string().min(1),
+    studentGender: z.string().min(1),
+    studentAddress: z.string().min(1),
+    institute: z.string().min(1),
+    course: z.string().min(1),
+    year: z.string().min(1),
+    section: z.string().min(1),
     pwd: z.string().optional(),
     indigenous: z.string().optional(),
-    studentPassword: z.string(),
-    verificationCode: z.string(),
+    studentPassword: z.string().min(8),
     studentDateofBirth: toDate(),
+    verificationCode: z.string(),
   }),
 });
 export type registerAccountZodType = z.infer<typeof registerAccountZodSchema>;
@@ -35,21 +35,21 @@ export type loginAccountsZodType = z.infer<typeof loginAccountsZodSchema>;
 
 export const sendAuthCodeRegisterZodSchema = z.object({
   body: z.object({
-    studentId: z.string(),
-    studentEmail: z.string(),
-    studentContact: z.string(),
-    studentFirstName: z.string(),
-    studentMiddleName: z.string(),
-    studentLastName: z.string(),
-    studentGender: z.string(),
-    studentAddress: z.string(),
-    institute: z.string(),
-    course: z.string(),
-    year: z.string(),
-    section: z.string(),
-    pwd: z.string(),
-    indigenous: z.string(),
-    studentPassword: z.string(),
+    studentId: z.string().min(1),
+    studentEmail: z.email(),
+    studentContact: z.string().min(10),
+    studentFirstName: z.string().min(1),
+    studentMiddleName: z.string().min(1).optional(),
+    studentLastName: z.string().min(1),
+    studentGender: z.string().min(1),
+    studentAddress: z.string().min(1),
+    institute: z.string().min(1),
+    course: z.string().min(1),
+    year: z.string().min(1),
+    section: z.string().min(1),
+    pwd: z.string().optional(),
+    indigenous: z.string().optional(),
+    studentPassword: z.string().min(8),
     studentDateofBirth: toDate(),
   }),
 });
@@ -67,17 +67,10 @@ export type sendAuthCodeLoginZodType = z.infer<
   typeof sendAuthCodeLoginZodSchema
 >;
 
-export const tokenValidationZodSchema = z.object({
-  cookies: z.object({
-    token: z.string().optional()
-  })
-})
-export type tokenValidationZodType = z.infer<typeof tokenValidationZodSchema>
-
 export const forgotPasswordZodSchema = z.object({
   body: z.object({
-    newPassword: z.string(),
-    email: z.string(),
+    newPassword: z.string().min(8),
+    email: z.email(),
     code: z.string()
   })
 })
@@ -85,7 +78,7 @@ export type forgotPasswordZodType = z.infer<typeof forgotPasswordZodSchema>
 
 export const forgotPasswordSendAuthCodeZodSchema = z.object({
   body: z.object({
-    email: z.string(),
+    email: z.email(),
   })
 })
 export type forgotPasswordSendAuthCodeZodType = z.infer<typeof forgotPasswordSendAuthCodeZodSchema>

@@ -3,11 +3,11 @@ import {z} from "zod";
 export const createAccountZodSchema = z.object({
     body: z.object({
         email: z.email(),
-        firstName: z.string(),
-        middleName: z.string().optional(),
-        lastName: z.string(),
-        phone: z.string(),
-        password: z.string(),
+        firstName: z.string().min(1),
+        middleName: z.string().min(1).optional(),
+        lastName: z.string().min(1),
+        phone: z.string().min(10),
+        password: z.string().min(8),
     })
 })
 export type createAccountZodType = z.infer<typeof createAccountZodSchema>

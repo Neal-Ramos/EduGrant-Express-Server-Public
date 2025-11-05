@@ -4,15 +4,15 @@ import { application } from "express";
 
 export const updateStudentInfoZodSchema = z.object({
     body: z.object({
-        contactNumber: z.string().optional(),
-        firstName: z.string().optional(),
-        middleName: z.string().optional(),
-        lastName: z.string().optional(),
-        gender: z.string().optional(),
-        address: z.string().optional(),
-        course: z.string().optional(),
-        year: z.string().optional(),
-        section: z.string().optional(),
+        contactNumber: z.string().min(1).optional(),
+        firstName: z.string().min(1).optional(),
+        middleName: z.string().min(1).optional(),
+        lastName: z.string().min(1).optional(),
+        gender: z.string().min(1).optional(),
+        address: z.string().min(1).optional(),
+        course: z.string().min(1).optional(),
+        year: z.string().min(1).optional(),
+        section: z.string().min(1).optional(),
         dateOfBirth: toDate().optional(),
         familyBackground: toJSON().optional(),
         pwd: z.string().optional(),
@@ -41,8 +41,8 @@ export type readNotificationZodType = z.infer<typeof readNotificationZodSchema>
 
 export const sendAuthCodeChangeAccountCredZodSchema = z.object({
     body: z.object({
-        oldPassword: z.string(),
-        newPassword: z.string(),
+        oldPassword: z.string().min(8),
+        newPassword: z.string().min(8),
     })
 })
 export type sendAuthCodeChangeAccountCredZodType = z.infer<typeof sendAuthCodeChangeAccountCredZodSchema>

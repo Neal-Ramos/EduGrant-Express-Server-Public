@@ -157,8 +157,8 @@ export const prismaUpdateStudentAccount = async (
                     year: year,
                     section: section,
                     familyBackground: familyBackground,
-                    PWD: pwd? pwd:"",
-                    indigenous: indigenous? indigenous:"",
+                    PWD: typeof pwd === "string"? pwd:undefined,
+                    indigenous: typeof pwd === "string"? indigenous:undefined,
                     ...(profileImg? {profileImg: {path: profileImg.path, publicUrl: profileImg.publicUrl}}:{})
                 }
             }

@@ -4,7 +4,7 @@ import { sign, verify } from "jsonwebtoken";
 import bcrypt, { hash } from "bcryptjs";
 import { SendAuthCode } from "../Config/Resend"
 import { TokenPayload } from "../Types/authControllerTypes";
-import { forgotPasswordSendAuthCodeZodType, forgotPasswordZodType, loginAccountsZodType, registerAccountZodType, sendAuthCodeLoginZodType, sendAuthCodeRegisterZodType, tokenValidationZodType } from "../Zod/ZodSchemaUserAuth";
+import { forgotPasswordSendAuthCodeZodType, forgotPasswordZodType, loginAccountsZodType, registerAccountZodType, sendAuthCodeLoginZodType, sendAuthCodeRegisterZodType } from "../Zod/ZodSchemaUserAuth";
 import { authHTML } from "../utils/HTML-AuthCode";
 import { prismaCheckEmailExist, prismaCheckStudentIdExist, prismaCreateStudentAccount, prismaGetAccountById, prismaUpdateAccountPassword } from "../Models/AccountModels";
 import { GenerateCode } from "../Config/CodeGenerator";
