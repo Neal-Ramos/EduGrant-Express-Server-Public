@@ -43,9 +43,9 @@ export type editStaffInfoZodType = z.infer<typeof editStaffInfoZodSchema>
 
 export const editStaffCredSendAuthCodeZodSchema = z.object({
     body: z.object({
-        newEmail: z.string().min(1).optional(),
-        oldPass: z.string().min(1).optional(),
-        newPass: z.string().min(1).optional()
+        newEmail: z.email().min(1).optional(),
+        oldPass: z.string().min(8).optional(),
+        newPass: z.string().min(8).optional()
     })
 })
 export type editStaffCredSendAuthCodeZodType = z.infer<typeof editStaffCredSendAuthCodeZodSchema>

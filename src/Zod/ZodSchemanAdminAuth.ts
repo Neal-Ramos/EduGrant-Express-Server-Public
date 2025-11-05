@@ -2,12 +2,12 @@ import {z} from "zod";
 
 export const createAccountZodSchema = z.object({
     body: z.object({
-        email: z.email(),
-        firstName: z.string().min(1),
-        middleName: z.string().min(1).optional(),
-        lastName: z.string().min(1),
-        phone: z.string().min(10),
-        password: z.string().min(8),
+        email: z.email().trim(),
+        firstName: z.string().trim().min(1),
+        middleName: z.string().trim().min(1).optional(),
+        lastName: z.string().trim().min(1),
+        phone: z.string().trim().min(10),
+        password: z.string().trim().min(8),
     })
 })
 export type createAccountZodType = z.infer<typeof createAccountZodSchema>
@@ -38,7 +38,7 @@ export type adminTokenAuthenticationZodType = z.infer<typeof adminTokenAuthentic
 
 export const sendAuthCodeForgetPassZodSchema = z.object({
   body: z.object({
-    email: z.string(),
+    email: z.email().trim(),
   })
 });
 export type sendAuthCodeForgetPassZodType = z.infer<typeof sendAuthCodeForgetPassZodSchema>;

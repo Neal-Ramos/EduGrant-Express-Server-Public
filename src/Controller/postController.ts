@@ -23,10 +23,6 @@ export const getAllScholarship = async (req: Request, res: Response, next: NextF
             res.status(401).json({success: false, message: "Account Did not Find!"})
             return
         }
-        if(!checkAccount.Student?.familyBackground || Object.entries(checkAccount.Student?.familyBackground).length === 0){
-            res.status(400).json({success: false, message: "Need To Finish Account Setup"})
-            return
-        }
 
         const getScholarshipsData = await prismaGetScholarship(page, dataPerPage, sortBy, order, status , filters, accountId)
         const meta = {

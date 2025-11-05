@@ -164,10 +164,10 @@ export type searchApplicationZodType = z.infer<
 
 export const adminAddScholarshipsZodSchema = z.object({
   body: z.object({
-    scholarshipType: z.string(),
-    newScholarTitle: z.string(),
-    newScholarProvider: z.string(),
-    newScholarDescription: z.string(),
+    scholarshipType: z.string().min(1).trim(),
+    newScholarTitle: z.string().min(1).trim(),
+    newScholarProvider: z.string().min(1).trim(),
+    newScholarDescription: z.string().min(1).trim(),
     newScholarDeadline: toDate(),
     isForInterview: z.string(),
     scholarshipAmount: z.string().optional(),
@@ -183,9 +183,9 @@ export type adminAddScholarshipsZodType = z.infer<
 export const updateScholarshipZodSchema = z.object({
   body: z.object({
     scholarshipId: toInt(),
-    newScholarProvider: z.string(),
-    newScholarTitle: z.string(),
-    newScholarDescription: z.string(),
+    newScholarProvider: z.string().min(1).trim(),
+    newScholarTitle: z.string().min(1).trim(),
+    newScholarDescription: z.string().min(1).trim(),
     newScholarDeadline: toDate(),
     scholarshipAmount: z.string().optional(),
     scholarshipLimit: toInt().optional(),
@@ -255,8 +255,8 @@ export type getFilterDataZodType = z.infer<typeof getFilterDataZodSchema>;
 
 export const createAnnouncementZodSchema = z.object({
   body: z.object({
-    announcementTitle: z.string(),
-    announcementDescription: z.string().optional(),
+    announcementTitle: z.string().min(1).trim(),
+    announcementDescription: z.string().min(1).trim().optional(),
     announcementTags: toJSON().optional(),
   }),
 });
@@ -274,8 +274,8 @@ export type deleteAnnouncementZodType = z.infer<typeof deleteAnnouncementZodSche
 export const editAnnouncementZodSchema = z.object({
   body: z.object({
     announcementId: toInt(),
-    title: z.string().optional(),
-    description: z.string().optional(),
+    title: z.string().min(1).trim().optional(),
+    description: z.string().min(1).trim().optional(),
     tags: toJSON().optional(),
   })
 })
@@ -315,21 +315,21 @@ export type getStaffLogsZodType = z.infer<typeof getStaffLogsZodSchema>
 export const updateStudentAccountZodSchema = z.object({
   body: z.object({
     ownerId: toInt(),
-    email: z.string().optional(),
-    newPassword: z.string().optional(),
-    schoolId: z.string().optional(),
-    fName: z.string().optional(),
-    lName: z.string().optional(),
-    mName: z.string().optional(),
-    contactNumber: z.string().optional(),
+    email: z.email().min(1).trim().optional(),
+    newPassword: z.string().min(8).trim().optional(),
+    schoolId: z.string().min(1).trim().optional(),
+    fName: z.string().min(1).trim().optional(),
+    lName: z.string().min(1).trim().optional(),
+    mName: z.string().min(1).trim().optional(),
+    contactNumber: z.string().min(10).trim().optional(),
     gender: z.string().optional(),
-    address: z.string().optional(),
+    address: z.string().min(1).trim().optional(),
     indigenous: z.string().optional(),
     PWD: z.string().optional(),
-    institute: z.string().optional(),
-    course: z.string().optional(),
-    year: z.string().optional(),
-    section: z.string().optional(),
+    institute: z.string().min(1).trim().optional(),
+    course: z.string().min(1).trim().optional(),
+    year: z.string().min(1).trim().optional(),
+    section: z.string().min(1).trim().optional(),
     dateOfBirth: toDate().optional(),
   })
 })
