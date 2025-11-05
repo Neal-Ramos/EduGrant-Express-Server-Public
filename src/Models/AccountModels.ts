@@ -146,19 +146,19 @@ export const prismaUpdateStudentAccount = async (
         data:{
             Student:{
                 update:{
-                    fName: firstName? firstName:undefined,
-                    lName: lastName? lastName:undefined,
-                    mName: middleName? middleName:undefined,
-                    gender: gender? gender:undefined,
-                    dateOfBirth: dateOfBirth? dateOfBirth:undefined,
-                    contactNumber: contactNumber? contactNumber:undefined,
-                    address: address? address:undefined,
-                    course: course? course:undefined,
-                    year: year? year:undefined,
-                    section: section? section:undefined,
-                    familyBackground: familyBackground? familyBackground:undefined,
-                    PWD: pwd,
-                    indigenous: indigenous,
+                    fName: firstName,
+                    lName: lastName,
+                    mName: middleName,
+                    gender: gender,
+                    dateOfBirth: dateOfBirth,
+                    contactNumber: contactNumber,
+                    address: address,
+                    course: course,
+                    year: year,
+                    section: section,
+                    familyBackground: familyBackground,
+                    PWD: pwd? pwd:"",
+                    indigenous: indigenous? indigenous:"",
                     ...(profileImg? {profileImg: {path: profileImg.path, publicUrl: profileImg.publicUrl}}:{})
                 }
             }

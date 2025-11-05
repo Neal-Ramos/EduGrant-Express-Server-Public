@@ -21,7 +21,7 @@ export const registerAccount = async (req: Request, res: Response, next: NextFun
             studentFirstName, studentMiddleName, studentLastName, studentGender, studentAddress,
             studentDateofBirth, course, year , section, studentPassword, verificationCode, institute, pwd, indigenous } = (req as Request & {validated: registerAccountZodType}).validated.body;
         const Code = await AuthCode.validate(verificationCode , studentEmail, origin)
-        if(Code.validated === false){
+        if(!Code.validated || !Code.AuthCode){
             res.status(400).json({success:false, message:Code.message});
             return;
         }
@@ -45,6 +45,7 @@ export const registerAccount = async (req: Request, res: Response, next: NextFun
         }
         await AuthCode.DeleteAll(studentEmail, origin)
         res.status(200).json({success: true, message:"Account Created!!!"});
+        await AuthCode.DeleteAll(studentEmail, Code.AuthCode.origin)
     } catch (error) {
         next(error);
     }
@@ -60,7 +61,7 @@ export const loginAccounts = async (req: Request, res: Response, next: NextFunct
             return;
         }
         const Code = await AuthCode.validate(code, Student.email, origin)
-        if(Code.validated === false){
+        if(!Code.validated || !Code.AuthCode){
             res.status(400).json({success: false, message: Code.message});
             return;
         }
@@ -84,6 +85,7 @@ export const loginAccounts = async (req: Request, res: Response, next: NextFunct
         const {hashedPassword, ...safeData} = Student
         const unreadNotifications = await prismaGetUnreadNotificationsCount(Student.accountId)
         res.status(200).json({success: true, userData: safeData, unreadNotifications})
+        await AuthCode.DeleteAll(Student.email, Code.AuthCode.origin)
     } catch (error) {
         next(error);
     }
@@ -107,7 +109,8 @@ export const sendAuthCodeRegister = async (req: Request, res: Response, next: Ne
         if(Code){
             const {validated} = await AuthCode.validate(Code.code, Code.owner, Code.origin)
             if(validated){
-                res.status(200).json({success: true, message: "Email Already Sent"});
+                const resendAvailableIn = (new Date().getTime() - new Date(Code.dateExpiry).getTime()) / 1000
+                res.status(200).json({success: true, message: "Email Already Sent", expiresAt: Code.dateExpiry, ttl:120, resendAvailableIn});
                 return;
             }
         }
@@ -156,7 +159,8 @@ export const sendAuthCodeLogin = async(req: Request, res: Response, next: NextFu
         if(Code){
             const {validated} = await AuthCode.validate(Code.code, Code.owner, Code.origin)
             if(validated){
-                res.status(200).json({success: true, message: "Code Already Sent!"});
+                const resendAvailableIn = (new Date().getTime() - new Date(Code.dateExpiry).getTime()) / 1000
+                res.status(200).json({success: true, message: "Code Already Sent!", expiresAt: Code.dateExpiry, ttl: 120, resendAvailableIn});
                 return;
             }
         }
@@ -175,7 +179,7 @@ export const forgotPassword = async(req: Request, res: Response, next: NextFunct
     try {
         const {email, newPassword, code} = (req as Request & {validated: forgotPasswordZodType}).validated.body
         const Code = await AuthCode.validate(code, email, "forgotPassword")
-        if(!Code.validated){
+        if(!Code.validated || !Code.AuthCode){
             res.status(400).json({success: false, message: Code.message})
             return
         }
@@ -188,6 +192,7 @@ export const forgotPassword = async(req: Request, res: Response, next: NextFunct
         }
         const {hashedPassword ,...userAccount} = updateAccountPassword
         res.status(200).json({success: true, message: "Password Changed!", userAccount})
+        await AuthCode.DeleteAll(updateAccountPassword.email, Code.AuthCode.origin)
     } catch (error) {
         next(error)
     }
@@ -195,6 +200,16 @@ export const forgotPassword = async(req: Request, res: Response, next: NextFunct
 export const forgotPasswordSendAuthCode = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
         const {email} = (req as Request & {validated: forgotPasswordSendAuthCodeZodType}).validated.body
+        const origin = "forgotPassword"
+        const Code = await AuthCode.Find(email, origin)
+        if(Code){
+            const {validated} = await AuthCode.validate(Code.code, email, origin)
+            if(validated){
+                const resendAvailableIn = (new Date().getTime() - new Date(Code.dateCreated).getTime()) / 1000
+                res.status(400).json({success: false, message: "Email Already Sent!", expiresAt: Code.dateExpiry, ttl: 120, resendAvailableIn})
+                return
+            }
+        }
         const checkEmail = await prismaCheckEmailExist(email)
         if(!checkEmail || checkEmail.role !== "Student"){
             res.status(400).json({success: false, message: "Account Did Not Found!"})
@@ -208,7 +223,7 @@ export const forgotPasswordSendAuthCode = async(req: Request, res: Response, nex
             subject: "Change Password!",
             html:authHTML(code)
         }
-        const sendCode = await SendAuthCode(mailOptions, "forgotPassword", checkEmail.email, code, expiresAt)
+        const sendCode = await SendAuthCode(mailOptions, origin, checkEmail.email, code, expiresAt)
         if(!sendCode.success){
             res.status(500).json({success: false, messagel: "Email Not Sent!"})
             return

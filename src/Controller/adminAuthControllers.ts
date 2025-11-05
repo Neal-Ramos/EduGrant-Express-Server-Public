@@ -70,7 +70,7 @@ export const adminCodeAuthentication = async (req: Request, res: Response, next:
             return;
         }
         const Code = await AuthCode.validate(code, adminEmail, "adminLogin");// check the code
-        if(!Code.validated){
+        if(!Code.validated || !Code.AuthCode){
             res.status(401).json({success:false, message:Code.message});
             return;
         }
@@ -90,6 +90,7 @@ export const adminCodeAuthentication = async (req: Request, res: Response, next:
 
         const {hashedPassword, ...safeData} = validAccount
         res.status(200).json({success:true, message:"Login Success!", role:validAccount.role, safeData:safeData})
+        await AuthCode.DeleteAll(adminEmail, Code.AuthCode.origin)
     } catch (error) {
         next(error)
     }
@@ -134,7 +135,7 @@ export const forgetPass = async (req: Request, res: Response, next: NextFunction
     }
 
     const Code = await AuthCode.validate(code, email, "ISPSU_ForgetPassword")
-    if(!Code.validated){
+    if(!Code.validated || !Code.AuthCode){
       res.status(404).json({success: false, message: Code.message})
       return
     }
@@ -147,6 +148,7 @@ export const forgetPass = async (req: Request, res: Response, next: NextFunction
       return
     }
     res.status(200).json({success: true, message: "Password Changed!"})
+    await AuthCode.DeleteAll(email, Code.AuthCode.origin)
   } catch (error) {
     next(error)
   }

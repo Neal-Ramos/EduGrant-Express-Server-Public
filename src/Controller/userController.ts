@@ -218,6 +218,7 @@ export const markAllReadNotifications = async(req: Request, res: Response, next:
 export const sendAuthCodeChangeAccountCred = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
         const {oldPassword, newPassword} = (req as Request &{validated: sendAuthCodeChangeAccountCredZodType}).validated.body
+        const origin = "Change_Password"
         const accountId = Number(req.tokenPayload.accountId)
 
         const checkAccount = await prismaGetAccountById(accountId)
@@ -227,6 +228,15 @@ export const sendAuthCodeChangeAccountCred = async(req: Request, res: Response, 
             return
         }
         
+        const Code = await AuthCode.Find(checkAccount.email, origin)
+        if(Code){
+            const {validated} = await AuthCode.validate(Code.code, Code.owner, Code.origin)
+            if(validated){
+                const resendAvailableIn = (new Date().getTime() - new Date(Code.dateCreated).getTime()) / 1000
+                res.status(400).json({success: false, message: "Email Already Sent!", expiresAt: Code.dateExpiry, ttl: 120, resendAvailableIn})
+                return
+            }
+        }
         if(oldPassword && newPassword){
             const verifyPass = await compare(oldPassword, checkAccount.hashedPassword)
             if(!verifyPass){
@@ -235,21 +245,21 @@ export const sendAuthCodeChangeAccountCred = async(req: Request, res: Response, 
             }
         }
 
-        await AuthCode.DeleteAll(checkAccount.email, "Change_Password")
+        await AuthCode.DeleteAll(checkAccount.email, origin)
         const code = await GenerateCode(6)
-        const dateExpiry = new Date(Date.now() + (2 * 60 * 1000))
+        const expiresAt = new Date(Date.now() + (2 * 60 * 1000))
         const mailOptions: CreateEmailOptions = {
             to: checkAccount.email,
             from: "service@edugrant.online",
             subject: "Change Account Password",
             html: authHTML(code)
         }
-        const send = await SendAuthCode(mailOptions, "Change_Password", checkAccount.email, code, dateExpiry)
+        const send = await SendAuthCode(mailOptions, origin, checkAccount.email, code, expiresAt)
         if(!send.success){
             res.status(400).json({success: false, message: send.message})
             return
         }
-        res.status(200).json({success: false, message: "Email Sent!"})
+        res.status(200).json({success: false, message: "Email Sent!", expiresAt, ttl: 120, resendAvailableIn: 60})
     } catch (error) {
         next(error)
     }
@@ -275,7 +285,7 @@ export const changePassword = async(req: Request, res: Response, next: NextFunct
         }
 
         const Code = await AuthCode.validate(code, email, "Change_Password")
-        if(Code.validated === false){
+        if(Code.validated === false || !Code.AuthCode){
             res.status(400).json({success: false, message: Code.message})
             return
         }
@@ -286,6 +296,7 @@ export const changePassword = async(req: Request, res: Response, next: NextFunct
             return
         }
         res.status(200).json({success: false, message: "Password Changed!"})
+        await AuthCode.DeleteAll(checkAccount.email, Code.AuthCode.origin)
     } catch (error) {
         next(error)
     }
