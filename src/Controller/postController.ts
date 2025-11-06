@@ -1,8 +1,8 @@
 import { Response, Request, NextFunction } from "express"
 import { filtersDataTypes } from "../Types/adminPostControllerTypes";
-import { ResponseUploadSupabase, ResponseUploadSupabasePrivate, SupabaseDeletePrivateFile, UploadSupabase, UploadSupabasePrivate } from "../Config/Supabase"
+import { ResponseUploadSupabasePrivate, SupabaseDeletePrivateFile, UploadSupabasePrivate } from "../Config/Supabase"
 import { applyScholarshipZodType, downloadScholarshipFormZodType, getAllScholarshipZodType, getAnnouncementsByIdZodType, getAnnouncementsZodType, getApplicationHistoryZodType, getApplicationsZodType, getNotificationsZodType, getScholarshipsByIdZodType, getStudentApplicationByIdZodType, getStudentByIdZodType, searchScholarshipZodType } from "../Zod/ZodSchemaUserPost"
-import { prismaGetRenewScholarship, prismaGetScholarship, prismaGetScholarshipsById, prismaSearchScholarshipTitle, prismaStudentCountsInToken } from "../Models/ScholarshipModels";
+import { prismaGetScholarship, prismaGetScholarshipsById, prismaSearchScholarshipTitle, prismaStudentCountsInToken } from "../Models/ScholarshipModels";
 import { prismaCheckApplicationDuplicate, prismaCheckApproveGov, prismaCreateApplication, prismaGetAllAccountApplication, prismaGetApplication, prismaGetApplicationHistory, prismaRenewApplication, prismaSearchApplication } from "../Models/ApplicationModels";
 import { prismaGetAccountById } from "../Models/AccountModels";
 import { prismaGetAllAnnouncement, prismaGetAnnouncementById } from "../Models/AnnouncementModels";
@@ -318,9 +318,9 @@ export const tokenValidation = async(req: Request, res: Response, next: NextFunc
             return;
         }
         const {hashedPassword ,...safeData} = userData
-        const {availableScholarshipCount, announcementCount, applicationCountPerStatus} = await prismaStudentCountsInToken(accountId)
+        const {availableScholarshipCount, announcementCount, applicationCountPerStatus, applicationCount, applicationHistoryCount} = await prismaStudentCountsInToken(accountId)
         const unreadNotifications = await prismaGetUnreadNotificationsCount(accountId)
-        res.status(200).json({success: true, userData:safeData, unreadNotifications, availableScholarshipCount, announcementCount, applicationCountPerStatus})
+        res.status(200).json({success: true, userData:safeData, unreadNotifications, availableScholarshipCount, announcementCount, applicationCount, applicationCountPerStatus, applicationHistoryCount})
     } catch (error) {
         next(error)
     }
