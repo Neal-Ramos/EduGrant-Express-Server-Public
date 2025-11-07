@@ -232,7 +232,7 @@ export const sendAuthCodeChangeAccountCred = async(req: Request, res: Response, 
         if(Code){
             const {validated} = await AuthCode.validate(Code.code, Code.owner, Code.origin)
             if(validated){
-                const resendAvailableIn = (new Date().getTime() - new Date(Code.dateCreated).getTime()) / 1000
+                const resendAvailableIn = (new Date(Code.dateCreated).getTime() - new Date().getTime()) / 1000
                 res.status(400).json({success: false, message: "Email Already Sent!", expiresAt: Code.dateExpiry, ttl: 120, resendAvailableIn})
                 return
             }

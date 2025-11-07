@@ -10,7 +10,7 @@ import { getAllAdmin, adminAddScholarships, getScholarship, updateScholarship, d
 import { AdminTokenAuth } from "../Config/TokenAuth";
 import { adminAddScholarshipsZodSchema, approveApplicationZodSchema, createAnnouncementZodSchema, declineApplicationZodSchema, deleteAdminZodSchema, deleteAnnouncementZodSchema, 
     deleteApplicationsZodSchema, deleteISPSU_StaffZodSchema, deleteScholarshipZodSchema, deleteStudentZodSchema, downloadApplicationCSVZodSchema, downloadStudentsCSVZodSchema, editAnnouncementZodSchema, endScholarshipZodSchema, forInterviewZodSchema, getAllAdminZodSchema, getAnnouncementByIdZodSchema, getAnnouncementZodSchema, getApplicationByIdZodSchema, getApplicationZodSchema, 
-    getFilterDataZodSchema, getScholarshipsByIdZodSchema, getScholarshipZodSchema, getStaffByIdZodSchema, getStaffLogsZodSchema, getStudentsByIdZodSchema, getStudentsZodSchema, renewalScholarshipZodSchema, searchAdminZodSchema, searchApplicationZodSchema, 
+    getFilterDataZodSchema, getFiltersCSVZodSchema, getScholarshipsByIdZodSchema, getScholarshipZodSchema, getStaffByIdZodSchema, getStaffLogsZodSchema, getStudentsByIdZodSchema, getStudentsZodSchema, renewalScholarshipZodSchema, searchAdminZodSchema, searchApplicationZodSchema, 
     searchStudentZodSchema, updateScholarshipZodSchema, 
     updateStudentAccountZodSchema,
     validateStaffZodSchema} from "../Zod/ZodSchemaAdminPost";
@@ -75,7 +75,7 @@ AdminPostRoutes.get("/getStudentsById", validate(getStudentsByIdZodSchema), getS
 AdminPostRoutes.get("/searchStudent", validate(searchStudentZodSchema), searchStudent)
 
 //CSV
-AdminPostRoutes.get("/getFiltersCSV", getFiltersCSV)
+AdminPostRoutes.get("/getFiltersCSV", validate(getFiltersCSVZodSchema), getFiltersCSV)
 AdminPostRoutes.get("/downloadApplicationCSV", validate(downloadApplicationCSVZodSchema), downloadApplicationCSV)
 AdminPostRoutes.get("/getFiltersStudentsCSV", getFiltersStudentsCSV)
 AdminPostRoutes.get("/downloadStudentsCSV", validate(downloadStudentsCSVZodSchema), downloadStudentsCSV)

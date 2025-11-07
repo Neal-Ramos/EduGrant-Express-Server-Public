@@ -375,6 +375,18 @@ export const searchStudentZodSchema = z.object({
 })
 export type searchStudentZodType = z.infer<typeof searchStudentZodSchema>
 
+export const getFiltersCSVZodSchema = z.object({
+  query: z.object({
+    scholarship: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
+    applicationStatus: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
+    studentInstitute: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
+    studentCourse: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
+    studentYear: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
+    studentSection: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
+  })
+})
+export type getFiltersCSVZodType = z.infer<typeof getFiltersCSVZodSchema>
+
 export const downloadApplicationCSVZodSchema = z.object({
   query: z.object({
     filters: toJSON().optional(),

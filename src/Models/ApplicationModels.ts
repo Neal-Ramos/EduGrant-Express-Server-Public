@@ -806,42 +806,80 @@ export const prismaBlockApplicationByApplicationId = async(applicationId: number
     })
     return block
 }
-export const prismaGetFiltersForApplicationsCSV = async (): Promise<{}> => {
-  const [scholarshipTitles, studentGroups, applicationGroups, providers] = await Promise.all([
+export const prismaGetFiltersForApplicationsCSV = async (
+    scholarship?: string[], applicationStatus?: string[], studentInstitute?: string[], studentCourse?: string[], studentYear?: string[], studentSection?: string[]
+): Promise<{}> => {
+  const [scholarshipTitles, applicationStatuses, institutes, courses, years, sections] = await Promise.all([
     prisma.scholarship.findMany({
       distinct: ['title'],
       select: { title: true },
     }),
-    prisma.student.groupBy({
-      by: ['course', 'year', 'section', 'institute'],
-    }),
-    prisma.application.groupBy({
-        by:['status']
-    }),
-    prisma.scholarship_Provider.findMany({
-        distinct: "name",
-        select:{
-            name:true
+    applicationStatus? prisma.application.groupBy({
+        by:["status"],
+        _count:{
+            _all: true
+        },
+        where:{
+            status: {in: applicationStatus},
+            Scholarship:{title: {in: scholarship}}
         }
-    })
+    }):[],
+    studentInstitute? prisma.student.groupBy({
+        by:["institute"],
+        _count:{
+            _all: true
+        },
+        where:{
+            institute: {in: studentInstitute},
+            Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
+        }
+    }):[],
+    studentCourse? prisma.student.groupBy({
+        by:["course"],
+        _count:{
+            _all: true
+        },
+        where:{
+            course: {in: studentCourse},
+            institute: {in: studentInstitute},
+            Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
+        }
+    }):[],
+    studentYear? prisma.student.groupBy({
+        by:["year"],
+        _count:{
+            _all: true
+        },
+        where:{
+            year: {in: studentYear},
+            course: {in: studentCourse},
+            institute: {in: studentInstitute},
+            Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
+        }
+    }):[],
+    studentSection? prisma.student.groupBy({
+        by:["section"],
+        _count:{
+            _all: true
+        },
+        where:{
+            section: {in: studentSection},
+            year: {in: studentYear},
+            course: {in: studentCourse},
+            institute: {in: studentInstitute},
+            Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
+        }
+    }):[],
   ]);
 
-  const courses = [...new Set(studentGroups.map(g => g.course))];
-  const years = [...new Set(studentGroups.map(g => g.year))];
-  const sections = [...new Set(studentGroups.map(g => g.section))];
-  const institutes = [...new Set(studentGroups.map(g => g.institute))];
-
-  const status = [...new Set(applicationGroups.map(g => g.status))]
-
   return {
-    scholarshipTitles: scholarshipTitles.map(f => f.title),
-    providers: providers.map(f => f.name),
-    course: courses,
-    year: years,
-    section: sections,
-    institute: institutes,
-    applicationStatus: status
-  };
+    scholarshipTitles: scholarshipTitles,
+    applicationStatuses: applicationStatuses.length? applicationStatuses:[],
+    institutes: institutes.length? institutes:[],
+    courses: courses.length? courses:[],
+    years: years.length? years:[],
+    sections: sections.length? sections:[],
+  }
 };
 export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?: {id: string, value: string[]}[]): Promise<object[]> =>{
     const records = await prisma.application.findMany({

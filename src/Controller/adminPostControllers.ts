@@ -4,6 +4,7 @@ import { filtersDataTypes } from "../Types/adminPostControllerTypes";
 import { DeleteSupabase, ResponseUploadSupabase, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase } from "../Config/Supabase";
 import { adminAddScholarshipsZodType, approveApplicationZodType, createAnnouncementZodType, declineApplicationZodType, deleteAdminZodType, deleteAnnouncementZodType, 
   deleteApplicationsZodType, deleteISPSU_StaffZodType, deleteScholarshipZodType, deleteStudentZodType, downloadApplicationCSVZodType, downloadStudentsCSVZodType, editAnnouncementZodType, endScholarshipZodType, forInterviewZondType, getAllAdminZodType, getAnnouncementByIdZodType, getAnnouncementZodType, getApplicationByIdZodType, getApplicationZodType, getFilterDataZodType, 
+  getFiltersCSVZodType, 
   getScholarshipsByIdZodType, getScholarshipZodType, getStaffByIdZodType, getStaffLogsZodType, getStudentsByIdZodType, getStudentsZodType, renewalScholarshipZodType, searchAdminZodType, searchApplicationZodType, searchStudentZodType, updateScholarshipZodType, 
   updateStudentAccountZodType,
   validateStaffZodType} from "../Zod/ZodSchemaAdminPost";
@@ -1411,6 +1412,7 @@ export const searchStudent = async(req: Request, res: Response, next: NextFuncti
 }
 export const getFiltersCSV = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
+    const {scholarship, applicationStatus, studentInstitute, studentCourse, studentYear, studentSection} = (req as Request &{validated: getFiltersCSVZodType}).validated.query
     const userId = Number(req.tokenPayload.accountId)
 
     const user = await prismaGetAccountById(userId)
@@ -1420,7 +1422,7 @@ export const getFiltersCSV = async(req: Request, res: Response, next: NextFuncti
         return
     }
 
-    const getFiltersForApplicationsCSV = await prismaGetFiltersForApplicationsCSV()
+    const getFiltersForApplicationsCSV = await prismaGetFiltersForApplicationsCSV(scholarship, applicationStatus, studentInstitute, studentCourse, studentYear, studentSection)
     const dataSelections = [ "status", "title", "name", "fName", "lName", "mName", "contactNumber", "gender", "address", "indigenous", "PWD", "institute", "course", "year", "section", "dateOfBirth", "schoolId", "email",
     ]
 

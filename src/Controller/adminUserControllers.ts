@@ -156,7 +156,7 @@ export const editStaffInfoAccount = async(req: Request, res: Response, next: Nex
 export const editStaffCredSendAuthCode = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
         const accountId = Number(req.tokenPayload.accountId)
-        const {newEmail, oldPass, newPass} = (req as Request &{validated: editStaffCredSendAuthCodeZodType}).validated.body
+        const {oldPass, newPass} = (req as Request &{validated: editStaffCredSendAuthCodeZodType}).validated.body
 
         const checkStaff = await prismaGetAccountById(accountId)
         if(!checkStaff){

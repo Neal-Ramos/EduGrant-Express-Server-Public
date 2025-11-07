@@ -99,11 +99,22 @@ export const adminCodeAuthentication = async (req: Request, res: Response, next:
 export const sendAuthCodeForgetPass = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
     const {email} = (req as Request & {validated: sendAuthCodeForgetPassZodType}).validated.body
+    const origin = "ISPSU_ForgetPassword"
 
     const checkAccount = await prismaCheckEmailExist(email)
     if(!checkAccount || checkAccount.role === "Student"){
       res.status(404).json({success: false, message: "Email does not Exist!"})
       return
+    }
+
+    const prevCode = await AuthCode.Find(email, origin)
+    if(prevCode){
+      const {validated} = await AuthCode.validate(prevCode.code, prevCode.owner, prevCode.origin)
+      if(validated){
+        const resendAvailableIn = (new Date(prevCode.dateCreated).getTime() - new Date().getTime()) / 1000
+        res.status(400).json({success: false, message: "Email Already Sent!", expiresAt: prevCode.dateExpiry, ttl: 120, resendAvailableIn})
+        return
+      }
     }
 
     const code = await GenerateCode(6)
@@ -114,7 +125,7 @@ export const sendAuthCodeForgetPass = async (req: Request, res: Response, next: 
         subject: "Change Password!",
         html:authHTML(code)
     }
-    const sendCode = await SendAuthCode(mailOptions, "ISPSU_ForgetPassword", checkAccount.email, code, expiresAt)
+    const sendCode = await SendAuthCode(mailOptions, origin, checkAccount.email, code, expiresAt)
     if(!sendCode.success){
         res.status(500).json({success: false, messagel: "Email Not Sent!"})
         return
