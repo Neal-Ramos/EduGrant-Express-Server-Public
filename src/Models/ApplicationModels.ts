@@ -885,12 +885,12 @@ export const prismaGetFiltersForApplicationsCSV = async (
   ]);
 
   return {
-    scholarshipTitles: scholarshipTitles.map(e => ({title: e.title, count: e._count})),
-    applicationStatuses: applicationStatuses.length? applicationStatuses.map(e => ({status: e.status, count: e._count})):[],
-    institutes: institutes.length? institutes.map(e => ({institute: e.institute, count: e._count})):[],
-    courses: courses.length? courses.map(e => ({course: e.course, count: e._count})):[],
-    years: years.length? years.map(e => ({year: e.year, count: e._count})):[],
-    sections: sections.length? sections.map(e => ({section: e.section, count: e._count})):[],
+    scholarshipTitles: scholarshipTitles.map(e => ({title: e.title, count: e._count._all})),
+    applicationStatuses: applicationStatuses.length? applicationStatuses.map(e => ({status: e.status, count: e._count._all})):[],
+    institutes: institutes.length? institutes.map(e => ({institute: e.institute, count: e._count._all})):[],
+    courses: courses.length? courses.map(e => ({course: e.course, count: e._count._all})):[],
+    years: years.length? years.map(e => ({year: e.year, count: e._count._all})):[],
+    sections: sections.length? sections.map(e => ({section: e.section, count: e._count._all})):[],
   }
 };
 export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?: {id: string, value: string[]}[]): Promise<object[]> =>{
