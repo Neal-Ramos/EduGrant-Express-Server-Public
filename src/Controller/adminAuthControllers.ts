@@ -112,7 +112,7 @@ export const sendAuthCodeForgetPass = async (req: Request, res: Response, next: 
       const {validated} = await AuthCode.validate(prevCode.code, prevCode.owner, prevCode.origin)
       if(validated){
         const resendAvailableIn = (new Date(prevCode.dateCreated).getTime() - new Date().getTime()) / 1000
-        res.status(400).json({success: false, message: "Email Already Sent!", expiresAt: prevCode.dateExpiry, ttl: 120, resendAvailableIn})
+        res.status(200).json({success: true, message: "Email Already Sent!", expiresAt: prevCode.dateExpiry, ttl: 120, resendAvailableIn})
         return
       }
     }

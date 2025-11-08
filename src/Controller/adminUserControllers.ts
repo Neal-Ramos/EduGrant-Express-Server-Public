@@ -156,6 +156,7 @@ export const editStaffInfoAccount = async(req: Request, res: Response, next: Nex
 export const editStaffCredSendAuthCode = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
         const accountId = Number(req.tokenPayload.accountId)
+        const origin = "ChangeLoginInfoStaff"
         const {oldPass, newPass} = (req as Request &{validated: editStaffCredSendAuthCodeZodType}).validated.body
 
         const checkStaff = await prismaGetAccountById(accountId)
@@ -181,6 +182,16 @@ export const editStaffCredSendAuthCode = async(req: Request, res: Response, next
             }
         }
 
+        const prevCode = await AuthCode.Find(checkStaff.email, origin)
+        if(prevCode){
+        const {validated} = await AuthCode.validate(prevCode.code, prevCode.owner, prevCode.origin)
+        if(validated){
+            const resendAvailableIn = (new Date(prevCode.dateCreated).getTime() - new Date().getTime()) / 1000
+            res.status(200).json({success: true, message: "Email Already Sent!", expiresAt: prevCode.dateExpiry, ttl: 120, resendAvailableIn})
+            return
+        }
+        }
+
         const code = await GenerateCode(6)
         const expiresAt = new Date(Date.now() + 2 * 60 * 1000)
         const DOMAIN = process.env.DOMAIN
@@ -191,7 +202,7 @@ export const editStaffCredSendAuthCode = async(req: Request, res: Response, next
             subject: "Change Login Info",
             html: authHTML(code)
         }
-        const send = await SendAuthCode(mailOptions, "ChangeLoginInfoStaff", checkStaff.email, code, expiresAt)
+        const send = await SendAuthCode(mailOptions, origin, checkStaff.email, code, expiresAt)
         if(!send.success){
             res.status(400).json({succes: false, message: send.message})
             return
