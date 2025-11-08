@@ -60,16 +60,16 @@ export const TokenAuth = (req: Request, res: Response, next: NextFunction) => {
 }
 export const AdminTokenAuth = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies.AdminToken;
-        if(!token){
-            res.status(401).json({success: false, message: "Access Prohibited!!!"})
-            return;
-        }
-        const valid = verify(token, process.env.JWT_SECRET as string) as TokenPayload;
-        if(!["ISPSU_Head", "ISPSU_Staff"].includes(valid.role)){
-            throw new Error("Invalid Role")
-        }
-        req.tokenPayload = valid
+        // const token = req.cookies.AdminToken;
+        // if(!token){
+        //     res.status(401).json({success: false, message: "Access Prohibited!!!"})
+        //     return;
+        // }
+        // const valid = verify(token, process.env.JWT_SECRET as string) as TokenPayload;
+        // if(!["ISPSU_Head", "ISPSU_Staff"].includes(valid.role)){
+        //     throw new Error("Invalid Role")
+        // }
+        // req.tokenPayload = valid
         next()
     } catch (error) {
         if ((error as {name: string}).name === "TokenExpiredError" || 

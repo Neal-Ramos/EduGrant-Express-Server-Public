@@ -807,14 +807,19 @@ export const prismaBlockApplicationByApplicationId = async(applicationId: number
     return block
 }
 export const prismaGetFiltersForApplicationsCSV = async (
-    scholarship?: string[], applicationStatus?: string[], studentInstitute?: string[], studentCourse?: string[], studentYear?: string[], studentSection?: string[]
+    scholarship?: string[], 
+    applicationStatus?: string[], 
+    studentInstitute?: string[], 
+    studentCourse?: string[], 
+    studentYear?: string[], 
+    studentSection?: string[]
 ): Promise<{}> => {
   const [scholarshipTitles, applicationStatuses, institutes, courses, years, sections] = await Promise.all([
     prisma.scholarship.findMany({
       distinct: ['title'],
       select: { title: true },
     }),
-    applicationStatus? prisma.application.groupBy({
+    scholarship? prisma.application.groupBy({
         by:["status"],
         _count:{
             _all: true
@@ -824,7 +829,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
             Scholarship:{title: {in: scholarship}}
         }
     }):[],
-    studentInstitute? prisma.student.groupBy({
+    applicationStatus? prisma.student.groupBy({
         by:["institute"],
         _count:{
             _all: true
@@ -834,7 +839,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
             Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
         }
     }):[],
-    studentCourse? prisma.student.groupBy({
+    studentInstitute? prisma.student.groupBy({
         by:["course"],
         _count:{
             _all: true
@@ -845,7 +850,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
             Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
         }
     }):[],
-    studentYear? prisma.student.groupBy({
+    studentCourse? prisma.student.groupBy({
         by:["year"],
         _count:{
             _all: true
@@ -857,7 +862,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
             Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
         }
     }):[],
-    studentSection? prisma.student.groupBy({
+    studentYear? prisma.student.groupBy({
         by:["section"],
         _count:{
             _all: true

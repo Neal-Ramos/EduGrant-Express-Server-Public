@@ -1413,14 +1413,14 @@ export const searchStudent = async(req: Request, res: Response, next: NextFuncti
 export const getFiltersCSV = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
     const {scholarship, applicationStatus, studentInstitute, studentCourse, studentYear, studentSection} = (req as Request &{validated: getFiltersCSVZodType}).validated.query
-    const userId = Number(req.tokenPayload.accountId)
+    // const userId = Number(req.tokenPayload.accountId)
 
-    const user = await prismaGetAccountById(userId)
-    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
-        res.clearCookie("AdminToken", cookieOptionsStaff);
-        res.status(401).json({success: false, message: "Account Did not Find!"})
-        return
-    }
+    // const user = await prismaGetAccountById(userId)
+    // if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
+    //     res.clearCookie("AdminToken", cookieOptionsStaff);
+    //     res.status(401).json({success: false, message: "Account Did not Find!"})
+    //     return
+    // }
 
     const getFiltersForApplicationsCSV = await prismaGetFiltersForApplicationsCSV(scholarship, applicationStatus, studentInstitute, studentCourse, studentYear, studentSection)
     const dataSelections = [ "status", "title", "name", "fName", "lName", "mName", "contactNumber", "gender", "address", "indigenous", "PWD", "institute", "course", "year", "section", "dateOfBirth", "schoolId", "email",

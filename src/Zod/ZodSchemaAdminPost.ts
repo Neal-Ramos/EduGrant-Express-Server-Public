@@ -377,7 +377,7 @@ export type searchStudentZodType = z.infer<typeof searchStudentZodSchema>
 
 export const getFiltersCSVZodSchema = z.object({
   query: z.object({
-    scholarship: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}),
+    scholarship: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
     applicationStatus: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
     studentInstitute: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
     studentCourse: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item === "string"), {message: "Must be an Array of Strings"}).optional(),
