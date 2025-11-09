@@ -623,6 +623,10 @@ export const prismaEndScholarship = async(scholarshipId: number): Promise<{ended
 }
 export const prismaStudentCountsInToken = async(accountId?: number): 
 Promise<{availableScholarshipCount: number, applicationCount: number, announcementCount: number, ISPSU_StaffCount: number, applicationCountPerStatus: Record<string, number>, applicationHistoryCount: number}>=>{
+    const now = new Date()
+    const firstDate = new Date(now.getFullYear(), now.getMonth(), 1)
+    const lastDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    
     const [availableScholarshipCount, applicationCount, announcementCount, ISPSU_StaffCount, applicationGroupStatusCount, applicationHistoryCount] = await Promise.all([
         prisma.scholarship.count({
             where:{
@@ -634,17 +638,20 @@ Promise<{availableScholarshipCount: number, applicationCount: number, announceme
                             {phase: {gt: 1}},
                             {...(accountId? {Application: {some: {ownerId: accountId}}}:{})}
                         ]
-                    }
+                    },
                 ]
             }
         }),
         prisma.application.count({
             where:{
-                ...(accountId? {ownerId: accountId}:{})
+                ...(accountId? {ownerId: accountId}:{}),
+                dateCreated: {gte: firstDate, lte: lastDate}
             }
         }),
         prisma.announcement.count({
-            
+            where:{
+                dateCreated: {gte: firstDate, lte: lastDate}
+            }
         }),
         prisma.iSPSU_Staff.count({
 
@@ -652,7 +659,8 @@ Promise<{availableScholarshipCount: number, applicationCount: number, announceme
         prisma.application.groupBy({
             by:["status"],
             where:{
-                ownerId: accountId
+                ownerId: accountId,
+                dateCreated: {gte: firstDate, lte: lastDate}
             },
             _count:{
                 status: true
@@ -662,7 +670,8 @@ Promise<{availableScholarshipCount: number, applicationCount: number, announceme
             where:{
                 Scholarship:{
                     ended: true
-                }
+                },
+                dateCreated: {gte: firstDate, lte: lastDate}
             }
         })
     ])

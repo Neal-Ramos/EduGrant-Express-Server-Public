@@ -274,10 +274,9 @@ export const getDashboard = async(req: Request, res: Response, next: NextFunctio
 }
 export const headDashboard = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    // const {accountId} = (req as Request &{validated: headDashboardZodType}).validated.query
-    const token = (req as Request &{tokenPayload: TokenPayload}).tokenPayload
+    const {accountId} = (req as Request &{tokenPayload: TokenPayload}).tokenPayload
 
-    const checkAccount = await prismaGetAccountById(token.accountId)
+    const checkAccount = await prismaGetAccountById(accountId)
     if(!checkAccount){
       res.status(401).json({success: false, message: "Account Did not Find!"})
       return

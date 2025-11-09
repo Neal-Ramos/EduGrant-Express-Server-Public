@@ -896,15 +896,15 @@ export const prismaGetFiltersForApplicationsCSV = async (
 export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?: {id: string, value: string[]}[]): Promise<object[]> =>{
     const records = await prisma.application.findMany({
         where:{
-            Scholarship:{title: {in: (filters?.find(f => f.id == "title")?.value)}},
+            Scholarship:{title: {in: (filters?.find(f => f.id == "scholarship")?.value)}},
             Student:{
-                course: {in:(filters?.find(f => f.id == "course")?.value)},
-                year: {in:(filters?.find(f => f.id == "year")?.value)},
-                section: {in:(filters?.find(f => f.id == "section")?.value)},
-                institute: {in:(filters?.find(f => f.id == "institute")?.value)},
+                course: {in:(filters?.find(f => f.id == "studentCourse")?.value)},
+                year: {in:(filters?.find(f => f.id == "studentYear")?.value)},
+                section: {in:(filters?.find(f => f.id == "studentSection")?.value)},
+                institute: {in:(filters?.find(f => f.id == "studentInstitute")?.value)},
                 gender: {in:(filters?.find(f => f.id == "gender")?.value)}
             },
-            status:{in: filters?.find(f => f.id === "status")?.value}
+            status:{in: filters?.find(f => f.id === "applicationStatus")?.value}
         },
         select: {
             applicationId: true,
