@@ -895,6 +895,9 @@ export const prismaGetFiltersForApplicationsCSV = async (
 };
 export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?: {id: string, value: string[]}[]): Promise<object[]> =>{
     const records = await prisma.application.findMany({
+        orderBy:{
+            Student: {lName: "asc"}
+        },
         where:{
             Scholarship:{title: {in: (filters?.find(f => f.id == "scholarship")?.value)}},
             Student:{
@@ -949,7 +952,11 @@ export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?
         }
     })
     const clean = (obj: Record<string, any>) => Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
-    const CSV = records.map(r => clean({
+    let Number = 0
+    const CSV = records.map(r => {
+        Number++
+        return clean({
+            ["No."]: Number,
             ["Scholarship Title"]: r.Scholarship?.title,
             ["Scholarship Provider"]:r.Scholarship?.Scholarship_Provider?.name,
             schoolId: r.Student.Account.schoolId,
@@ -969,7 +976,7 @@ export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?
             ["Birth Date"]: r.Student.dateOfBirth,
             Status: r.status
         })
-    )
+    })
 
     return CSV
 }
