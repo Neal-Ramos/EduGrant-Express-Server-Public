@@ -959,10 +959,10 @@ export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?
             ["No."]: Number,
             ["Scholarship Title"]: r.Scholarship?.title,
             ["Scholarship Provider"]:r.Scholarship?.Scholarship_Provider?.name,
-            schoolId: r.Student.Account.schoolId,
-            email: r.Student.Account.email,
-            ["First Name"]: r.Student.fName,
+            ["Student ID"]: r.Student.Account.schoolId,
+            ["Student Email"]: r.Student.Account.email,
             ["Last Name"]: r.Student.lName,
+            ["First Name"]: r.Student.fName,
             ["Middle Name"]: r.Student.mName,
             ["Contact Number"]: r.Student.contactNumber,
             Gender: r.Student.gender,
@@ -970,11 +970,11 @@ export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?
             Indigenous: dataSelections.includes("indigenous")?r.Student.indigenous || "No":null,
             ['Person With Disability']: dataSelections.includes("PWD")?r.Student.PWD || "No":null,
             Institute: r.Student.institute,
-            course: r.Student.course,
+            Course: r.Student.course,
             Year: r.Student.year,
             Section: r.Student.section,
             ["Birth Date"]: r.Student.dateOfBirth,
-            Status: r.status
+            ["Application Status"]: r.status
         })
     })
 

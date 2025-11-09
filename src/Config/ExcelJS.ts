@@ -36,15 +36,15 @@ export const ExportToExcel = async(record: {}[], fileName: string, res: Response
     
     sheet.eachRow((row, rowNumber) => {
         row.eachCell(cell => {
-        cell.border = {
-            top: { style: "thin" },
-            left: { style: "thin" },
-            bottom: { style: "thin" },
-            right: { style: "thin" },
-        };
-        cell.alignment = { horizontal: "left", vertical: "middle" };
+            cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+            cell.alignment = { horizontal: "center", vertical: "middle" };
         });
-
+        
         // Optional: Add alternate background color for even rows
         if (rowNumber % 2 === 0 && rowNumber !== 1) {
         row.eachCell(cell => {
