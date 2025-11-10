@@ -102,8 +102,8 @@ export const sendAuthCodeForgetPass = async (req: Request, res: Response, next: 
     const origin = "ISPSU_ForgetPassword"
 
     const checkAccount = await prismaCheckEmailExist(email)
-    if(!checkAccount || checkAccount.role === "Student"){
-      res.status(404).json({success: false, message: "Email does not Exist!"})
+    if(!checkAccount || !["ISPSU_Head", "ISPSU_Staff"].includes(checkAccount.role)){
+      res.status(400).json({success: false, message: "Email does not Exist!"})
       return
     }
 
@@ -140,7 +140,7 @@ export const forgetPass = async (req: Request, res: Response, next: NextFunction
     const {email, newPassword, code} = (req as Request & {validated: forgetPassZodType}).validated.body
 
     const checkAccount = await prismaCheckEmailExist(email)
-    if(!checkAccount || checkAccount.role === "Student"){
+    if(!checkAccount || !["ISPSU_Head", "ISPSU_Staff"].includes(checkAccount.role)){
       res.status(400).json({success: false, message: "Email does not Exist!"})
       return
     }
