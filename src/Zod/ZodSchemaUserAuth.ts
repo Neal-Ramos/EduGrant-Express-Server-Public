@@ -39,7 +39,7 @@ export const sendAuthCodeRegisterZodSchema = z.object({
     studentEmail: z.email().trim(),
     studentContact: z.string().min(10).trim(),
     studentFirstName: z.string().min(1).trim(),
-    studentMiddleName: z.string().trim().optional(),
+    studentMiddleName: z.string().min(1).trim().optional(),
     studentLastName: z.string().min(1).trim(),
     studentGender: z.string().min(1).trim(),
     studentAddress: z.string().min(1).trim(),
