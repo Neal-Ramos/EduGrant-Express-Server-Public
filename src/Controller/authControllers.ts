@@ -178,6 +178,12 @@ export const sendAuthCodeLogin = async(req: Request, res: Response, next: NextFu
 export const forgotPassword = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
         const {email, newPassword, code} = (req as Request & {validated: forgotPasswordZodType}).validated.body
+        const Student = await prismaCheckEmailExist(email)
+        if(!Student || Student.role !== "Student"){
+            res.status(400).json({success: false, message: "Email does not Exist!"})
+            return
+        }
+
         const Code = await AuthCode.validate(code, email, "forgotPassword")
         if(!Code.validated || !Code.AuthCode){
             res.status(400).json({success: false, message: Code.message})
@@ -201,6 +207,11 @@ export const forgotPasswordSendAuthCode = async(req: Request, res: Response, nex
     try {
         const {email} = (req as Request & {validated: forgotPasswordSendAuthCodeZodType}).validated.body
         const origin = "forgotPassword"
+        const checkEmail = await prismaCheckEmailExist(email)
+        if(!checkEmail || checkEmail.role !== "Student"){
+            res.status(400).json({success: false, message: "Account Did Not Found!"})
+            return
+        }
         const Code = await AuthCode.Find(email, origin)
         if(Code){
             const {validated} = await AuthCode.validate(Code.code, email, origin)
@@ -209,11 +220,6 @@ export const forgotPasswordSendAuthCode = async(req: Request, res: Response, nex
                 res.status(200).json({success: true, message: "Email Already Sent!", expiresAt: Code.dateExpiry, ttl: 120, resendAvailableIn})
                 return
             }
-        }
-        const checkEmail = await prismaCheckEmailExist(email)
-        if(!checkEmail || checkEmail.role !== "Student"){
-            res.status(400).json({success: false, message: "Account Did Not Found!"})
-            return
         }
         const code = await GenerateCode(6)
         const expiresAt = new Date(Date.now() + (2 * 60 * 1000))

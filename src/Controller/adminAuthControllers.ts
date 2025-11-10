@@ -140,8 +140,8 @@ export const forgetPass = async (req: Request, res: Response, next: NextFunction
     const {email, newPassword, code} = (req as Request & {validated: forgetPassZodType}).validated.body
 
     const checkAccount = await prismaCheckEmailExist(email)
-    if(!checkAccount || checkAccount.role !== "ISPSU_Head" && checkAccount.role === "ISPSU_Staff"){
-      res.status(404).json({success: false, message: "Email does not Exist!"})
+    if(!checkAccount || checkAccount.role === "Student"){
+      res.status(400).json({success: false, message: "Email does not Exist!"})
       return
     }
 
