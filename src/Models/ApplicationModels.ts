@@ -973,7 +973,7 @@ export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?
             Course: r.Student.course,
             Year: r.Student.year,
             Section: r.Student.section,
-            ["Birth Date"]: r.Student.dateOfBirth,
+            ["Birth Date"]: r.Student.dateOfBirth? (typeof r.Student.dateOfBirth === "string"? r.Student.dateOfBirth : new Date(r.Student.dateOfBirth).toISOString().split("T")[0]):null,
             ["Application Status"]: r.status
         })
     })
