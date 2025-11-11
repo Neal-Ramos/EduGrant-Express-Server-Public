@@ -5,8 +5,8 @@ import { forgotPasswordSendAuthCodeZodSchema, forgotPasswordZodSchema, loginAcco
 const UserAuthRoutes = Router();
 
 UserAuthRoutes.post("/registerAccount", validate(registerAccountZodSchema), registerAccount);
-UserAuthRoutes.post("/loginAccounts", validate(loginAccountsZodSchema), loginAccounts);
 UserAuthRoutes.post("/sendAuthCodeRegister", validate(sendAuthCodeRegisterZodSchema), sendAuthCodeRegister); 
+UserAuthRoutes.post("/loginAccounts", validate(loginAccountsZodSchema), loginAccounts);
 UserAuthRoutes.post("/sendAuthCodeLogin", validate(sendAuthCodeLoginZodSchema), sendAuthCodeLogin)
 UserAuthRoutes.post("/forgotPassword", validate(forgotPasswordZodSchema), forgotPassword)
 UserAuthRoutes.post("/forgotPasswordSendAuthCode", validate(forgotPasswordSendAuthCodeZodSchema), forgotPasswordSendAuthCode)

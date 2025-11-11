@@ -76,7 +76,6 @@ export type approveApplicationZodType = z.infer<
 export const forInterviewZodSchema = z.object({
   body: z.object({
     applicationId: toInt(),
-    accountId: toInt(),
     scholarshipId: toInt(),
     rejectMessage: toJSON()
   })
