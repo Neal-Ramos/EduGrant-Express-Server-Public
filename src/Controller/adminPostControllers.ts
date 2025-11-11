@@ -33,6 +33,7 @@ import { error } from "console";
 import { sendApplicationUpdate } from "../Config/Resend";
 import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
 import { createAccountZodType } from "../Zod/ZodSchemanAdminAuth";
+import { DenormalizeApplication } from "../Helper/ApplicationHelper";
 
 
 export const getAllAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
@@ -666,27 +667,8 @@ export const getApplicationById = async (req: Request, res: Response, next: Next
       res.status(404).json({success: false, message: "Data Did not found"})
       return
     }
-    const k: any = {}
-    for(const [key, value] of Object.entries(application.submittedDocuments as RecordApplicationFilesTypes)){
-      k[key] = {
-        documents : value,
-        Application_Decision : application.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
-        Interview_Decision : application.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
-      }
-    }
-    res.status(200).json({success: true, data: {
-        applicationId: application.applicationId,
-        scholarshipId: application.scholarshipId,
-        ownerId: application.ownerId,
-        status: application.status,
-        supabasePath: application.supabasePath,
-        submittedDocuments: k,
-        Application_Decision: application.Application_Decision,
-        Interview_Decision: application.Interview_Decision,
-        Student: application.Student,
-        Scholarship: application.Scholarship,
-        dateCreated: application.dateCreated,
-    }})
+    
+    res.status(200).json({success: true, data: DenormalizeApplication(application)})
   } catch (error) {
     next(error)
   }
@@ -806,32 +788,11 @@ export const approveApplication = async (req: Request, res: Response, next: Next
       html:ApproveHTML(applicantName, applicantStudentId, applicantEmail),
     }
     const inGov = checkApproveGov? true:false
-    const k: any = {}
-    for(const [key, value] of Object.entries(Application.submittedDocuments as RecordApplicationFilesTypes)){
-        k[key] = {
-            documents : value,
-            Application_Decision : Application.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
-            Interview_Decision : Application.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
-        }
-    }
-    const applicationFormat = {
-        applicationId: Application.applicationId,
-        scholarshipId: Application.scholarshipId,
-        ownerId: Application.ownerId,
-        status: Application.status,
-        supabasePath: Application.supabasePath,
-        submittedDocuments: k,
-        Application_Decision: Application.Application_Decision,
-        Interview_Decision: Application.Interview_Decision,
-        Student: Application.Student,
-        Scholarship: Application.Scholarship,
-        dateCreated: Application.dateCreated,
-    }
 
     sendApplicationUpdate(mailOptions)
-    res.status(200).json({success: true, message: "Application Approved!", approvedApplication: applicationFormat, BlockedApplications, notification: notification})
+    res.status(200).json({success: true, message: "Application Approved!", approvedApplication: DenormalizeApplication(Application), BlockedApplications, notification: notification})
     io.to(["ISPSU_Staff", "ISPSU_Head", checkApplication.ownerId.toString()]).emit("approveApplication", {
-      approvedApplication: applicationFormat, BlockedApplications, notification: notification
+      approvedApplication: DenormalizeApplication(Application), BlockedApplications, notification: notification
     })
   } catch (error: any) {
     if(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034"){
@@ -895,31 +856,10 @@ export const forInterview = async (req: Request, res: Response, next: NextFuncti
 
     const checkApproveGov = await prismaCheckApproveGov(checkApplication.ownerId)
     const inGov = checkApproveGov? true:false
-    const k: any = {}
-    for(const [key, value] of Object.entries(interviewApplication.submittedDocuments as RecordApplicationFilesTypes)){
-        k[key] = {
-            documents : value,
-            Application_Decision : interviewApplication.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
-            Interview_Decision : interviewApplication.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
-        }
-    }
-    const applicationFormat = {
-        applicationId: interviewApplication.applicationId,
-        scholarshipId: interviewApplication.scholarshipId,
-        ownerId: interviewApplication.ownerId,
-        status: interviewApplication.status,
-        supabasePath: interviewApplication.supabasePath,
-        submittedDocuments: k,
-        Application_Decision: interviewApplication.Application_Decision,
-        Interview_Decision: interviewApplication.Interview_Decision,
-        Student: interviewApplication.Student,
-        Scholarship: interviewApplication.Scholarship,
-        dateCreated: interviewApplication.dateCreated,
-    }
 
     sendApplicationUpdate(mailOptions)
-    res.status(200).json({success: true, message: "Application Is now For Interview!", interviewedApplication: applicationFormat, notification: notification})
-    io.to(["ISPSU_Staff", "ISPSU_Head", checkApplication.Student.studentId.toString()]).emit("forInterview", {interviewApplication: applicationFormat, notification: notification})
+    res.status(200).json({success: true, message: "Application Is now For Interview!", interviewedApplication: DenormalizeApplication(interviewApplication), notification: notification, inGov})
+    io.to(["ISPSU_Staff", "ISPSU_Head", checkApplication.Student.studentId.toString()]).emit("forInterview", {interviewApplication: DenormalizeApplication(interviewApplication), notification: notification, inGov})
   } catch (error) {
     if(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034"){
       res.status(400).json({success: false, message: "This Application Has Been Processed!"})
@@ -978,31 +918,10 @@ export const declineApplication = async (req: Request, res: Response, next: Next
 
     const checkApproveGov = await prismaCheckApproveGov(checkApplication.ownerId)
     const inGov = checkApproveGov? true:false
-    const k: any = {}
-    for(const [key, value] of Object.entries(declineApplication.submittedDocuments as RecordApplicationFilesTypes)){
-        k[key] = {
-            documents : value,
-            Application_Decision : declineApplication.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
-            Interview_Decision : declineApplication.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
-        }
-    }
-    const applicationFormat = {
-        applicationId: declineApplication.applicationId,
-        scholarshipId: declineApplication.scholarshipId,
-        ownerId: declineApplication.ownerId,
-        status: declineApplication.status,
-        supabasePath: declineApplication.supabasePath,
-        submittedDocuments: k,
-        Application_Decision: declineApplication.Application_Decision,
-        Interview_Decision: declineApplication.Interview_Decision,
-        Student: declineApplication.Student,
-        Scholarship: declineApplication.Scholarship,
-        dateCreated: declineApplication.dateCreated,
-    }
 
     sendApplicationUpdate(mailOptions)
-    res.status(200).json({success: true, message: "Application Declined!", declinedApplication: applicationFormat, inGov})
-    io.to(["ISPSU_Staff", "ISPSU_Head", checkApplication.Student.studentId.toString()]).emit("declineApplication", {declineApplication:applicationFormat, notification: notification, inGov})
+    res.status(200).json({success: true, message: "Application Declined!", declinedApplication: DenormalizeApplication(declineApplication), inGov})
+    io.to(["ISPSU_Staff", "ISPSU_Head", checkApplication.Student.studentId.toString()]).emit("declineApplication", {declineApplication:DenormalizeApplication(declineApplication), notification: notification, inGov})
   } catch (error) {
     if(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034"){
       res.status(400).json({success: false, message: "This Application Has Been Processed!"})

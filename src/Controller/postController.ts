@@ -11,6 +11,7 @@ import { DocumentEntry, RecordApplicationFilesTypes, RecordDocumentEntry } from 
 import { cookieOptionsStudent } from "../Config/TokenAuth";
 import { normalizeString } from "../Config/normalizeString";
 import { io } from "..";
+import { DenormalizeApplication } from "../Helper/ApplicationHelper";
 
 export const getAllScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
@@ -166,29 +167,9 @@ export const applyScholarship = async (req: Request, res: Response, next: NextFu
             return;
         }
         const inGov = checkAccount.Student?.Application.find(f => f.Scholarship?.type === "government")? true:false
-        const k: any = {}
-        for(const [key, value] of Object.entries(insertApplication.submittedDocuments as RecordApplicationFilesTypes)){
-            k[key] = {
-                documents : value,
-                Application_Decision : insertApplication.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
-                Interview_Decision : insertApplication.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
-            }
-        }
-        const newApplication = {
-            applicationId: insertApplication.applicationId,
-            scholarshipId: insertApplication.scholarshipId,
-            ownerId: insertApplication.ownerId,
-            status: insertApplication.status,
-            supabasePath: insertApplication.supabasePath,
-            submittedDocuments: k,
-            Application_Decision: insertApplication.Application_Decision,
-            Interview_Decision: insertApplication.Interview_Decision,
-            Student: insertApplication.Student,
-            Scholarship: insertApplication.Scholarship,
-            dateCreated: insertApplication.dateCreated,
-        }
-        res.status(200).json({success:true, inGov, newApplication})
-        io.to(["ISPSU_Head", "ISPSU_Staff", insertApplication.ownerId.toString()]).emit("applyScholarship", {newApplication, inGov, success: true})
+        
+        res.status(200).json({success:true, inGov, newApplication: DenormalizeApplication(insertApplication)})
+        io.to(["ISPSU_Head", "ISPSU_Staff", insertApplication.ownerId.toString()]).emit("applyScholarship", {newApplication: DenormalizeApplication(insertApplication), inGov, success: true})
     } catch (error) {
         next(error)
     }
@@ -468,28 +449,8 @@ export const getStudentApplicationById = async (req: Request, res: Response, nex
             return
         }
         const inGov = checkAccount.Student?.Application.find(f => f.Scholarship?.type === "government")? true:false
-        const k: any = {}
-        for(const [key, value] of Object.entries(application.submittedDocuments as RecordApplicationFilesTypes)){
-            k[key] = {
-                documents : value,
-                Application_Decision : application.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
-                Interview_Decision : application.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
-            }
-        }
 
-        res.status(200).json({success: true, inGov, application:{
-            applicationId: application.applicationId,
-            scholarshipId: application.scholarshipId,
-            ownerId: application.ownerId,
-            status: application.status,
-            supabasePath: application.supabasePath,
-            submittedDocuments: k,
-            Application_Decision: application.Application_Decision,
-            Interview_Decision: application.Interview_Decision,
-            Student: application.Student,
-            Scholarship: application.Scholarship,
-            dateCreated: application.dateCreated,
-        }})
+        res.status(200).json({success: true, inGov, application:DenormalizeApplication(application)})
     } catch (error) {
         next(error)
     }

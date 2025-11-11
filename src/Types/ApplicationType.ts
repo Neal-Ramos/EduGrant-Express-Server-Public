@@ -1,6 +1,13 @@
 import { Prisma } from "@prisma/client"
 
-
+export type DenormalizeApplicationType = Prisma.ApplicationGetPayload<{
+    include:{
+        Application_Decision: true,
+        Interview_Decision: true,
+        Scholarship: true,
+        Student:true
+    }
+}>
 export type ApplicationWithRelation = Prisma.ApplicationGetPayload<{
     include:{
         Application_Decision: true,

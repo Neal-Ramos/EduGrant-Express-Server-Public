@@ -16,6 +16,7 @@ import { AuthCode } from "../Models/Auth_CodeModels";
 import { cookieOptionsStudent } from "../Config/TokenAuth";
 import { error } from "console";
 import { io } from "..";
+import { DenormalizeApplication } from "../Helper/ApplicationHelper";
 
 export const logoutUser = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
     try {
@@ -133,40 +134,9 @@ export const updateApplication = async (req: Request, res: Response, next: NextF
             await SupabaseDeletePrivateFile(newPaths).catch(error => console.log(error))
             return
         }
-        const k: any = {}
-        for(const [key, value] of Object.entries(application.submittedDocuments as RecordApplicationFilesTypes)){
-        k[key] = {
-            documents : value,
-            Application_Decision : application.Application_Decision.find(f => `phase-${f.scholarshipPhase}` === key),
-            Interview_Decision : application.Interview_Decision.find(f => `phase-${f.scholarshipPhase}` === key)
-        }
-        }
-        res.status(200).json({success: true, updatedApplication: {
-            applicationId: application.applicationId,
-            scholarshipId: application.scholarshipId,
-            ownerId: application.ownerId,
-            status: application.status,
-            supabasePath: application.supabasePath,
-            submittedDocuments: k,
-            Application_Decision: application.Application_Decision,
-            Interview_Decision: application.Interview_Decision,
-            Student: application.Student,
-            Scholarship: application.Scholarship,
-            dateCreated: application.dateCreated,
-        }})
-        io.emit("updateApplication", {updatedApplication:{
-            applicationId: application.applicationId,
-            scholarshipId: application.scholarshipId,
-            ownerId: application.ownerId,
-            status: application.status,
-            supabasePath: application.supabasePath,
-            submittedDocuments: k,
-            Application_Decision: application.Application_Decision,
-            Interview_Decision: application.Interview_Decision,
-            Student: application.Student,
-            Scholarship: application.Scholarship,
-            dateCreated: application.dateCreated,
-        }})
+        
+        res.status(200).json({success: true, updatedApplication: DenormalizeApplication(application)})
+        io.emit("updateApplication", {updatedApplication:DenormalizeApplication(application)})
         await SupabaseDeletePrivateFile(prevPaths).catch(error => console.log(error))
     } catch (error) {
         next(error)
