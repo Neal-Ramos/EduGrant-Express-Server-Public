@@ -1,20 +1,11 @@
 import { Application, Prisma, PrismaClient, Student_Notification } from "@prisma/client";
 import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
 import { prismaCreateStaffLog } from "./Staff_LogsModels";
+import { ApplicationWithScholarshipType, prismaAcceptForInterviewType, prismaApproveApplicationType, prismaCreateApplicationType, prismaDeclineApplicationType, prismaGetApplicationType } from "../Types/ApplicationType";
 
 const prisma = new PrismaClient();
 
-type ApplicationWithRelation = Prisma.ApplicationGetPayload<{
-    include:{Student: true, Scholarship: true}
-}>
-
-type ApplicationWithStudentAndScholarship = Prisma.ApplicationGetPayload<{
-    include: { Student: true , Scholarship: true }
-}>
-type prismaGetApplication = Prisma.ApplicationGetPayload<{
-    include:{Student: {include:{Account: {select:{accountId: true, schoolId: true, email: true, role: true}}}}, Scholarship: true, Application_Decision:true, Interview_Decision: true}
-}>
-export const prismaGetApplication = async (applicationId: number): Promise<prismaGetApplication | null> => {
+export const prismaGetApplication = async (applicationId: number): Promise<prismaGetApplicationType | null> => {
     const application = await prisma.application.findUnique({
         where: { applicationId: applicationId },
         include:{
@@ -222,8 +213,8 @@ export const prismaSearchApplication = async(search?: string, status?: string, s
         })
         return transac;
 }
-type ApplicationWithScholarship = Prisma.ApplicationGetPayload<{include: {Scholarship: true}}>
-export const prismaCheckApproveGov = async(accountId: number): Promise<ApplicationWithScholarship|null> => {
+
+export const prismaCheckApproveGov = async(accountId: number): Promise<ApplicationWithScholarshipType|null> => {
     const applications = await prisma.application.findFirst({
         where:{
             ownerId: accountId,
@@ -295,16 +286,8 @@ export const prismaGetApplicationPath = async(applicationId: number[]): Promise<
     });
     return applicationPath;
 }
-type prismaApproveApplication = Prisma.ApplicationGetPayload<{
-    include:{
-        Student: true,
-        Scholarship: true,
-        Application_Decision: {include: {ISPSU_Staff: true}},
-        Interview_Decision: {include: {ISPSU_Staff: true}}
-    }
-}>
 export const prismaApproveApplication = async (applicationId: number,accountId: number, rejectMessage: {}, scholarshipPhase: number): 
-Promise<{Application: prismaApproveApplication, BlockedApplications: Application[], notification: Student_Notification}> => {
+Promise<{Application: prismaApproveApplicationType, BlockedApplications: Application[], notification: Student_Notification}> => {
     const transac  = await prisma.$transaction(async (tx) => {
         const approveApplication = await tx.application.update({
             where:{
@@ -435,57 +418,8 @@ Promise<{Application: prismaApproveApplication, BlockedApplications: Application
     
     return {Application: transac.approveApplication, BlockedApplications, notification: transac.notification};
 }
-type prismaAcceptForInterview = Prisma.ApplicationGetPayload<{
-    include:{
-        Student:{
-            include:{
-                Account:{
-                    select:{
-                        email: true,
-                        schoolId: true
-                    }
-                }
-            }
-        },
-        Scholarship:{
-            include:{
-                Scholarship_Provider: {
-                    select:{
-                        name:true
-                    }
-                }
-            }
-        },
-        Interview_Decision: {
-            include:{
-                ISPSU_Staff:{
-                    include:{
-                        Account:{
-                            select:{
-                                email:true
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        Application_Decision: {
-            include:{
-                ISPSU_Staff:{
-                    include:{
-                        Account:{
-                            select:{
-                                email:true
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}>
 export const prismaAcceptForInterview = async (applicationId: number,accountId: number, rejectMessage: {}, scholarshipPhase: number): 
-Promise<{interviewApplication: prismaAcceptForInterview, notification: Student_Notification}> => {
+Promise<{interviewApplication: prismaAcceptForInterviewType, notification: Student_Notification}> => {
     const transac = await prisma.$transaction(async(tx)=> {
         const interviewApplication = await tx.application.update({
             where:{
@@ -576,25 +510,8 @@ Promise<{interviewApplication: prismaAcceptForInterview, notification: Student_N
     
     return transac;
 }
-type prismaDeclineApplication = Prisma.ApplicationGetPayload<{
-    include:{
-        Student:{
-            include:{
-                Account:{
-                    select:{
-                        email:true,
-                        schoolId:true
-                    }
-                }
-            }
-        },
-        Scholarship:{include: {Scholarship_Provider: {select:{name:true}}}},
-        Application_Decision: {include: {ISPSU_Staff: true}},
-        Interview_Decision: {include: {ISPSU_Staff: true}}
-    }
-}>
 export const prismaDeclineApplication = async(applicationId: number, accountId: number, rejectMessage: {}, scholarshipPhase: number): 
-Promise<{declineApplication: prismaDeclineApplication, notification: Student_Notification}> => {
+Promise<{declineApplication: prismaDeclineApplicationType, notification: Student_Notification}> => {
     const transac = await prisma.$transaction(async (tx) => {
         const declineApplication = await tx.application.update({
             where:{
@@ -687,36 +604,8 @@ export const prismaCheckApplicationDuplicate = async(accountId: number, scholars
     });
     return applicationDuplicate;
 }
-type prismaCreateApplication = Prisma.ApplicationGetPayload<{
-    include:{
-        Student: {
-            include:{
-                Account: {
-                    select:{
-                        email: true,
-                        schoolId: true
-                    }
-                }
-            }
-        },
-        Scholarship: {
-            include:{
-                Scholarship_Provider: {
-                    select:{
-                        name: true
-                    }
-                },
-                Application:{
-                    select:{applicationId: true}
-                }
-            }
-        },
-        Interview_Decision: true,
-        Application_Decision: true
-    }
-}>
 export const prismaCreateApplication = async (fileRequirements: RecordApplicationFilesTypes, supabasePath: string[], accountId: number, scholarshipId: number): 
-Promise<prismaCreateApplication> => {
+Promise<prismaCreateApplicationType> => {
     const transac = await prisma.$transaction( async(tx) => {
         const application = await tx.application.create({
             data:{

@@ -1,15 +1,12 @@
 import { Account, Prisma, PrismaClient } from "@prisma/client";
 import { hashSync } from "bcryptjs";
 import { ResponseUploadSupabase } from "../Config/Supabase";
+import { AccountRelations, prismaGetAccountByIdType, prismaUpdateStaffAccountType } from "../Types/AccountTypes";
 
 
 const prisma = new PrismaClient();
 
-type AccountWithISPSU_Staff = Prisma.AccountGetPayload<{
-    include: { ISPSU_Staff: true , ISPSU_Head: true , Student: true}
-}>
-
-export const prismaCheckEmailExist = async(email: string): Promise<AccountWithISPSU_Staff|null>=>{
+export const prismaCheckEmailExist = async(email: string): Promise<AccountRelations|null>=>{
     const emailExist = await prisma.account.findUnique({
         where:{
             email:email
@@ -18,7 +15,7 @@ export const prismaCheckEmailExist = async(email: string): Promise<AccountWithIS
     })
     return emailExist
 }
-export const prismaCheckStudentIdExist = async(studentId: string): Promise<AccountWithISPSU_Staff | null>=>{
+export const prismaCheckStudentIdExist = async(studentId: string): Promise<AccountRelations | null>=>{
     const studentIdExist = await prisma.account.findFirst({
         where:{
             schoolId: studentId
@@ -79,7 +76,7 @@ studentDateofBirth: Date, studentAddress: string, course: string, year: string ,
     })
     return newStudentAccount;
 }
-export const getStaffByEmail = async(email: string): Promise<AccountWithISPSU_Staff | null>=>{
+export const getStaffByEmail = async(email: string): Promise<AccountRelations | null>=>{
     const getStaff = await prisma.account.findFirst({
         where:{
             email: email
@@ -92,21 +89,8 @@ export const getStaffByEmail = async(email: string): Promise<AccountWithISPSU_St
     });
     return getStaff;
 }
-type prismaGetAccountById = Prisma.AccountGetPayload<{
-    include:{
-        ISPSU_Staff:true,
-        ISPSU_Head:true,
-        Student:{
-            include:{
-                Application: {
-                    include: {Scholarship:true, Interview_Decision: true, Application_Decision: true}
-                },
-                Account: {select: {email: true, schoolId: true}}
-            }
-        },
-    }
-}>
-export const prismaGetAccountById = async(accountId: number): Promise<prismaGetAccountById | null>=>{
+
+export const prismaGetAccountById = async(accountId: number): Promise<prismaGetAccountByIdType | null>=>{
     const getAccount = await prisma.account.findUnique({
         where:{
             accountId: accountId
@@ -138,7 +122,7 @@ export const prismaUpdateStudentAccount = async (
     accountId: number, contactNumber?: string ,firstName?: string, middleName?: string ,lastName?: string ,
     gender?: string ,dateOfBirth?: Date ,address?: string ,course?: string ,year?: string ,section?: string ,
     familyBackground?: object, pwd?: string, indigenous?: string, profileImg?: ResponseUploadSupabase): 
-    Promise<AccountWithISPSU_Staff>=> {
+    Promise<AccountRelations>=> {
     const update = await prisma.account.update({
         where:{
             accountId: accountId
@@ -181,7 +165,7 @@ export const prismaUpdateAccountLoginCredentials = async(accountId: number, scho
     })
     return result
 }
-export const prismaUpdateAccountPassword = async(email: string, hashedPassword: string): Promise<AccountWithISPSU_Staff|null>=> {
+export const prismaUpdateAccountPassword = async(email: string, hashedPassword: string): Promise<AccountRelations|null>=> {
     const updatePassword = await prisma.account.update({
         where:{
             email: email
@@ -223,13 +207,8 @@ export const prismaUpdateHeadAccount = async(accountId: number, address?: string
     })
     return update
 }
-type prismaUpdateStaffAccount = Prisma.AccountGetPayload<{
-    include:{
-        ISPSU_Staff: true,
-    }
-}>
 export const prismaUpdateStaffAccount = async(accountId: number, fName?: string, lName?: string, mName?: string, email?: string, 
-    hashedPassword?: string, validate?: string, profileURL?: ResponseUploadSupabase): Promise<prismaUpdateStaffAccount|null>=> {
+    hashedPassword?: string, validate?: string, profileURL?: ResponseUploadSupabase): Promise<prismaUpdateStaffAccountType|null>=> {
     const newValidate = validate === "true"?
      true : validate === "false"?
       false : undefined

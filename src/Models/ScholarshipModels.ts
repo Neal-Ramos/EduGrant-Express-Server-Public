@@ -1,19 +1,11 @@
 import { Application, Prisma, PrismaClient, Scholarship } from "@prisma/client";
 import { ResponseUploadSupabase } from "../Config/Supabase";
-import { applicationFilesTypes, DocumentEntry } from "../Types/postControllerTypes";
-import { title } from "process";
+import { DocumentEntry } from "../Types/postControllerTypes";
 import { io } from "..";
-import { resolve } from "path";
+import { prismaRenewScholarshipType, ScholarshipWithChildType } from "../Types/ScholarshipTypes";
 
 const prisma = new PrismaClient()
 
-type ScholarshipWithChild = Prisma.ScholarshipGetPayload<{
-    include:{
-        Application?: true,
-        Scholarship_Provider?: true
-        ISPSU_Head?: true
-    }
-}>
 
 export const prismaCreateScholarship = async(scholarshipType: string, newScholarTitle: string, newScholarProvider: string,  newScholarDeadline: Date, newScholarDescription: string,
         scholarshipDocuments: DocumentEntry[], scholarshipAmount: string|undefined, scholarshipLimit: number|undefined, gwa: number|undefined, accountId: number, 
@@ -414,18 +406,8 @@ export const prismaUpdateScholarship = async(
     })
     return updateScholarship;
 }
-type prismaRenewScholarship = Prisma.ScholarshipGetPayload<{
-    include:{
-        Scholarship_Provider: true,
-        Application:{
-            include:{
-                Student:true
-            }
-        }
-    }
-}>
 export const prismaRenewScholarship = async(accountId: number, scholarshipId: number, updatedRequirements: object, renewDeadline: Date, isForInterview: "false"|"true")
-: Promise<prismaRenewScholarship | null>=>{
+: Promise<prismaRenewScholarshipType | null>=>{
     const transac = await prisma.$transaction(async(tx)=> {
         const scholar = await tx.scholarship.update({
             where: {
@@ -528,7 +510,7 @@ export const prismaDeleteScholarship = async(scholarshipId: number): Promise<num
     })
     return transac.count;
 }
-export const prismaGetScholarshipByArray = async (scholarshipId: number): Promise<ScholarshipWithChild | null> => {
+export const prismaGetScholarshipByArray = async (scholarshipId: number): Promise<ScholarshipWithChildType | null> => {
     return prisma.scholarship.findUnique({
         where: {
             scholarshipId: scholarshipId

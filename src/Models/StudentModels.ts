@@ -1,13 +1,7 @@
 import { PrismaClient, Student, Prisma } from "@prisma/client";
+import { AccountWithRelationsType } from "../Types/StudentTypes";
 
 const prisma = new PrismaClient();
-
-type AccountWithRelations = Prisma.StudentGetPayload<{
-    include:{
-        Application: true,
-        Account: {select: {role: true, email: true, schoolId: true}}
-    }
-}>
 
 export const prismaFiltersStudent = async(status?: string): Promise<{}>=> {
 
@@ -147,7 +141,7 @@ export const prismaGetStudents = async(page?: number, dataPerPage?: number, sort
     ])
     return {students, totalCount}
 }
-export const prismaGetStudentById = async(accountId: number): Promise<AccountWithRelations | null>=>{
+export const prismaGetStudentById = async(accountId: number): Promise<AccountWithRelationsType | null>=>{
     const student = await prisma.student.findUnique({
         where:{studentId: accountId},
         include: {

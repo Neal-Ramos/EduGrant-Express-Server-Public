@@ -1,5 +1,6 @@
 import { Account, ISPSU_Staff, Prisma, PrismaClient } from "@prisma/client";
 import { ResponseUploadSupabase } from "../Config/Supabase";
+import { prismaGetStaffAccountsType, prismaGetStaffByIdType } from "../Types/ISPSU_StaffTypes";
 
 const prisma = new PrismaClient();
 
@@ -11,12 +12,7 @@ export const prismaTotalCountStaff = async (accountId?: number): Promise<number>
   });
   return count;
 }
-type prismaGetStaffAccounts = Prisma.AccountGetPayload<{
-  include:{
-    ISPSU_Staff: true
-  }
-}>
-export const prismaGetStaffAccounts = async (page?: number, dataPerPage?: number, sortBy?: string, id?: number | null, order?: string): Promise<prismaGetStaffAccounts[]> => {
+export const prismaGetStaffAccounts = async (page?: number, dataPerPage?: number, sortBy?: string, id?: number | null, order?: string): Promise<prismaGetStaffAccountsType[]> => {
   const allowedSortByFields: string[] = ['fName','lName','mName','validated','dateCreated']
   const allowedOrderByFields: string[] = ["asc", "desc"];
 
@@ -75,12 +71,7 @@ export const prismaSearchISPUStaff = async(search: string, page: number|undefine
     })
     return searchResult
 }
-type prismaGetStaffById = Prisma.AccountGetPayload<{
-  include:{
-    ISPSU_Staff: true,
-  }
-}>
-export const prismaGetStaffById = async(accountId: number): Promise<prismaGetStaffById|null>=> {
+export const prismaGetStaffById = async(accountId: number): Promise<prismaGetStaffByIdType|null>=> {
   const staff = await prisma.account.findUnique({
     where:{
       accountId: accountId

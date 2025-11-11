@@ -1,12 +1,11 @@
 import { Application, Prisma, PrismaClient } from "@prisma/client";
+import { prismaGetApplicationByIdScholarshipIdType } from "../Types/Application_DecisionTypes";
 
 const prisma = new PrismaClient()
 
-type AccountWithRelations = Prisma.ApplicationGetPayload<{
-    include: {Student: {include: {Account: true}}}
-}>
 
-export const prismaGetApplicationByIdScholarshipId = async (applicationId: number, scholarshipId: number, status?: string): Promise<AccountWithRelations | null> => {
+
+export const prismaGetApplicationByIdScholarshipId = async (applicationId: number, scholarshipId: number, status?: string): Promise<prismaGetApplicationByIdScholarshipIdType | null> => {
     const application = await prisma.application.findFirst({
         where: {
             applicationId: applicationId,
