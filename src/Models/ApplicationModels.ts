@@ -295,8 +295,16 @@ export const prismaGetApplicationPath = async(applicationId: number[]): Promise<
     });
     return applicationPath;
 }
+type prismaApproveApplication = Prisma.ApplicationGetPayload<{
+    include:{
+        Student: true,
+        Scholarship: true,
+        Application_Decision: {include: {ISPSU_Staff: true}},
+        Interview_Decision: {include: {ISPSU_Staff: true}}
+    }
+}>
 export const prismaApproveApplication = async (applicationId: number,accountId: number, rejectMessage: {}, scholarshipPhase: number): 
-Promise<{Application: Application, BlockedApplications: Application[], notification: Student_Notification}> => {
+Promise<{Application: prismaApproveApplication, BlockedApplications: Application[], notification: Student_Notification}> => {
     const transac  = await prisma.$transaction(async (tx) => {
         const approveApplication = await tx.application.update({
             where:{
@@ -317,7 +325,8 @@ Promise<{Application: Application, BlockedApplications: Application[], notificat
             include:{
                 Student: true,
                 Scholarship: true,
-                Application_Decision: {include: {ISPSU_Staff: {select: {fName: true, mName: true, lName: true}}}},
+                Application_Decision: {include: {ISPSU_Staff: true}},
+                Interview_Decision: {include: {ISPSU_Staff: true}}
             }
         })
         const [notification] = await Promise.all([
@@ -426,8 +435,57 @@ Promise<{Application: Application, BlockedApplications: Application[], notificat
     
     return {Application: transac.approveApplication, BlockedApplications, notification: transac.notification};
 }
+type prismaAcceptForInterview = Prisma.ApplicationGetPayload<{
+    include:{
+        Student:{
+            include:{
+                Account:{
+                    select:{
+                        email: true,
+                        schoolId: true
+                    }
+                }
+            }
+        },
+        Scholarship:{
+            include:{
+                Scholarship_Provider: {
+                    select:{
+                        name:true
+                    }
+                }
+            }
+        },
+        Interview_Decision: {
+            include:{
+                ISPSU_Staff:{
+                    include:{
+                        Account:{
+                            select:{
+                                email:true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        Application_Decision: {
+            include:{
+                ISPSU_Staff:{
+                    include:{
+                        Account:{
+                            select:{
+                                email:true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}>
 export const prismaAcceptForInterview = async (applicationId: number,accountId: number, rejectMessage: {}, scholarshipPhase: number): 
-Promise<{interviewApplication: Application, notification: Student_Notification}> => {
+Promise<{interviewApplication: prismaAcceptForInterview, notification: Student_Notification}> => {
     const transac = await prisma.$transaction(async(tx)=> {
         const interviewApplication = await tx.application.update({
             where:{
@@ -476,6 +534,19 @@ Promise<{interviewApplication: Application, notification: Student_Notification}>
                             }
                         }
                     }
+                },
+                Application_Decision: {
+                    include:{
+                        ISPSU_Staff:{
+                            include:{
+                                Account:{
+                                    select:{
+                                        email:true
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         })
@@ -505,8 +576,25 @@ Promise<{interviewApplication: Application, notification: Student_Notification}>
     
     return transac;
 }
+type prismaDeclineApplication = Prisma.ApplicationGetPayload<{
+    include:{
+        Student:{
+            include:{
+                Account:{
+                    select:{
+                        email:true,
+                        schoolId:true
+                    }
+                }
+            }
+        },
+        Scholarship:{include: {Scholarship_Provider: {select:{name:true}}}},
+        Application_Decision: {include: {ISPSU_Staff: true}},
+        Interview_Decision: {include: {ISPSU_Staff: true}}
+    }
+}>
 export const prismaDeclineApplication = async(applicationId: number, accountId: number, rejectMessage: {}, scholarshipPhase: number): 
-Promise<{declineApplication: ApplicationWithStudentAndScholarship, notification: Student_Notification}> => {
+Promise<{declineApplication: prismaDeclineApplication, notification: Student_Notification}> => {
     const transac = await prisma.$transaction(async (tx) => {
         const declineApplication = await tx.application.update({
             where:{
@@ -545,7 +633,8 @@ Promise<{declineApplication: ApplicationWithStudentAndScholarship, notification:
                     }
                 },
                 Scholarship:{include: {Scholarship_Provider: {select:{name:true}}}},
-                Application_Decision: true
+                Application_Decision: {include: {ISPSU_Staff: true}},
+                Interview_Decision: {include: {ISPSU_Staff: true}}
             }
         })
         const [notification] = await Promise.all([
