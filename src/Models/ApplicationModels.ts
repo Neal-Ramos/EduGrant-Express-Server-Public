@@ -563,7 +563,6 @@ Promise<{declineApplication: prismaDeclineApplicationType, notification: Student
                     description:`We appreciate your effort in applying. Unfortunately, your scholarship application was not selected this time. You may apply again in future opportunities.`,
                     applicationId: declineApplication.applicationId,
                     scholarshipId: declineApplication.scholarshipId
-
                 }
             }),
             tx.staff_Logs.create({
