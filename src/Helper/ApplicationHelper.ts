@@ -1,6 +1,10 @@
 import { DenormalizeApplicationType } from "../Types/ApplicationType";
 import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
 
+export function ValidateApplication(){
+    
+}
+
 export function DenormalizeApplication(Application: DenormalizeApplicationType){
     const k: any = {}
     for(const [key, value] of Object.entries(Application.submittedDocuments as RecordApplicationFilesTypes)){

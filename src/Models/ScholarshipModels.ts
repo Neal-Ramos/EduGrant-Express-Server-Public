@@ -55,27 +55,62 @@ export const prismaGetScholarship = async(page?: number, dataPerPage?: number, s
         const allowedSortByProvider: string[] = ["name"]
         const allowedStatus: string[] = ["ACTIVE", "ENDED", "EXPIRED", "RENEW"]
         const allowedOrder: string[] = ["asc", "desc"]
-        const whereClause: Prisma.ScholarshipWhereInput = {}
+        let whereClause: Prisma.ScholarshipWhereInput = {
+            Scholarship_Provider:{name: {in: filters?.find(f => f.id === "name")?.value}},
+            title: {in: filters?.find(f => f.id === "title")?.value},
+            ...(search? {
+                OR:[
+                    {title:{contains: search, mode:"insensitive"}},
+                    {Scholarship_Provider:{name:{contains:search, mode: "insensitive"}}}
+                ]
+            }:{})
+        }
         if (status && allowedStatus.includes(status)) {
             if (status === "ENDED") {
-                whereClause.ended = true
+                whereClause = {
+                    ended: true,
+                    OR:[
+                        {
+                            phase: 1
+                        },
+                        {
+                            phase: {gt: 1},
+                            Application:{some: {ownerId: accountId}}
+                        }
+                    ]
+                }
             } else if (status === "EXPIRED") {
-                whereClause.ended = false
-                whereClause.deadline = { lt: new Date() }
+                whereClause = {
+                    deadline: {lte: new Date()},
+                    ended: false,
+                    OR:[
+                        {
+                            phase: 1
+                        },
+                        {
+                            phase: {gt: 1},
+                            Application:{some: {ownerId: accountId}}
+                        }
+                    ]
+                }
             } else if (status === "ACTIVE") {
-                whereClause.ended = false
-                whereClause.deadline = { gt: new Date() }
-                whereClause.phase = 1
+                whereClause = {
+                    deadline: {gt: new Date()},
+                    phase: 1,
+                    ended: false
+                }
             } else if(status === "RENEW"){
-                whereClause.ended = false
-                whereClause.phase = {gt: 1}
-                whereClause.Application = accountId? {some:{ownerId: accountId, status: {notIn: ["BLOCKED", "DECLINED"]}}}: undefined
-                whereClause.deadline = { gt: new Date()}
+                whereClause = {
+                    deadline: {gt: new Date()},
+                    phase: {gt: 1},
+                    ended: false,
+                    Application:{some: {ownerId: accountId, status: {not: "BLOCKED"}}}
+                }
             }
         }
 
         const [scholarship, totalCount, countActive, countRenew, countExpired, countEnded] = await Promise.all([
-            prisma.scholarship.findMany({
+            prisma.scholarship.findMany({//scholarship
                 ...(dataPerPage? {take: dataPerPage}:undefined),
                 ...(page && dataPerPage? {skip: (page-1)*dataPerPage}:undefined),
                 orderBy: [
@@ -99,77 +134,59 @@ export const prismaGetScholarship = async(page?: number, dataPerPage?: number, s
                         }
                     }
                 },
-                where:{
-                    ...whereClause,
-                    Scholarship_Provider:{name: {in: filters?.find(f => f.id === "name")?.value}},
-                    title: {in: filters?.find(f => f.id === "title")?.value},
-                    ...(search? {
-                        OR:[
-                            {title:{contains: search, mode:"insensitive"}},
-                            {Scholarship_Provider:{name:{contains:search, mode: "insensitive"}}}
-                        ]
-                    }:{})
-                }
+                where: whereClause
             }),
-            prisma.scholarship.count({
+            prisma.scholarship.count({//totalCount
                 where: {
-                    ...whereClause,
-                    Scholarship_Provider:{name: {in: filters?.find(f => f.id === "name")?.value}},
-                    title: {in: filters?.find(f => f.id === "title")?.value},
+                    OR:[
+                        {phase: 1},
+                        {
+                            phase: {gt:1},
+                            Application: {some: {ownerId: accountId, status: {not: "BLOCKED"}}}
+                        }
+                    ]
                 }
             }),
-            prisma.scholarship.count({
+            prisma.scholarship.count({//countActive
                 where:{
                     deadline: {gt:new Date()},
-                    Scholarship_Provider:{name: {in: filters?.find(f => f.id === "name")?.value}},
-                    title: {in: filters?.find(f => f.id === "title")?.value},
                     phase: 1
                 }
             }),
-            prisma.scholarship.count({
+            prisma.scholarship.count({//countRenew
                 where: {
-                    phase: {gt: 1},
                     deadline: {gt:new Date()},
-                    Application:{
-                        some: {ownerId: accountId, status: {not:"BLOCKED"}}
-                    },
-                    Scholarship_Provider:{name: {in: filters?.find(f => f.id === "name")?.value}},
-                    title: {in: filters?.find(f => f.id === "title")?.value},
+                    phase: {gt:1},
+                    Application: {some: {ownerId: accountId, status: {not: "BLOCKED"}}}
                 }
             }),
-            prisma.scholarship.count({
+            prisma.scholarship.count({//countExpired
                 where:{
                     deadline: {lt:new Date()},
                     ended: false,
-                    ...(accountId? {
-                        Application: {
-                            some: {
-                                AND:[
-                                    {ownerId: accountId},
-                                    {status: {
-                                        in: ["RENEW", "PENDING", "APPROVED", "INTERVIEW"]
-                                    }}
-                                ]
-                            }
+                    OR:[
+                        {
+                            phase: 1
+                        },
+                        {
+                            Application:{some:{ownerId: accountId, status: {not: "BLOCKED"}}},
+                            phase: {gt: 1}
                         }
-                    }:{})
+                    ]
                 }
             }),
             prisma.scholarship.count({
                 where:{
                     ended: true,
-                    ...(accountId? {
-                        Application: {
-                            some: {
-                                AND:[
-                                    {ownerId: accountId},
-                                    {status: {
-                                        in: ["RENEW", "PENDING", "APPROVED", "INTERVIEW"]
-                                    }}
-                                ]
-                            }
+                    OR:[
+                        {
+                            phase: 1
+                        },
+                        {
+                            Application:{some:{ownerId: accountId, status: {not: "BLOCKED"}}},
+                            phase: {gt: 1}
                         }
-                    }:{})
+                    ]
                 }
             })
         ])

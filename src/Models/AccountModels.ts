@@ -1,4 +1,4 @@
-import { Account, Prisma, PrismaClient } from "@prisma/client";
+import { Account, PrismaClient } from "@prisma/client";
 import { hashSync } from "bcryptjs";
 import { ResponseUploadSupabase } from "../Config/Supabase";
 import { AccountRelations, prismaGetAccountByIdType, prismaUpdateStaffAccountType } from "../Types/AccountTypes";
