@@ -566,19 +566,6 @@ Promise<{declineApplication: prismaDeclineApplicationType, notification: Student
 
                 }
             }),
-            tx.scholarship.update({
-                where:{
-                    scholarshipId: declineApplication.scholarshipId || 0
-                },
-                data:{
-                    declined:{
-                        increment:1
-                    },
-                    pending:{
-                        decrement:1
-                    }
-                }
-            }),
             tx.staff_Logs.create({
                 data:{
                     staffId:accountId,
