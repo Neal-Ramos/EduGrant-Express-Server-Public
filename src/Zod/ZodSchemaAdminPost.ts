@@ -93,20 +93,6 @@ export type declineApplicationZodType = z.infer<
   typeof declineApplicationZodSchema
 >;
 
-export const deleteApplicationsZodSchema = z.object({
-  body: z.object({
-    applicationId: toJSON().transform((val, cxt) => {
-      if (!Array.isArray(val.data)) {
-        cxt.addIssue({ code: "custom", message: "Invalid Array Format!" });
-      }
-      return val.data as number[];
-    }),
-  }),
-});
-export type deleteApplicationsZodType = z.infer<
-  typeof deleteApplicationsZodSchema
->
-
 export const getFileUrlZodSchemaZodSchema = z.object({
   body: z.object({
     applicationId: toInt(),

@@ -2,8 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Prisma } from "@prisma/client";
 import { filtersDataTypes } from "../Types/adminPostControllerTypes";
 import { DeleteSupabase, ResponseUploadSupabase, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase } from "../Config/Supabase";
-import { adminAddScholarshipsZodType, approveApplicationZodType, createAnnouncementZodType, declineApplicationZodType, deleteAdminZodType, deleteAnnouncementZodType, 
-  deleteApplicationsZodType, deleteISPSU_StaffZodType, deleteScholarshipZodType, deleteStudentZodType, downloadApplicationCSVZodType, downloadStudentsCSVZodType, editAnnouncementZodType, endScholarshipZodType, forInterviewZondType, getAllAdminZodType, getAnnouncementByIdZodType, getAnnouncementZodType, getApplicationByIdZodType, getApplicationZodType, getFilterDataZodType, 
+import { adminAddScholarshipsZodType, approveApplicationZodType, createAnnouncementZodType, declineApplicationZodType, deleteAdminZodType, deleteAnnouncementZodType, deleteISPSU_StaffZodType, deleteScholarshipZodType, deleteStudentZodType, downloadApplicationCSVZodType, downloadStudentsCSVZodType, editAnnouncementZodType, endScholarshipZodType, forInterviewZondType, getAllAdminZodType, getAnnouncementByIdZodType, getAnnouncementZodType, getApplicationByIdZodType, getApplicationZodType, getFilterDataZodType, 
   getFiltersCSVZodType, 
   getScholarshipsByIdZodType, getScholarshipZodType, getStaffByIdZodType, getStaffLogsZodType, getStudentsByIdZodType, getStudentsZodType, renewalScholarshipZodType, searchAdminZodType, searchApplicationZodType, searchStudentZodType, updateScholarshipZodType, 
   updateStudentAccountZodType,
@@ -15,7 +14,7 @@ import { prismaGetStaffAccounts, prismaGetStaffById, prismaSearchISPUStaff, pris
 import { prismaCheckEmailExist, prismaCreateISPSU_Staff, prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from "../Models/AccountModels";
 import { prismaCreateScholarship, prismaDeleteScholarship, prismaEndScholarship, prismaFiltersScholarship, prismaGetScholarship, prismaGetScholarshipByArray, prismaGetScholarshipsById, 
   prismaRenewScholarship, prismaSearchScholarshipTitle, prismaStudentCountsInToken, prismaUpdateScholarship } from "../Models/ScholarshipModels";
-import { prismaAcceptForInterview, prismaApproveApplication, prismaBlockApplicationByApplicationId, prismaCheckApproveGov, prismaDeclineApplication, prismaDeleteApplication, 
+import { prismaAcceptForInterview, prismaApproveApplication, prismaBlockApplicationByApplicationId, prismaCheckApproveGov, prismaDeclineApplication, 
   prismaGetAllApplication, prismaGetApplication, prismaGetApplicationPath, prismaGetApplicationsCSV, prismaGetFiltersForApplicationsCSV, prismaSearchApplication } from "../Models/ApplicationModels";
 import { prismaExportCSV, prismaFiltersStudent, prismaGetFiltersStudentCSV, prismaGetStudentById, prismaGetStudents, prismaSearchStudents } from "../Models/StudentModels";
 import { prismaGetApplicationByIdScholarshipId } from "../Models/Application_DecisionModels";
@@ -957,46 +956,6 @@ export const getApplication = async (req: Request, res: Response, next: NextFunc
     }
     res.status(200).json({success: true, data: getApplication.applications.flat(3), meta})
     return
-  } catch (error) {
-    next(error)
-  }
-}
-
-export const deleteApplications = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
-  try {
-    const {applicationId} = (req as Request & {validated: deleteApplicationsZodType}).validated.body
-    const userId = Number(req.tokenPayload.accountId)
-
-    const user = await prismaGetAccountById(userId)
-    if(!user || user.role !== "ISPSU_Staff" && user.role !== "ISPSU_Head"){
-        res.clearCookie("AdminToken", cookieOptionsStaff);
-        res.status(401).json({success: false, message: "Account Did not Find!"})
-        return
-    }
-    
-    if(!Array.isArray(applicationId)){
-      res.status(400).json({success: false, message: "Invalid Format!"})
-      return
-    }
-
-    const applicationImages: Array<{[key: string]: {[key: string]: string}}> = await prismaGetApplicationPath(applicationId)
-
-    let SupabasePaths: Array<string> = []
-
-    applicationImages.forEach(element => {
-      if(Array.isArray(element.supabasePath)){
-        SupabasePaths = SupabasePaths.concat(element.supabasePath)
-      }
-    })
-    
-    const deleteApplications = await prismaDeleteApplication(applicationId)
-    if(!deleteApplications){
-      res.status(500).json({success: false, message: "Server Error!"})
-      return
-    }
-    io.to(["ISPSU_Head", "ISPSU_Staff", ...(deleteApplications.map(e => e.toString()))]).emit("deleteApplications", {deleteApplications})
-    res.status(200).json({success: true, message: "Applications Deleted!", applicationIds:deleteApplications})
-    await SupabaseDeletePrivateFile(SupabasePaths).catch(error => console.log(error))
   } catch (error) {
     next(error)
   }

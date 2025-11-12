@@ -230,51 +230,6 @@ export const prismaCheckApproveGov = async(accountId: number): Promise<Applicati
     });
     return applications;
 }
-export const prismaDeleteApplication = async(applicationIds: number[]): Promise<number[]> => {
-    const transac = await prisma.$transaction(async (tx) => {
-        const applications = await tx.application.findMany({
-            where: {
-                applicationId: { in: applicationIds }
-            },
-            select:{
-                applicationId: true,
-                scholarshipId: true,
-                status: true
-            }
-        });
-        const deleteResult = await tx.application.deleteMany({
-            where: {
-                applicationId: { in: applicationIds }
-            }
-        });
-        if(deleteResult.count === 0){
-            return applications
-        }
-        const scholarshipRecords: Record<string, {id: number,count:number, status: string}> = {};
-        for (const app of applications) {
-            const key = `${app.scholarshipId}-${app.status}`;
-            if(!scholarshipRecords[key]){
-                scholarshipRecords[key] = {id: app.scholarshipId || 0, count:1, status: app.status}
-            }else{
-                scholarshipRecords[key].count++;
-            }
-        }
-        await Promise.all(
-            Object.values(scholarshipRecords).map((rec) =>
-                tx.scholarship.update({
-                where: { scholarshipId: rec.id },
-                data: {
-                    pending: ["PENDING", "INTERVIEW"].includes(rec.status) ? { decrement: rec.count } : undefined,
-                    declined: rec.status === "DECLINED" ? { decrement: rec.count } : undefined,
-                    approved: rec.status === "APPROVED" ? { decrement: rec.count } : undefined
-                }
-                })
-            )
-        )
-        return applications
-    })
-    return transac.map(i => i.applicationId);
-}
 export const prismaGetApplicationPath = async(applicationId: number[]): Promise<Array<{}>>=>{
     const applicationPath = await prisma.application.findMany({
         where:{

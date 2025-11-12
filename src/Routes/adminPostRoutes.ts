@@ -2,14 +2,14 @@ import { Router } from "express";
 import upload from "../Config/upload";
 import { getAllAdmin, adminAddScholarships, getScholarship, updateScholarship, deleteScholarship, 
     searchApplication, getApplicationById, getFilterData, approveApplication, declineApplication, getApplication, 
-    searchAdmin, deleteAdmin, deleteApplications, createAnnouncement, getAnnouncement, deleteAnnouncement, getScholarshipsById, forInterview,
+    searchAdmin, deleteAdmin, createAnnouncement, getAnnouncement, deleteAnnouncement, getScholarshipsById, forInterview,
     renewalScholarship, getDashboard, headDashboard, getAnnouncementById, editAnnouncement, getStaffLogs, getStaffById, updateStudentAccount,
     deleteStudent, getStudents, getStudentsById, searchStudent, getFiltersCSV, downloadApplicationCSV, adminTokenAuthentication,
     downloadStudentsCSV, getFiltersStudentsCSV,endScholarship, validateStaff, getFileUrl, downloadApplicationFile, createISPSUStaffAccount,
     deleteISPSU_Staff, } from "../Controller/adminPostControllers";
 import { AdminTokenAuth } from "../Config/TokenAuth";
 import { adminAddScholarshipsZodSchema, approveApplicationZodSchema, createAnnouncementZodSchema, declineApplicationZodSchema, deleteAdminZodSchema, deleteAnnouncementZodSchema, 
-    deleteApplicationsZodSchema, deleteISPSU_StaffZodSchema, deleteScholarshipZodSchema, deleteStudentZodSchema, downloadApplicationCSVZodSchema, downloadStudentsCSVZodSchema, editAnnouncementZodSchema, endScholarshipZodSchema, forInterviewZodSchema, getAllAdminZodSchema, getAnnouncementByIdZodSchema, getAnnouncementZodSchema, getApplicationByIdZodSchema, getApplicationZodSchema, 
+    deleteISPSU_StaffZodSchema, deleteScholarshipZodSchema, deleteStudentZodSchema, downloadApplicationCSVZodSchema, downloadStudentsCSVZodSchema, editAnnouncementZodSchema, endScholarshipZodSchema, forInterviewZodSchema, getAllAdminZodSchema, getAnnouncementByIdZodSchema, getAnnouncementZodSchema, getApplicationByIdZodSchema, getApplicationZodSchema, 
     getFilterDataZodSchema, getFiltersCSVZodSchema, getScholarshipsByIdZodSchema, getScholarshipZodSchema, getStaffByIdZodSchema, getStaffLogsZodSchema, getStudentsByIdZodSchema, getStudentsZodSchema, renewalScholarshipZodSchema, searchAdminZodSchema, searchApplicationZodSchema, 
     searchStudentZodSchema, updateScholarshipZodSchema, 
     updateStudentAccountZodSchema,
@@ -37,7 +37,6 @@ AdminPostRoutes.get("/getStaffById", validate(getStaffByIdZodSchema), getStaffBy
 AdminPostRoutes.post("/approveApplication", validate(approveApplicationZodSchema), approveApplication)
 AdminPostRoutes.post("/forInterview", validate(forInterviewZodSchema), forInterview)
 AdminPostRoutes.post("/declineApplication", validate(declineApplicationZodSchema), declineApplication)
-AdminPostRoutes.post("/deleteApplications", validate(deleteApplicationsZodSchema), deleteApplications)
 AdminPostRoutes.post("/getFileUrl", validate(getFileUrlZodSchema), getFileUrl)
 AdminPostRoutes.post("/downloadApplicationFile", validate(downloadApplicationFileZodSchema), downloadApplicationFile)
 
