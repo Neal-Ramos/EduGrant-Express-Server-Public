@@ -70,7 +70,7 @@ export const prismaGetDashboardData = async(accountId?: number): Promise<{}> => 
 }
 export const prismaGetStudents = async(page?: number, dataPerPage?: number, sortBy?: string, order?: string, ownderId?: number, filters?: {id: string, value:string[]}[], 
     search?: string): Promise<{students: Student[], totalCount: number}>=> {
-    const allowedSort: string[] = ["fName", "lName", "mName", "contactNumber", "gender", "address", "institute", "course", "year", "section"]
+    const allowedSort: string[] = ["fName", "lName", "mName", "contactNumber", "gender", "address", "institute", "course", "year", "section", "dateCreated"]
 
     const [students, totalCount] = await Promise.all([
         prisma.student.findMany({
@@ -92,9 +92,9 @@ export const prismaGetStudents = async(page?: number, dataPerPage?: number, sort
                     {Account:{schoolId: {contains: search, mode: "insensitive"}}},
                 ]
             },
-            orderBy: [
-                ...(allowedSort.includes(sortBy || "")? [{[sortBy as string]: order? order:"asc"}]:[])
-            ],
+            orderBy: {
+                ...(allowedSort.includes(sortBy || "")? {[sortBy as string]: order? order:"asc"}:{})
+            },
             include:{
                 Application: {
                     include: {
