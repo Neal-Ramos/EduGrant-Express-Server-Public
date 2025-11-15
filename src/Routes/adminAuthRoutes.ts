@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { adminCodeAuthentication, adminLogIn, forgetPass, sendAuthCodeForgetPass } from "../Controller/adminAuthControllers";
-import { validate } from "../Zod/Validator";
-import { adminCodeAuthenticationZodSchema, adminLoginZodSchema, adminTokenAuthenticationZodSchema, createAccountZodSchema, forgetPassZodSchema, sendAuthCodeForgetPassZodSchema, superAdminTokenAuthenticationZodSchema } from "../Zod/ZodSchemanAdminAuth";
+import { validate } from "../Validator/Validator";
+import { adminCodeAuthenticationZodSchema, adminLoginZodSchema, adminTokenAuthenticationZodSchema, createAccountZodSchema, forgetPassZodSchema, sendAuthCodeForgetPassZodSchema, superAdminTokenAuthenticationZodSchema } from "../Validator/ZodSchemanAdminAuth";
 
 const AdminAuthRoutes = Router();
 

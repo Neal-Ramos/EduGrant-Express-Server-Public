@@ -50,7 +50,7 @@ app.use((req, res, next) => {
     }
     next();
 });
-// app.use(apiLimiter)
+app.use(apiLimiter)
 app.use(healthCheckMiddleware)
 
 app.use(PublicRoutes)

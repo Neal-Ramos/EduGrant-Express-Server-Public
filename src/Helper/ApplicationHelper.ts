@@ -29,3 +29,16 @@ export function DenormalizeApplication(Application: DenormalizeApplicationType){
         dateCreated: Application.dateCreated,
     }
 }
+
+export function GenerateAlphabet(start: string, end: string){
+    const startCode = start.charCodeAt(0)
+    const endCode = end.charCodeAt(0)
+
+    if (startCode < 65 || endCode > 90 || startCode > endCode) {
+        return undefined
+    }
+    return Array.from(
+        {length: endCode - startCode + 1},
+        (_, i) => String.fromCharCode(startCode + i)
+    )
+}

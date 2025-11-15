@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { changePassword, downloadApplicationFile, getDashboard, getFileUrl, logoutUser, markAllReadNotifications, readNotification, sendAuthCodeChangeAccountCred, updateApplication, updateStudentInfo } from "../Controller/userController";
 import { TokenAuth } from "../Config/TokenAuth";
-import { validate } from "../Zod/Validator";
-import { changePasswordZodSchema, downloadApplicationFileZodSchema, getFileUrlZodSchema, readNotificationZodSchema, sendAuthCodeChangeAccountCredZodSchema, updateApplicationZodSchema, updateStudentInfoZodSchema } from "../Zod/ZodSchemaUserUser";
+import { validate } from "../Validator/Validator";
+import { changePasswordZodSchema, downloadApplicationFileZodSchema, getFileUrlZodSchema, readNotificationZodSchema, sendAuthCodeChangeAccountCredZodSchema, updateApplicationZodSchema, updateStudentInfoZodSchema } from "../Validator/ZodSchemaUserUser";
 import upload from "../Config/upload";
 
 const UserUserRoutes = Router();

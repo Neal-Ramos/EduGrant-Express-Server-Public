@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { getAnnouncementsZodType } from "../Zod/ZodSchemaUserPost"
+import { getAnnouncementsZodType } from "../Validator/ZodSchemaUserPost"
 import { prismaGetAllAnnouncement } from "../Models/AnnouncementModels"
 import { WasabiCreateSignedURL, WasabiUpload } from "../Config/Wasabi"
 

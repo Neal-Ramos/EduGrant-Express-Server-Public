@@ -13,10 +13,10 @@ import { adminAddScholarshipsZodSchema, approveApplicationZodSchema, createAnnou
     getFilterDataZodSchema, getFiltersCSVZodSchema, getScholarshipsByIdZodSchema, getScholarshipZodSchema, getStaffByIdZodSchema, getStaffLogsZodSchema, getStudentsByIdZodSchema, getStudentsZodSchema, renewalScholarshipZodSchema, searchAdminZodSchema, searchApplicationZodSchema, 
     searchStudentZodSchema, updateScholarshipZodSchema, 
     updateStudentAccountZodSchema,
-    validateStaffZodSchema} from "../Zod/ZodSchemaAdminPost";
-import { validate } from "../Zod/Validator";
-import { downloadApplicationFileZodSchema, getFileUrlZodSchema } from "../Zod/ZodSchemaUserUser";
-import { createAccountZodSchema } from "../Zod/ZodSchemanAdminAuth";
+    validateStaffZodSchema} from "../Validator/ZodSchemaAdminPost";
+import { validate } from "../Validator/Validator";
+import { downloadApplicationFileZodSchema, getFileUrlZodSchema } from "../Validator/ZodSchemaUserUser";
+import { createAccountZodSchema } from "../Validator/ZodSchemanAdminAuth";
 
 const AdminPostRoutes = Router();
 

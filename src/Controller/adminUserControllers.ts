@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { adminLogoutZodType, changeStaffCredZodType, editHeadZodType, editStaffCredSendAuthCodeZodType, editStaffInfoZodType, editStaffZodType, updateTourZodType } from "../Zod/ZodSchemaAdminUser";
+import { adminLogoutZodType, changeStaffCredZodType, editHeadZodType, editStaffCredSendAuthCodeZodType, editStaffInfoZodType, editStaffZodType, updateTourZodType } from "../Validator/ZodSchemaAdminUser";
 import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateHeadAccount, prismaUpdateStaffAccount, prismaUpdateWebTour } from "../Models/AccountModels";
 import { compare, hash } from "bcryptjs";
 import { prismaUpdateStaffInfo } from "../Models/ISPSU_StaffModels";

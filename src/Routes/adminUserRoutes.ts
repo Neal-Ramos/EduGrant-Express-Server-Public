@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { adminLogout, changeStaffCred, editHead, editStaff, editStaffCredSendAuthCode, editStaffInfoAccount, updateTour } from "../Controller/adminUserControllers";
 import { AdminTokenAuth } from "../Config/TokenAuth";
-import { validate } from "../Zod/Validator";
-import { adminLogoutZodSchema, changeStaffCredZodSchema, editHeadZodSchema, editStaffCredSendAuthCodeZodSchema, editStaffInfoZodSchema, editStaffZodSchema, updateTourZodSchema } from "../Zod/ZodSchemaAdminUser";
+import { validate } from "../Validator/Validator";
+import { adminLogoutZodSchema, changeStaffCredZodSchema, editHeadZodSchema, editStaffCredSendAuthCodeZodSchema, editStaffInfoZodSchema, editStaffZodSchema, updateTourZodSchema } from "../Validator/ZodSchemaAdminUser";
 import upload from "../Config/upload";
 
 const AdminUserRoutes = Router();

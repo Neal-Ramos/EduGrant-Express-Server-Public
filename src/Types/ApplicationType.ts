@@ -126,3 +126,28 @@ export type prismaCreateApplicationType = Prisma.ApplicationGetPayload<{
         Application_Decision: true
     }
 }>
+export type prismaRenewApplicationType = Prisma.ApplicationGetPayload<{
+    include:{
+            Student: {
+                include:{
+                    Account: {
+                        select:{
+                            email: true,
+                            schoolId: true
+                        }
+                    }
+                }
+            },
+            Scholarship:{
+                include:{
+                    Scholarship_Provider:{
+                        select:{
+                            name:true
+                        }
+                    }
+                }
+            },
+            Interview_Decision: true,
+            Application_Decision: true
+        }
+}>

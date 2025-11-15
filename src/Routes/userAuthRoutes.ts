@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {registerAccount, loginAccounts, sendAuthCodeRegister, sendAuthCodeLogin, forgotPassword, forgotPasswordSendAuthCode} from "../Controller/authControllers";
-import { validate } from "../Zod/Validator";
-import { forgotPasswordSendAuthCodeZodSchema, forgotPasswordZodSchema, loginAccountsZodSchema, registerAccountZodSchema, sendAuthCodeLoginZodSchema, sendAuthCodeRegisterZodSchema } from "../Zod/ZodSchemaUserAuth";
+import { validate } from "../Validator/Validator";
+import { forgotPasswordSendAuthCodeZodSchema, forgotPasswordZodSchema, loginAccountsZodSchema, registerAccountZodSchema, sendAuthCodeLoginZodSchema, sendAuthCodeRegisterZodSchema } from "../Validator/ZodSchemaUserAuth";
 const UserAuthRoutes = Router();
 
 UserAuthRoutes.post("/registerAccount", validate(registerAccountZodSchema), registerAccount);

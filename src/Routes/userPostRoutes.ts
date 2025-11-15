@@ -3,11 +3,11 @@ import upload from "../Config/upload";
 import { applyRenewScholarship, applyScholarship, downloadScholarshipForm, getAllScholarship, getAnnouncements, getAnnouncementsById, getApplicationHistory, getApplications, getNotifications, 
     getScholarshipsbyId, getStudentApplicationById, getStudentById, searchScholarship, tokenValidation } from "../Controller/postController";
 import { TokenAuth } from "../Config/TokenAuth";
-import { validate } from "../Zod/Validator";
+import { validate } from "../Validator/Validator";
 import { applyRenewScholarshipZodSchema, applyScholarshipZodSchema, downloadScholarshipFormZodSchema, getAllScholarshipZodSchema, getAnnouncementsByIdZodSchema, getAnnouncementsZodSchema, 
     getApplicationHistoryZodSchema, 
     getApplicationsZodSchema, getNotificationsZodSchema, getScholarshipsByIdZodSchema, getStudentApplicationByIdZodSchema, getStudentByIdZodSchema, 
-    searchScholarshipZodSchema} from "../Zod/ZodSchemaUserPost";
+    searchScholarshipZodSchema} from "../Validator/ZodSchemaUserPost";
 
 const UserPostRoutes = Router();
 

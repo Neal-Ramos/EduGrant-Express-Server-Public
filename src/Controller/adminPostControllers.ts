@@ -1,38 +1,35 @@
 import { NextFunction, Request, Response } from "express";
 import { Prisma } from "@prisma/client";
-import { filtersDataTypes } from "../Types/adminPostControllerTypes";
 import { DeleteSupabase, ResponseUploadSupabase, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase } from "../Config/Supabase";
 import { adminAddScholarshipsZodType, approveApplicationZodType, createAnnouncementZodType, declineApplicationZodType, deleteAdminZodType, deleteAnnouncementZodType, deleteISPSU_StaffZodType, deleteScholarshipZodType, deleteStudentZodType, downloadApplicationCSVZodType, downloadStudentsCSVZodType, editAnnouncementZodType, endScholarshipZodType, forInterviewZondType, getAllAdminZodType, getAnnouncementByIdZodType, getAnnouncementZodType, getApplicationByIdZodType, getApplicationZodType, getFilterDataZodType, 
   getFiltersCSVZodType, 
   getScholarshipsByIdZodType, getScholarshipZodType, getStaffByIdZodType, getStaffLogsZodType, getStudentsByIdZodType, getStudentsZodType, renewalScholarshipZodType, searchAdminZodType, searchApplicationZodType, searchStudentZodType, updateScholarshipZodType, 
   updateStudentAccountZodType,
-  validateStaffZodType} from "../Zod/ZodSchemaAdminPost";
+  validateStaffZodType} from "../Validator/ZodSchemaAdminPost";
 import { CreateEmailOptions } from "resend";
 import { ApproveHTML } from "../utils/HTML-ApprovedApplication";
 import { interviewHTML } from "../utils/HTML-InterviewApplication";
 import { prismaGetStaffAccounts, prismaGetStaffById, prismaSearchISPUStaff, prismaTotalCountStaff, prismaValidateStaff } from "../Models/ISPSU_StaffModels";
 import { prismaCheckEmailExist, prismaCreateISPSU_Staff, prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from "../Models/AccountModels";
 import { prismaCreateScholarship, prismaDeleteScholarship, prismaEndScholarship, prismaFiltersScholarship, prismaGetScholarship, prismaGetScholarshipByArray, prismaGetScholarshipsById, 
-  prismaRenewScholarship, prismaSearchScholarshipTitle, prismaStudentCountsInToken, prismaUpdateScholarship } from "../Models/ScholarshipModels";
+  prismaRenewScholarship, prismaStudentCountsInToken, prismaUpdateScholarship } from "../Models/ScholarshipModels";
 import { prismaAcceptForInterview, prismaApproveApplication, prismaBlockApplicationByApplicationId, prismaCheckApproveGov, prismaDeclineApplication, 
-  prismaGetAllApplication, prismaGetApplication, prismaGetApplicationPath, prismaGetApplicationsCSV, prismaGetFiltersForApplicationsCSV, prismaSearchApplication } from "../Models/ApplicationModels";
+  prismaGetAllApplication, prismaGetApplication, prismaGetApplicationsCSV, prismaGetFiltersForApplicationsCSV, prismaSearchApplication } from "../Models/ApplicationModels";
 import { prismaExportCSV, prismaFiltersStudent, prismaGetFiltersStudentCSV, prismaGetStudentById, prismaGetStudents, prismaSearchStudents } from "../Models/StudentModels";
 import { prismaGetApplicationByIdScholarshipId } from "../Models/Application_DecisionModels";
 import { prismaCreateAnnouncement, prismaDeleteAnnouncement, prismaEditAnnouncement, prismaGetAllAnnouncement, prismaGetAnnouncementById } from "../Models/AnnouncementModels";
 import { declineHTML } from "../utils/HTML-DeclinedApplication";
-import { chunkArray } from "../utils/Helper";
+import { chunkArray } from "../Helper/ChunkArray";
 import { io } from "..";
-import { prismaCreateStaffLog, prismaGetStaffLogs } from "../Models/Staff_LogsModels";
+import { prismaGetStaffLogs } from "../Models/Staff_LogsModels";
 import { hash } from "bcryptjs";
 import { ExportToExcel } from "../Config/ExcelJS";
 import { TokenPayload } from "../Types/authControllerTypes";
 import { cookieOptionsStaff } from "../Config/TokenAuth";
-import { downloadApplicationFileZodType, getFileUrlZodType } from "../Zod/ZodSchemaUserUser";
-import { error } from "console";
-import { sendApplicationUpdate } from "../Config/Resend";
-import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
-import { createAccountZodType } from "../Zod/ZodSchemanAdminAuth";
+import { downloadApplicationFileZodType, getFileUrlZodType } from "../Validator/ZodSchemaUserUser";
+import { createAccountZodType } from "../Validator/ZodSchemanAdminAuth";
 import { DenormalizeApplication } from "../Helper/ApplicationHelper";
+import { sendApplicationUpdate } from "../Config/Resend";
 
 
 export const getAllAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
@@ -1383,7 +1380,7 @@ export const getFiltersCSV = async(req: Request, res: Response, next: NextFuncti
 }
 export const downloadApplicationCSV = async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {
-    const {filters, dataSelections} = (req as Request &{validated: downloadApplicationCSVZodType}).validated.query
+    const {filters, dataSelections, AtoZ, order, gender} = (req as Request &{validated: downloadApplicationCSVZodType}).validated.query
     const userId = Number(req.tokenPayload.accountId)
 
     const user = await prismaGetAccountById(userId)
@@ -1393,7 +1390,7 @@ export const downloadApplicationCSV = async(req: Request, res: Response, next: N
         return
     }
 
-    const ApplicationsCSV = await prismaGetApplicationsCSV(dataSelections, filters)
+    const ApplicationsCSV = await prismaGetApplicationsCSV(dataSelections, filters, AtoZ, order, gender)
     if(ApplicationsCSV.length === 0){
       res.status(404).json({success: false, message: "No Record Found!"})
       return

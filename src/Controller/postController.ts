@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from "express"
 import { filtersDataTypes } from "../Types/adminPostControllerTypes";
 import { ResponseUploadSupabasePrivate, SupabaseDeletePrivateFile, UploadSupabasePrivate } from "../Config/Supabase"
-import { applyScholarshipZodType, downloadScholarshipFormZodType, getAllScholarshipZodType, getAnnouncementsByIdZodType, getAnnouncementsZodType, getApplicationHistoryZodType, getApplicationsZodType, getNotificationsZodType, getScholarshipsByIdZodType, getStudentApplicationByIdZodType, getStudentByIdZodType, searchScholarshipZodType } from "../Zod/ZodSchemaUserPost"
+import { applyScholarshipZodType, downloadScholarshipFormZodType, getAllScholarshipZodType, getAnnouncementsByIdZodType, getAnnouncementsZodType, getApplicationHistoryZodType, getApplicationsZodType, getNotificationsZodType, getScholarshipsByIdZodType, getStudentApplicationByIdZodType, getStudentByIdZodType, searchScholarshipZodType } from "../Validator/ZodSchemaUserPost"
 import { prismaGetScholarship, prismaGetScholarshipsById, prismaSearchScholarshipTitle, prismaStudentCountsInToken } from "../Models/ScholarshipModels";
 import { prismaCheckApplicationDuplicate, prismaCheckApproveGov, prismaCreateApplication, prismaGetAllAccountApplication, prismaGetApplication, prismaGetApplicationHistory, prismaRenewApplication, prismaSearchApplication } from "../Models/ApplicationModels";
 import { prismaGetAccountById } from "../Models/AccountModels";
@@ -241,8 +241,8 @@ export const applyRenewScholarship = async(req: Request, res: Response, next: Ne
             return
         }
         const inGov = checkAccount.Student?.Application.find(f => f.Scholarship?.type === "government")? true:false
-        res.status(200).json({success: true, message: "Application Submitted!", inGov, newApplication: renewApplication})
-        io.to(["ISPSU_Head", "ISPSU_Staff"]).emit("applyRenewScholarship", inGov, {newApplication: renewApplication, success: true})
+        res.status(200).json({success: true, message: "Application Submitted!", inGov, newApplication: DenormalizeApplication(renewApplication)})
+        io.to(["ISPSU_Head", "ISPSU_Staff"]).emit("applyRenewScholarship", inGov, {newApplication: DenormalizeApplication(renewApplication), success: true})
     } catch (error) {
         next(error)
     }

@@ -1,7 +1,8 @@
 import { Application, Prisma, PrismaClient, Student_Notification } from "@prisma/client";
 import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
 import { prismaCreateStaffLog } from "./Staff_LogsModels";
-import { ApplicationWithScholarshipType, prismaAcceptForInterviewType, prismaApproveApplicationType, prismaCreateApplicationType, prismaDeclineApplicationType, prismaGetApplicationType } from "../Types/ApplicationType";
+import { ApplicationWithScholarshipType, prismaAcceptForInterviewType, prismaApproveApplicationType, prismaCreateApplicationType, prismaDeclineApplicationType, prismaGetApplicationType, prismaRenewApplicationType } from "../Types/ApplicationType";
+import { GenerateAlphabet } from "../Helper/ApplicationHelper";
 
 const prisma = new PrismaClient();
 
@@ -672,7 +673,7 @@ export const prismaBlockApplicationByOwnerId = async(ownerId: number): Promise<n
     })
     return result.count
 }
-export const prismaRenewApplication = async( applicationId: number, renewFiles: RecordApplicationFilesTypes, supabasePath: string[]): Promise<number>=> {
+export const prismaRenewApplication = async( applicationId: number, renewFiles: RecordApplicationFilesTypes, supabasePath: string[]): Promise<prismaRenewApplicationType>=> {
     const result = await prisma.application.update({
         where:{
             applicationId: applicationId
@@ -706,10 +707,12 @@ export const prismaRenewApplication = async( applicationId: number, renewFiles: 
                         }
                     }
                 }
-            }
+            },
+            Interview_Decision: true,
+            Application_Decision: true
         }
     })
-    return result.ownerId
+    return result
 }
 export const prismaBlockApplicationByApplicationId = async(applicationId: number):Promise<Application|null>=> {
     const block = await prisma.application.update({
@@ -812,10 +815,17 @@ export const prismaGetFiltersForApplicationsCSV = async (
     sections: sections.length? sections.map(e => ({label: e.section, count: e._count._all})):[],
   }
 };
-export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?: {id: string, value: string[]}[]): Promise<object[]> =>{
+export const prismaGetApplicationsCSV = async(
+    dataSelections: string[], filters?: {id: string, value: string[]}[], AtoZ?: 
+    {start?: string, end?: string}, order?: string, gender?: string
+): Promise<object[]> =>{
+    const start = (AtoZ?.start?.[0] || "A").toUpperCase()
+    const end = (AtoZ?.end?.[0] || "Z").toUpperCase()
+    const alphabets = GenerateAlphabet(start, end)
+    const finalOrder = order === "asc" || order === "desc"? order:"asc"
     const records = await prisma.application.findMany({
         orderBy:{
-            Student: {lName: "asc"}
+            Student: {lName: finalOrder}
         },
         where:{
             Scholarship:{title: {in: (filters?.find(f => f.id == "scholarship")?.value)}},
@@ -824,7 +834,10 @@ export const prismaGetApplicationsCSV = async(dataSelections: string[], filters?
                 year: {in:(filters?.find(f => f.id == "studentYear")?.value)},
                 section: {in:(filters?.find(f => f.id == "studentSection")?.value)},
                 institute: {in:(filters?.find(f => f.id == "studentInstitute")?.value)},
-                gender: {in:(filters?.find(f => f.id == "gender")?.value)}
+                gender: gender,
+                ...(alphabets?.length? {
+                    OR:alphabets.map(e => ({lName:{startsWith: e, mode:"insensitive"}}))
+                }:{})
             },
             status:{in: filters?.find(f => f.id === "applicationStatus")?.value}
         },

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { changePasswordZodType, downloadApplicationFileZodType, getFileUrlZodType, readNotificationZodType, sendAuthCodeChangeAccountCredZodType, updateApplicationZodType, updateStudentInfoZodType } from "../Zod/ZodSchemaUserUser";
+import { changePasswordZodType, downloadApplicationFileZodType, getFileUrlZodType, readNotificationZodType, sendAuthCodeChangeAccountCredZodType, updateApplicationZodType, updateStudentInfoZodType } from "../Validator/ZodSchemaUserUser";
 import { DeleteSupabase, ResponseUploadSupabase, ResponseUploadSupabasePrivate, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase, UploadSupabasePrivate } from "../Config/Supabase";
 import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateStudentAccount } from "../Models/AccountModels";
 import { compare, hash } from "bcryptjs";

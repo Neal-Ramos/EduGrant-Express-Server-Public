@@ -4,7 +4,7 @@ import { sign, verify } from "jsonwebtoken";
 import bcrypt, { hash } from "bcryptjs";
 import { SendAuthCode } from "../Config/Resend"
 import { TokenPayload } from "../Types/authControllerTypes";
-import { forgotPasswordSendAuthCodeZodType, forgotPasswordZodType, loginAccountsZodType, registerAccountZodType, sendAuthCodeLoginZodType, sendAuthCodeRegisterZodType } from "../Zod/ZodSchemaUserAuth";
+import { forgotPasswordSendAuthCodeZodType, forgotPasswordZodType, loginAccountsZodType, registerAccountZodType, sendAuthCodeLoginZodType, sendAuthCodeRegisterZodType } from "../Validator/ZodSchemaUserAuth";
 import { authHTML } from "../utils/HTML-AuthCode";
 import { prismaCheckEmailExist, prismaCheckStudentIdExist, prismaCreateStudentAccount, prismaGetAccountById, prismaUpdateAccountPassword } from "../Models/AccountModels";
 import { GenerateCode } from "../Config/CodeGenerator";
@@ -12,7 +12,7 @@ import { CreateEmailOptions } from "resend";
 import { prismaGetUnreadNotificationsCount } from "../Models/Student_NotificationModels";
 import { AuthCode } from "../Models/Auth_CodeModels";
 import { prismaGetAllAnnouncement } from "../Models/AnnouncementModels";
-import { getAnnouncementsZodType } from "../Zod/ZodSchemaUserPost";
+import { getAnnouncementsZodType } from "../Validator/ZodSchemaUserPost";
 
 export const registerAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
