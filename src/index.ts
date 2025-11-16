@@ -107,7 +107,7 @@ io.on("connection", (socket) => {// Start Connection BOOOOOOOIIIII
             socket.join(data.id.toString())
             socket.join("Student")
         }
-        console.log(`User Connected: ID = ${data.id} Role = ${data.role}`)
+        // console.log(`User Connected: ID = ${data.id} Role = ${data.role}`)
     })
     socket.on("disconnect", () => {
         

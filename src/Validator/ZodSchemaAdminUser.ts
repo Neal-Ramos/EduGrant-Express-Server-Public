@@ -24,7 +24,7 @@ export const editStaffZodSchema = z.object({
         ownerId: toInt(),
         fName: z.string().min(1).optional(),
         lName: z.string().min(1).optional(),
-        mName: z.string().min(1).optional(),
+        mName: z.string().optional(),
         email: z.email().optional(),
         password: z.string().min(8).optional(),
         validate: z.string().optional()
