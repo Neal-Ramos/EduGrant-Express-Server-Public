@@ -886,16 +886,15 @@ export const prismaGetApplicationsCSV = async(
     const clean = (obj: Record<string, any>) => Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
     let Number = 0
     const CSV = records.map(r => {
-        Number++
         return clean({
-            ["No."]: Number,
+            ["No."]: Number + 1,
             ["Scholarship Title"]: r.Scholarship?.title,
             ["Scholarship Provider"]:r.Scholarship?.Scholarship_Provider?.name,
             ["Student ID"]: r.Student.Account.schoolId,
             ["Student Email"]: r.Student.Account.email,
             ["Last Name"]: r.Student.lName,
             ["First Name"]: r.Student.fName,
-            ["Middle Name"]: r.Student.mName,
+            ["Middle Name"]: dataSelections.includes("mName")?r.Student.mName || "None":null,
             ["Contact Number"]: r.Student.contactNumber,
             Gender: r.Student.gender,
             Address: r.Student.address,
