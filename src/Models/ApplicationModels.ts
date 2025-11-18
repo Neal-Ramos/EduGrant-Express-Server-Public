@@ -746,9 +746,9 @@ export const prismaGetFiltersForApplicationsCSV = async (
         OR:[
             {Application: {some:{status: {in: ["APPROVED","DECLINED","PENDING","INTERVIEW", "BLOCKED"]}}}},
         ]
-      }
+      },
     }),
-    scholarship? prisma.application.groupBy({
+    scholarship? prisma.application.groupBy({//applicationStatuses
         by:["status"],
         _count:{
             _all: true
@@ -758,7 +758,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
             Scholarship:{title: {in: scholarship}}
         }
     }):[],
-    applicationStatus? prisma.student.groupBy({
+    applicationStatus? prisma.student.groupBy({//institutes
         by:["institute"],
         _count:{
             _all: true
@@ -768,7 +768,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
             Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
         }
     }):[],
-    studentInstitute? prisma.student.groupBy({
+    studentInstitute? prisma.student.groupBy({//course
         by:["course"],
         _count:{
             _all: true
@@ -779,7 +779,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
             Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
         }
     }):[],
-    studentCourse? prisma.student.groupBy({
+    studentCourse? prisma.student.groupBy({//year
         by:["year"],
         _count:{
             _all: true
@@ -791,7 +791,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
             Application: {some:{Scholarship: {title:{in: scholarship}}, status: {in: applicationStatus}}}
         }
     }):[],
-    studentYear? prisma.student.groupBy({
+    studentYear? prisma.student.groupBy({//section
         by:["section"],
         _count:{
             _all: true
@@ -805,9 +805,19 @@ export const prismaGetFiltersForApplicationsCSV = async (
         }
     }):[],
   ]);
+  const applicationCountByScholarshipTitle = await Promise.all(
+    scholarshipTitles.map(async(e) => {
+        return {
+            label: e.title,
+            count: await prisma.application.count({
+                where:{Scholarship: {title: e.title}}
+            })
+        }
+    })
+  )
 
   return {
-    scholarshipTitles: scholarshipTitles.map(e => ({label: e.title, count: e._count._all})),
+    scholarshipTitles: applicationCountByScholarshipTitle,
     applicationStatuses: applicationStatuses.length? applicationStatuses.map(e => ({label: e.status, count: e._count._all})):[],
     institutes: institutes.length? institutes.map(e => ({label: e.institute, count: e._count._all})):[],
     courses: courses.length? courses.map(e => ({label: e.course, count: e._count._all})):[],
@@ -839,7 +849,7 @@ export const prismaGetApplicationsCSV = async(
                     OR:alphabets.map(e => ({lName:{startsWith: e, mode:"insensitive"}}))
                 }:{})
             },
-            status:{in: filters?.find(f => f.id === "applicationStatus")?.value}
+            status:{in: filters?.find(f => f.id === "applicationStatus")?.value},
         },
         select: {
             applicationId: true,
