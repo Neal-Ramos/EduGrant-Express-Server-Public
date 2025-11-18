@@ -376,7 +376,7 @@ export const downloadApplicationCSVZodSchema = z.object({
   query: z.object({
     filters: toJSON().refine(e => (Array.isArray(e) && e.every(item => typeof item == "object"))).optional(),
     dataSelections: toJSON().refine(e => Array.isArray(e) && e.every(item => typeof item == "string")),
-    AtoZ: toJSON().refine((e) =>{typeof e === "object" && e.start && e.end}, {message: "Error Value!"}).optional(),
+    AtoZ: toJSON().optional(),//.refine((e) =>{typeof e === "object" && e.start && e.end}, {message: "Error Value!"})
     order: z.string().refine(e => e === "asc" || e === "desc", {message: "Error Value!"}).optional(),
     gender: z.string().refine(e => e === "Male" || e === "Female", {message: "Error Value!"}).optional()
   })
