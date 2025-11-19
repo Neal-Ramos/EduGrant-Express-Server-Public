@@ -896,7 +896,7 @@ export const prismaGetApplicationsCSV = async(
         }
     })
     const clean = (obj: Record<string, any>) => Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
-    const CSV = records.map(r => {//"Mother Taxable Income", "Father Taxable Income", "Guardian Taxable Income", "Total Taxable Income"
+    const CSV = records.map(r => {
         const No = 0
         
         const familyBackground = r.Student.familyBackground as familyBackgroundType
@@ -905,7 +905,7 @@ export const prismaGetApplicationsCSV = async(
             motherTotalParentsTaxableIncome: dataSelections.includes("Mother Taxable Income")? extractNumber(familyBackground.fatherTotalParentsTaxableIncome):null,
             guardianTotalParentsTaxableIncome: dataSelections.includes("Guardian Taxable Income")? extractNumber(familyBackground.guardianTotalParentsTaxableIncome):null,
         }
-        const totalTotalParentsTaxableIncome: number|null = dataSelections.includes("")? (fatherTotalParentsTaxableIncome || 0) + (motherTotalParentsTaxableIncome || 0) + (guardianTotalParentsTaxableIncome || 0):null
+        const totalTotalParentsTaxableIncome: number|null = dataSelections.includes("Total Taxable Income")? (fatherTotalParentsTaxableIncome || 0) + (motherTotalParentsTaxableIncome || 0) + (guardianTotalParentsTaxableIncome || 0):null
 
         
         return clean({
