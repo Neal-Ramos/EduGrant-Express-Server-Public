@@ -829,7 +829,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
 export const prismaGetApplicationsCSV = async(
     dataSelections: string[], filters?: {id: string, value: string[]}[], AtoZ?: 
     {start?: string, end?: string}, order?: string, gender?: string
-): Promise<object[]> =>{//"Mother Taxable Income", "Father Taxable Income", "Guardian Taxable Income", "Total Taxable Income"
+): Promise<object[]> =>{
     const start = (AtoZ?.start?.[0] || "A").toUpperCase()
     const end = (AtoZ?.end?.[0] || "Z").toUpperCase()
     const alphabets = GenerateAlphabet(start, end)
@@ -896,16 +896,16 @@ export const prismaGetApplicationsCSV = async(
         }
     })
     const clean = (obj: Record<string, any>) => Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
-    const CSV = records.map(r => {
+    const CSV = records.map(r => {//"Mother Taxable Income", "Father Taxable Income", "Guardian Taxable Income", "Total Taxable Income"
         const No = 0
         
         const familyBackground = r.Student.familyBackground as familyBackgroundType
         const {fatherTotalParentsTaxableIncome, motherTotalParentsTaxableIncome, guardianTotalParentsTaxableIncome} = {
-            fatherTotalParentsTaxableIncome: extractNumber(familyBackground.motherTotalParentsTaxableIncome),
-            motherTotalParentsTaxableIncome: extractNumber(familyBackground.fatherTotalParentsTaxableIncome),
-            guardianTotalParentsTaxableIncome: extractNumber(familyBackground.guardianTotalParentsTaxableIncome),
+            fatherTotalParentsTaxableIncome: dataSelections.includes("Father Taxable Income")? extractNumber(familyBackground.motherTotalParentsTaxableIncome):null,
+            motherTotalParentsTaxableIncome: dataSelections.includes("Mother Taxable Income")? extractNumber(familyBackground.fatherTotalParentsTaxableIncome):null,
+            guardianTotalParentsTaxableIncome: dataSelections.includes("Guardian Taxable Income")? extractNumber(familyBackground.guardianTotalParentsTaxableIncome):null,
         }
-        const totalTotalParentsTaxableIncome: number = fatherTotalParentsTaxableIncome + motherTotalParentsTaxableIncome + guardianTotalParentsTaxableIncome
+        const totalTotalParentsTaxableIncome: number|null = dataSelections.includes("")? (fatherTotalParentsTaxableIncome || 0) + (motherTotalParentsTaxableIncome || 0) + (guardianTotalParentsTaxableIncome || 0):null
 
         
         return clean({
@@ -927,10 +927,10 @@ export const prismaGetApplicationsCSV = async(
             Year: r.Student.year,
             Section: r.Student.section,
             ["Birth Date"]: r.Student.dateOfBirth? (typeof r.Student.dateOfBirth === "string"? r.Student.dateOfBirth : new Date(r.Student.dateOfBirth).toISOString().split("T")[0]):null,
-            fatherTotalParentsTaxableIncome: fatherTotalParentsTaxableIncome,
-            motherTotalParentsTaxableIncome: motherTotalParentsTaxableIncome,
-            guardianTotalParentsTaxableIncome: guardianTotalParentsTaxableIncome,
-            totalTotalParentsTaxableIncome: totalTotalParentsTaxableIncome,
+            ["Father Taxable Income"]: fatherTotalParentsTaxableIncome,
+            ["Mother Taxable Income"]: motherTotalParentsTaxableIncome,
+            ["Guardian Taxable Income"]: guardianTotalParentsTaxableIncome,
+            ["Total Taxable Income"]: totalTotalParentsTaxableIncome,
             ["Application Status"]: r.status
         })
     })
