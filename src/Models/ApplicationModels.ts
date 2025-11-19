@@ -1,8 +1,9 @@
 import { Application, Prisma, PrismaClient, Student_Notification } from "@prisma/client";
 import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
 import { prismaCreateStaffLog } from "./Staff_LogsModels";
-import { ApplicationWithScholarshipType, prismaAcceptForInterviewType, prismaApproveApplicationType, prismaCreateApplicationType, prismaDeclineApplicationType, prismaGetApplicationType, prismaRenewApplicationType } from "../Types/ApplicationType";
+import { ApplicationWithScholarshipType, familyBackgroundType, prismaAcceptForInterviewType, prismaApproveApplicationType, prismaCreateApplicationType, prismaDeclineApplicationType, prismaGetApplicationType, prismaRenewApplicationType } from "../Types/ApplicationType";
 import { GenerateAlphabet } from "../Helper/ApplicationHelper";
+import { extractNumber } from "../Helper/Helpers";
 
 const prisma = new PrismaClient();
 
@@ -828,7 +829,7 @@ export const prismaGetFiltersForApplicationsCSV = async (
 export const prismaGetApplicationsCSV = async(
     dataSelections: string[], filters?: {id: string, value: string[]}[], AtoZ?: 
     {start?: string, end?: string}, order?: string, gender?: string
-): Promise<object[]> =>{
+): Promise<object[]> =>{//"Mother Taxable Income", "Father Taxable Income", "Guardian Taxable Income", "Total Taxable Income"
     const start = (AtoZ?.start?.[0] || "A").toUpperCase()
     const end = (AtoZ?.end?.[0] || "Z").toUpperCase()
     const alphabets = GenerateAlphabet(start, end)
@@ -882,6 +883,7 @@ export const prismaGetApplicationsCSV = async(
                     year: dataSelections.includes("year"),
                     section: dataSelections.includes("section"),
                     dateOfBirth: dataSelections.includes("dateOfBirth"),
+                    familyBackground: true,
                     Account:{
                         select: {
                             accountId: true,
@@ -894,10 +896,20 @@ export const prismaGetApplicationsCSV = async(
         }
     })
     const clean = (obj: Record<string, any>) => Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
-    let Number = 0
     const CSV = records.map(r => {
+        const No = 0
+        
+        const familyBackground = r.Student.familyBackground as familyBackgroundType
+        const {fatherTotalParentsTaxableIncome, motherTotalParentsTaxableIncome, guardianTotalParentsTaxableIncome} = {
+            fatherTotalParentsTaxableIncome: extractNumber(familyBackground.motherTotalParentsTaxableIncome),
+            motherTotalParentsTaxableIncome: extractNumber(familyBackground.fatherTotalParentsTaxableIncome),
+            guardianTotalParentsTaxableIncome: extractNumber(familyBackground.guardianTotalParentsTaxableIncome),
+        }
+        const totalTotalParentsTaxableIncome: number = fatherTotalParentsTaxableIncome + motherTotalParentsTaxableIncome + guardianTotalParentsTaxableIncome
+
+        
         return clean({
-            ["No."]: Number + 1,
+            ["No."]: No + 1,
             ["Scholarship Title"]: r.Scholarship?.title,
             ["Scholarship Provider"]:r.Scholarship?.Scholarship_Provider?.name,
             ["Student ID"]: r.Student.Account.schoolId,
@@ -915,6 +927,10 @@ export const prismaGetApplicationsCSV = async(
             Year: r.Student.year,
             Section: r.Student.section,
             ["Birth Date"]: r.Student.dateOfBirth? (typeof r.Student.dateOfBirth === "string"? r.Student.dateOfBirth : new Date(r.Student.dateOfBirth).toISOString().split("T")[0]):null,
+            fatherTotalParentsTaxableIncome: fatherTotalParentsTaxableIncome,
+            motherTotalParentsTaxableIncome: motherTotalParentsTaxableIncome,
+            guardianTotalParentsTaxableIncome: guardianTotalParentsTaxableIncome,
+            totalTotalParentsTaxableIncome: totalTotalParentsTaxableIncome,
             ["Application Status"]: r.status
         })
     })

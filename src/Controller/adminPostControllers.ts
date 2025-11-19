@@ -19,7 +19,7 @@ import { prismaExportCSV, prismaFiltersStudent, prismaGetFiltersStudentCSV, pris
 import { prismaGetApplicationByIdScholarshipId } from "../Models/Application_DecisionModels";
 import { prismaCreateAnnouncement, prismaDeleteAnnouncement, prismaEditAnnouncement, prismaGetAllAnnouncement, prismaGetAnnouncementById } from "../Models/AnnouncementModels";
 import { declineHTML } from "../utils/HTML-DeclinedApplication";
-import { chunkArray } from "../Helper/ChunkArray";
+import { chunkArray } from "../Helper/Helpers";
 import { io } from "..";
 import { prismaGetStaffLogs } from "../Models/Staff_LogsModels";
 import { hash } from "bcryptjs";
@@ -1370,7 +1370,9 @@ export const getFiltersCSV = async(req: Request, res: Response, next: NextFuncti
     }
 
     const getFiltersForApplicationsCSV = await prismaGetFiltersForApplicationsCSV(scholarship, applicationStatus, studentInstitute, studentCourse, studentYear, studentSection)
-    const dataSelections = [ "status", "title", "name", "fName", "lName", "mName", "contactNumber", "gender", "address", "indigenous", "PWD", "institute", "course", "year", "section", "dateOfBirth", "schoolId", "email",
+    const dataSelections = [
+      "status", "title", "name", "fName", "lName", "mName", "contactNumber", "gender", "address", "indigenous", "PWD", "institute", "course", "year",
+      "section", "dateOfBirth", "schoolId", "email", "Mother Taxable Income", "Father Taxable Income", "Guardian Taxable Income", "Total Taxable Income"
     ]
 
     res.status(200).json({success: true, filters: getFiltersForApplicationsCSV, dataSelections})

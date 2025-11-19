@@ -151,3 +151,20 @@ export type prismaRenewApplicationType = Prisma.ApplicationGetPayload<{
             Application_Decision: true
         }
 }>
+export type familyBackgroundType = {
+    fatherStatus?: string,
+    motherStatus?: string,
+    fatherAddress?: string,
+    motherAddress?: string,
+    fatherFullName?: string,
+    motherFullName?: string,
+    fatherOccupation?: string,
+    motherOccupation?: string,
+    fatherContactNumber?: string,
+    motherContactNumber?: string,
+    fatherHighestEducation?: string,
+    motherHighestEducation?: string,
+    fatherTotalParentsTaxableIncome?: string,
+    motherTotalParentsTaxableIncome?: string,
+    guardianTotalParentsTaxableIncome?: string,
+}
