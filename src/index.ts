@@ -50,7 +50,8 @@ app.use((req, res, next) => {
     }
     next();
 });
-app.use(apiLimiter)
+// app.set("trust proxy", 1)
+// app.use(apiLimiter)
 app.use(healthCheckMiddleware)
 
 app.use(PublicRoutes)
