@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client"
+import { Prisma } from "../lib/prisma"
 
 export interface filtersDataTypes {
     id: string,

@@ -1,7 +1,5 @@
 import { PrismaClient, Staff_Logs } from "@prisma/client";
-
-
-const prisma = new PrismaClient()
+import { prisma } from "../lib/prisma"
 
 export const prismaCreateStaffLog = async(ownerId: number, scholarshipId: number, applicationId: number, action: string): Promise<Staff_Logs|null>=> {
     const result = await prisma.staff_Logs.create({

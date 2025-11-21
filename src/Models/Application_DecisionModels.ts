@@ -1,7 +1,6 @@
 import { Application, Prisma, PrismaClient } from "@prisma/client";
 import { prismaGetApplicationByIdScholarshipIdType } from "../Types/Application_DecisionTypes";
-
-const prisma = new PrismaClient()
+import { prisma } from "../lib/prisma"
 
 
 

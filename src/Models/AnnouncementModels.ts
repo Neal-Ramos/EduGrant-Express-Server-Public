@@ -1,6 +1,5 @@
 import { Announcement, PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma"
 
 export const prismaCreateAnnouncement = async (accountId: number, announcementTitle: string, announcementDescription?: string, announcementTags?: {}): Promise<Announcement>=> {
     const announcement = await prisma.announcement.create({

@@ -1,10 +1,9 @@
-import { Application, Prisma, PrismaClient, Scholarship } from "@prisma/client";
+import { Application, Scholarship } from "@prisma/client";
 import { ResponseUploadSupabase } from "../Config/Supabase";
 import { DocumentEntry } from "../Types/postControllerTypes";
 import { io } from "..";
 import { prismaRenewScholarshipType, ScholarshipWithChildType } from "../Types/ScholarshipTypes";
-
-const prisma = new PrismaClient()
+import { prisma, Prisma } from "../lib/prisma"
 
 
 export const prismaCreateScholarship = async(scholarshipType: string, newScholarTitle: string, newScholarProvider: string,  newScholarDeadline: Date, newScholarDescription: string,

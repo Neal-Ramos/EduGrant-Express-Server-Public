@@ -1,8 +1,7 @@
 import { Account, ISPSU_Staff, Prisma, PrismaClient } from "@prisma/client";
 import { ResponseUploadSupabase } from "../Config/Supabase";
 import { prismaGetStaffAccountsType, prismaGetStaffByIdType } from "../Types/ISPSU_StaffTypes";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma"
 
 export const prismaTotalCountStaff = async (accountId?: number): Promise<number> => {
   const count = await prisma.iSPSU_Staff.count({

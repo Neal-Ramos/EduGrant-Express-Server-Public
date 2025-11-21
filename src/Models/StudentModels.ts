@@ -1,7 +1,6 @@
 import { PrismaClient, Student, Prisma } from "@prisma/client";
 import { AccountWithRelationsType } from "../Types/StudentTypes";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma"
 
 export const prismaFiltersStudent = async(status?: string): Promise<{}>=> {
 

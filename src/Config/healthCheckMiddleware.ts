@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { supabase } from './Supabase';
-
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 
 export const healthCheckMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
   try {

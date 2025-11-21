@@ -4,8 +4,7 @@ import { prismaCreateStaffLog } from "./Staff_LogsModels";
 import { ApplicationWithScholarshipType, familyBackgroundType, prismaAcceptForInterviewType, prismaApproveApplicationType, prismaCreateApplicationType, prismaDeclineApplicationType, prismaGetApplicationType, prismaRenewApplicationType } from "../Types/ApplicationType";
 import { GenerateAlphabet } from "../Helper/ApplicationHelper";
 import { extractNumber } from "../Helper/Helpers";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma"
 
 export const prismaGetApplication = async (applicationId: number): Promise<prismaGetApplicationType | null> => {
     const application = await prisma.application.findUnique({
