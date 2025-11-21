@@ -1,4 +1,4 @@
-import { PrismaClient, Student, Prisma } from "@prisma/client";
+import { Student } from "@prisma/client";
 import { AccountWithRelationsType } from "../Types/StudentTypes";
 import { prisma } from "../lib/prisma"
 

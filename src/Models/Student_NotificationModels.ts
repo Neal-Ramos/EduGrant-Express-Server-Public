@@ -1,4 +1,4 @@
-import { PrismaClient, Student_Notification } from "@prisma/client";
+import { Student_Notification } from "@prisma/client";
 import { prisma } from "../lib/prisma"
 
 export const prismaGetAllNotifications = async(accountId: number, page: number|undefined, dataPerPage: number|undefined, status: string|undefined, 

@@ -1,6 +1,5 @@
-import { Application, Prisma, PrismaClient, Student_Notification } from "@prisma/client";
+import { Application, Prisma, Student_Notification } from "@prisma/client";
 import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
-import { prismaCreateStaffLog } from "./Staff_LogsModels";
 import { ApplicationWithScholarshipType, familyBackgroundType, prismaAcceptForInterviewType, prismaApproveApplicationType, prismaCreateApplicationType, prismaDeclineApplicationType, prismaGetApplicationType, prismaRenewApplicationType } from "../Types/ApplicationType";
 import { GenerateAlphabet } from "../Helper/ApplicationHelper";
 import { extractNumber } from "../Helper/Helpers";

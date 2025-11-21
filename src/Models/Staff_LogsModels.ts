@@ -1,4 +1,4 @@
-import { PrismaClient, Staff_Logs } from "@prisma/client";
+import { Staff_Logs } from "@prisma/client";
 import { prisma } from "../lib/prisma"
 
 export const prismaCreateStaffLog = async(ownerId: number, scholarshipId: number, applicationId: number, action: string): Promise<Staff_Logs|null>=> {

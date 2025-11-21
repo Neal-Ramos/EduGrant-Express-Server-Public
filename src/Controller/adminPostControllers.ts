@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../lib/prisma";
 import { DeleteSupabase, ResponseUploadSupabase, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase } from "../Config/Supabase";
 import { adminAddScholarshipsZodType, approveApplicationZodType, createAnnouncementZodType, declineApplicationZodType, deleteAdminZodType, deleteAnnouncementZodType, deleteISPSU_StaffZodType, deleteScholarshipZodType, deleteStudentZodType, downloadApplicationCSVZodType, downloadStudentsCSVZodType, editAnnouncementZodType, endScholarshipZodType, forInterviewZondType, getAllAdminZodType, getAnnouncementByIdZodType, getAnnouncementZodType, getApplicationByIdZodType, getApplicationZodType, getFilterDataZodType, 
   getFiltersCSVZodType, 

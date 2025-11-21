@@ -1,4 +1,4 @@
-import { Announcement, PrismaClient } from "@prisma/client";
+import { Announcement } from "@prisma/client";
 import { prisma } from "../lib/prisma"
 
 export const prismaCreateAnnouncement = async (accountId: number, announcementTitle: string, announcementDescription?: string, announcementTags?: {}): Promise<Announcement>=> {

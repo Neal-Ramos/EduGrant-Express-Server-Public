@@ -1,4 +1,4 @@
-import { Account, ISPSU_Staff, Prisma, PrismaClient } from "@prisma/client";
+import { Account, ISPSU_Staff } from "@prisma/client";
 import { ResponseUploadSupabase } from "../Config/Supabase";
 import { prismaGetStaffAccountsType, prismaGetStaffByIdType } from "../Types/ISPSU_StaffTypes";
 import { prisma } from "../lib/prisma"

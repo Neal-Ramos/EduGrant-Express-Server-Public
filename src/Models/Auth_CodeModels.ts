@@ -1,4 +1,4 @@
-import { Auth_Code, PrismaClient } from "@prisma/client";
+import { Auth_Code } from "@prisma/client";
 import { prisma } from "../lib/prisma"
 
 export class AuthCode {
