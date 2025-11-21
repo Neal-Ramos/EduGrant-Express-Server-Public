@@ -1,6 +1,5 @@
-import { Prisma } from "../lib/prisma"
-
+import { Prisma } from '../lib/prisma';
 
 export type prismaGetApplicationByIdScholarshipIdType = Prisma.ApplicationGetPayload<{
-    include: {Student: {include: {Account: true}}}
-}>
+  include: { Student: { include: { Account: true } } };
+}>;

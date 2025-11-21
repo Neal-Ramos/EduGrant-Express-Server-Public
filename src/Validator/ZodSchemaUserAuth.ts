@@ -1,5 +1,5 @@
-import z, { boolean, email } from "zod";
-import { toBoolean, toDate } from "./Validator";
+import z, { boolean, email } from 'zod';
+import { toBoolean, toDate } from './Validator';
 
 export const registerAccountZodSchema = z.object({
   body: z.object({
@@ -63,9 +63,7 @@ export const sendAuthCodeRegisterZodSchema = z.object({
     studentDateofBirth: toDate(),
   }),
 });
-export type sendAuthCodeRegisterZodType = z.infer<
-  typeof sendAuthCodeRegisterZodSchema
->;
+export type sendAuthCodeRegisterZodType = z.infer<typeof sendAuthCodeRegisterZodSchema>;
 
 export const sendAuthCodeLoginZodSchema = z.object({
   body: z.object({
@@ -73,22 +71,20 @@ export const sendAuthCodeLoginZodSchema = z.object({
     userPassword: z.string(),
   }),
 });
-export type sendAuthCodeLoginZodType = z.infer<
-  typeof sendAuthCodeLoginZodSchema
->;
+export type sendAuthCodeLoginZodType = z.infer<typeof sendAuthCodeLoginZodSchema>;
 
 export const forgotPasswordZodSchema = z.object({
   body: z.object({
     newPassword: z.string().min(8),
     email: z.email(),
-    code: z.string()
-  })
-})
-export type forgotPasswordZodType = z.infer<typeof forgotPasswordZodSchema>
+    code: z.string(),
+  }),
+});
+export type forgotPasswordZodType = z.infer<typeof forgotPasswordZodSchema>;
 
 export const forgotPasswordSendAuthCodeZodSchema = z.object({
   body: z.object({
     email: z.email(),
-  })
-})
-export type forgotPasswordSendAuthCodeZodType = z.infer<typeof forgotPasswordSendAuthCodeZodSchema>
+  }),
+});
+export type forgotPasswordSendAuthCodeZodType = z.infer<typeof forgotPasswordSendAuthCodeZodSchema>;

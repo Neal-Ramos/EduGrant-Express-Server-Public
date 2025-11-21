@@ -1,4 +1,8 @@
-export const declineHTML = (applicantName: string, applicantStudentId: string, applicanteEmail: string): string => `
+export const declineHTML = (
+  applicantName: string,
+  applicantStudentId: string,
+  applicanteEmail: string,
+): string => `
     <!doctype html>
 <html lang="en">
 <head>

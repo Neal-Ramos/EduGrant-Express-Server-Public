@@ -1,37 +1,91 @@
-import { Router } from "express";
-import upload from "../Helper/upload";
-import { applyRenewScholarship, applyScholarship, downloadScholarshipForm, getAllScholarship, getAnnouncements, getAnnouncementsById, getApplicationHistory, getApplications, getNotifications, 
-    getScholarshipsbyId, getStudentApplicationById, getStudentById, searchScholarship, tokenValidation } from "../Controller/postController";
-import { TokenAuth } from "../Helper/TokenAuth";
-import { validate } from "../Validator/Validator";
-import { applyRenewScholarshipZodSchema, applyScholarshipZodSchema, downloadScholarshipFormZodSchema, getAllScholarshipZodSchema, getAnnouncementsByIdZodSchema, getAnnouncementsZodSchema, 
-    getApplicationHistoryZodSchema, 
-    getApplicationsZodSchema, getNotificationsZodSchema, getScholarshipsByIdZodSchema, getStudentApplicationByIdZodSchema, getStudentByIdZodSchema, 
-    searchScholarshipZodSchema} from "../Validator/ZodSchemaUserPost";
+import { Router } from 'express';
+import upload from '../Helper/upload';
+import {
+  applyRenewScholarship,
+  applyScholarship,
+  downloadScholarshipForm,
+  getAllScholarship,
+  getAnnouncements,
+  getAnnouncementsById,
+  getApplicationHistory,
+  getApplications,
+  getNotifications,
+  getScholarshipsbyId,
+  getStudentApplicationById,
+  getStudentById,
+  searchScholarship,
+  tokenValidation,
+} from '../Controller/postController';
+import { TokenAuth } from '../Helper/TokenAuth';
+import { validate } from '../Validator/Validator';
+import {
+  applyRenewScholarshipZodSchema,
+  applyScholarshipZodSchema,
+  downloadScholarshipFormZodSchema,
+  getAllScholarshipZodSchema,
+  getAnnouncementsByIdZodSchema,
+  getAnnouncementsZodSchema,
+  getApplicationHistoryZodSchema,
+  getApplicationsZodSchema,
+  getNotificationsZodSchema,
+  getScholarshipsByIdZodSchema,
+  getStudentApplicationByIdZodSchema,
+  getStudentByIdZodSchema,
+  searchScholarshipZodSchema,
+} from '../Validator/ZodSchemaUserPost';
 
 const UserPostRoutes = Router();
 
 UserPostRoutes.use(TokenAuth);
-UserPostRoutes.post("/applyScholarship", upload.any(),validate(applyScholarshipZodSchema) ,applyScholarship);
-UserPostRoutes.post("/renewScholarship", upload.any(),validate(applyRenewScholarshipZodSchema) ,applyRenewScholarship);
-UserPostRoutes.post("/downloadScholarshipForm", validate(downloadScholarshipFormZodSchema) ,downloadScholarshipForm);
+UserPostRoutes.post(
+  '/applyScholarship',
+  upload.any(),
+  validate(applyScholarshipZodSchema),
+  applyScholarship,
+);
+UserPostRoutes.post(
+  '/renewScholarship',
+  upload.any(),
+  validate(applyRenewScholarshipZodSchema),
+  applyRenewScholarship,
+);
+UserPostRoutes.post(
+  '/downloadScholarshipForm',
+  validate(downloadScholarshipFormZodSchema),
+  downloadScholarshipForm,
+);
 
-UserPostRoutes.get("/tokenValidation", tokenValidation);
+UserPostRoutes.get('/tokenValidation', tokenValidation);
 
-UserPostRoutes.get("/getStudentById", validate(getStudentByIdZodSchema), getStudentById);
+UserPostRoutes.get('/getStudentById', validate(getStudentByIdZodSchema), getStudentById);
 
-UserPostRoutes.get("/getAllScholarship", validate(getAllScholarshipZodSchema), getAllScholarship)
-UserPostRoutes.get("/searchScholarship", validate(searchScholarshipZodSchema), searchScholarship)
-UserPostRoutes.get("/getScholarshipsById", validate(getScholarshipsByIdZodSchema), getScholarshipsbyId);
+UserPostRoutes.get('/getAllScholarship', validate(getAllScholarshipZodSchema), getAllScholarship);
+UserPostRoutes.get('/searchScholarship', validate(searchScholarshipZodSchema), searchScholarship);
+UserPostRoutes.get(
+  '/getScholarshipsById',
+  validate(getScholarshipsByIdZodSchema),
+  getScholarshipsbyId,
+);
 
-UserPostRoutes.get("/getNotifications", validate(getNotificationsZodSchema), getNotifications)
+UserPostRoutes.get('/getNotifications', validate(getNotificationsZodSchema), getNotifications);
 
-UserPostRoutes.get("/getApplications", validate(getApplicationsZodSchema), getApplications)
-UserPostRoutes.get("/getStudentApplicationById", validate(getStudentApplicationByIdZodSchema), getStudentApplicationById)
-UserPostRoutes.get("/getApplicationHistory", validate(getApplicationHistoryZodSchema), getApplicationHistory)
+UserPostRoutes.get('/getApplications', validate(getApplicationsZodSchema), getApplications);
+UserPostRoutes.get(
+  '/getStudentApplicationById',
+  validate(getStudentApplicationByIdZodSchema),
+  getStudentApplicationById,
+);
+UserPostRoutes.get(
+  '/getApplicationHistory',
+  validate(getApplicationHistoryZodSchema),
+  getApplicationHistory,
+);
 
-UserPostRoutes.get("/getAnnouncements", validate(getAnnouncementsZodSchema), getAnnouncements)
-UserPostRoutes.get("/getAnnouncementsById", validate(getAnnouncementsByIdZodSchema), getAnnouncementsById)
-
+UserPostRoutes.get('/getAnnouncements', validate(getAnnouncementsZodSchema), getAnnouncements);
+UserPostRoutes.get(
+  '/getAnnouncementsById',
+  validate(getAnnouncementsByIdZodSchema),
+  getAnnouncementsById,
+);
 
 export default UserPostRoutes;
