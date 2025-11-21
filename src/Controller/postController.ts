@@ -1,10 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
 import { filtersDataTypes } from '../Types/adminPostControllerTypes';
-import {
-  ResponseUploadSupabasePrivate,
-  SupabaseDeletePrivateFile,
-  UploadSupabasePrivate,
-} from '../Config/Supabase';
+import { ResponseUploadSupabasePrivate, SupabaseDeletePrivateFile, UploadSupabasePrivate } from '../Config/Supabase';
 import {
   applyScholarshipZodType,
   downloadScholarshipFormZodType,
@@ -19,12 +15,7 @@ import {
   getStudentByIdZodType,
   searchScholarshipZodType,
 } from '../Validator/ZodSchemaUserPost';
-import {
-  prismaGetScholarship,
-  prismaGetScholarshipsById,
-  prismaSearchScholarshipTitle,
-  prismaStudentCountsInToken,
-} from '../Models/ScholarshipModels';
+import { prismaGetScholarship, prismaGetScholarshipsById, prismaSearchScholarshipTitle, prismaStudentCountsInToken } from '../Models/ScholarshipModels';
 import {
   prismaCheckApplicationDuplicate,
   prismaCheckApproveGov,
@@ -37,29 +28,16 @@ import {
 } from '../Models/ApplicationModels';
 import { prismaGetAccountById } from '../Models/AccountModels';
 import { prismaGetAllAnnouncement, prismaGetAnnouncementById } from '../Models/AnnouncementModels';
-import {
-  prismaGetAllNotifications,
-  prismaGetUnreadNotificationsCount,
-} from '../Models/Student_NotificationModels';
-import {
-  DocumentEntry,
-  RecordApplicationFilesTypes,
-  RecordDocumentEntry,
-} from '../Types/postControllerTypes';
+import { prismaGetAllNotifications, prismaGetUnreadNotificationsCount } from '../Models/Student_NotificationModels';
+import { DocumentEntry, RecordApplicationFilesTypes, RecordDocumentEntry } from '../Types/postControllerTypes';
 import { cookieOptionsStudent } from '../Helper/TokenAuth';
 import { normalizeString } from '../Helper/normalizeString';
 import { io } from '..';
 import { DenormalizeApplication } from '../Helper/ApplicationHelper';
 
-export const getAllScholarship = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getAllScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, sortBy, order, status, filters } = (
-      req as Request & { validated: getAllScholarshipZodType }
-    ).validated.query;
+    const { page, dataPerPage, sortBy, order, status, filters } = (req as Request & { validated: getAllScholarshipZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -69,15 +47,7 @@ export const getAllScholarship = async (
       return;
     }
 
-    const getScholarshipsData = await prismaGetScholarship(
-      page,
-      dataPerPage,
-      sortBy,
-      order,
-      status,
-      filters,
-      accountId,
-    );
+    const getScholarshipsData = await prismaGetScholarship(page, dataPerPage, sortBy, order, status, filters, accountId);
     const meta = {
       counts: {
         countActive: getScholarshipsData.countActive,
@@ -87,9 +57,7 @@ export const getAllScholarship = async (
       page: page,
       pageSize: dataPerPage,
       totalRows: getScholarshipsData.totalCount,
-      totalPage: Math.ceil(
-        getScholarshipsData.totalCount / (dataPerPage || getScholarshipsData.totalCount),
-      ),
+      totalPage: Math.ceil(getScholarshipsData.totalCount / (dataPerPage || getScholarshipsData.totalCount)),
       sortBy: sortBy ? sortBy : 'default',
       order: order ? order : 'default',
       filters: JSON.stringify(filters?.map((f: filtersDataTypes) => f.id)),
@@ -99,15 +67,9 @@ export const getAllScholarship = async (
     next(error);
   }
 };
-export const searchScholarship = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const searchScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, sortBy, order, status, filters, search } = (
-      req as Request & { validated: searchScholarshipZodType }
-    ).validated.query;
+    const { page, dataPerPage, sortBy, order, status, filters, search } = (req as Request & { validated: searchScholarshipZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -117,15 +79,7 @@ export const searchScholarship = async (
       return;
     }
 
-    const searchedScholarship = await prismaSearchScholarshipTitle(
-      page,
-      dataPerPage,
-      search,
-      sortBy,
-      order,
-      status,
-      accountId,
-    );
+    const searchedScholarship = await prismaSearchScholarshipTitle(page, dataPerPage, search, sortBy, order, status, accountId);
 
     const meta = {
       counts: {
@@ -136,35 +90,23 @@ export const searchScholarship = async (
       page: page,
       pageSize: dataPerPage,
       totalRows: searchedScholarship.totalCount,
-      totalPage: Math.ceil(
-        searchedScholarship.totalCount / (dataPerPage || searchedScholarship.totalCount),
-      ),
+      totalPage: Math.ceil(searchedScholarship.totalCount / (dataPerPage || searchedScholarship.totalCount)),
       sortBy: sortBy,
       order: order,
       filters: JSON.stringify(filters?.map((f: filtersDataTypes) => f.id)),
     };
 
-    res
-      .status(200)
-      .json({ success: true, searchedScholarship: searchedScholarship.searchResults, meta });
+    res.status(200).json({ success: true, searchedScholarship: searchedScholarship.searchResults, meta });
   } catch (error) {
     next(error);
   }
 };
-export const getScholarshipsbyId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getScholarshipsbyId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipId } = (req as Request & { validated: getScholarshipsByIdZodType }).validated
-      .query;
+    const { scholarshipId } = (req as Request & { validated: getScholarshipsByIdZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
-    const [checkAccount, isApproved] = await Promise.all([
-      prismaGetAccountById(accountId),
-      prismaCheckApproveGov(accountId),
-    ]);
+    const [checkAccount, isApproved] = await Promise.all([prismaGetAccountById(accountId), prismaCheckApproveGov(accountId)]);
     if (!checkAccount || checkAccount.role !== 'Student') {
       res.clearCookie('token', cookieOptionsStudent);
       res.status(401).json({ success: false, message: 'Account Did not Find!' });
@@ -174,26 +116,19 @@ export const getScholarshipsbyId = async (
 
     const getScholarshipsById = await prismaGetScholarshipsById(scholarshipId, accountId);
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Get Success!',
-        scholarship: getScholarshipsById,
-        inGovScholar,
-      });
+    res.status(200).json({
+      success: true,
+      message: 'Get Success!',
+      scholarship: getScholarshipsById,
+      inGovScholar,
+    });
   } catch (error) {
     next(error);
   }
 };
-export const applyScholarship = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const applyScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipId } = (req as Request & { validated: applyScholarshipZodType }).validated
-      .body;
+    const { scholarshipId } = (req as Request & { validated: applyScholarshipZodType }).validated.body;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -218,37 +153,25 @@ export const applyScholarship = async (
     }
 
     const checkIfInGovScholarship = await prismaCheckApproveGov(accountId);
-    if (
-      checkIfInGovScholarship &&
-      checkScholarship.type === 'government' &&
-      checkIfInGovScholarship.Scholarship?.ended === false
-    ) {
-      res
-        .status(400)
-        .json({ success: false, message: 'Already have a Approved Goverment Scholarship' });
+    if (checkIfInGovScholarship && checkScholarship.type === 'government' && checkIfInGovScholarship.Scholarship?.ended === false) {
+      res.status(400).json({ success: false, message: 'Already have a Approved Goverment Scholarship' });
       return;
     }
     const applicationDuplicate = await prismaCheckApplicationDuplicate(accountId, scholarshipId);
     if (applicationDuplicate) {
-      res
-        .status(400)
-        .json({ success: false, message: 'You already have an application for this Scholarship!' });
+      res.status(400).json({ success: false, message: 'You already have an application for this Scholarship!' });
       return;
     }
 
     const phase: string = `phase-${checkScholarship.phase}`;
-    const rawFileNames: RecordDocumentEntry = (
-      checkScholarship.documents as { [phase]: RecordDocumentEntry }
-    )[phase];
+    const rawFileNames: RecordDocumentEntry = (checkScholarship.documents as { [phase]: RecordDocumentEntry })[phase];
     if (!rawFileNames) {
       res.status(400).json({ success: false, message: 'File Requirements Did not Find!' });
       return;
     }
 
     for (const [key, value] of Object.entries(rawFileNames)) {
-      const check = (req.files as Express.Multer.File[]).find(
-        (file) => normalizeString(file.fieldname) == normalizeString(value.label),
-      );
+      const check = (req.files as Express.Multer.File[]).find((file) => normalizeString(file.fieldname) == normalizeString(value.label));
       if (!check && value.requirementType === 'required') {
         res.status(400).json({ success: false, message: 'File Requirements Did not met!' });
         return;
@@ -258,13 +181,9 @@ export const applyScholarship = async (
     const applicationFiles: RecordApplicationFilesTypes = { [phase]: [] };
     const supabasePath: string[] = [];
     for (const [key, value] of Object.entries(rawFileNames)) {
-      const upload = (req.files as Express.Multer.File[]).find(
-        (file) => normalizeString(file.fieldname) == normalizeString(value.label),
-      );
+      const upload = (req.files as Express.Multer.File[]).find((file) => normalizeString(file.fieldname) == normalizeString(value.label));
 
-      const uploadResult: ResponseUploadSupabasePrivate | undefined = upload
-        ? await UploadSupabasePrivate(upload, 'student-application-files')
-        : undefined;
+      const uploadResult: ResponseUploadSupabasePrivate | undefined = upload ? await UploadSupabasePrivate(upload, 'student-application-files') : undefined;
       applicationFiles[phase].push({
         document: value.label,
         supabasePath: upload && uploadResult ? uploadResult.path : '',
@@ -274,41 +193,22 @@ export const applyScholarship = async (
       });
       supabasePath.push(uploadResult ? uploadResult.path : '');
     }
-    const insertApplication = await prismaCreateApplication(
-      applicationFiles,
-      supabasePath,
-      accountId,
-      scholarshipId,
-    );
+    const insertApplication = await prismaCreateApplication(applicationFiles, supabasePath, accountId, scholarshipId);
     if (!insertApplication) {
       res.status(500).json({ success: false, message: 'Server Error!!!' });
       return;
     }
-    const inGov = checkAccount.Student?.Application.find(
-      (f) => f.Scholarship?.type === 'government',
-    )
-      ? true
-      : false;
+    const inGov = checkAccount.Student?.Application.find((f) => f.Scholarship?.type === 'government') ? true : false;
 
-    res
-      .status(200)
-      .json({ success: true, inGov, newApplication: DenormalizeApplication(insertApplication) });
-    io.to(['ISPSU_Head', 'ISPSU_Staff', insertApplication.ownerId.toString()]).emit(
-      'applyScholarship',
-      { newApplication: DenormalizeApplication(insertApplication), inGov, success: true },
-    );
+    res.status(200).json({ success: true, inGov, newApplication: DenormalizeApplication(insertApplication) });
+    io.to(['ISPSU_Head', 'ISPSU_Staff', insertApplication.ownerId.toString()]).emit('applyScholarship', { newApplication: DenormalizeApplication(insertApplication), inGov, success: true });
   } catch (error) {
     next(error);
   }
 };
-export const applyRenewScholarship = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const applyRenewScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipId } = (req as Request & { validated: applyScholarshipZodType }).validated
-      .body;
+    const { scholarshipId } = (req as Request & { validated: applyScholarshipZodType }).validated.body;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -330,15 +230,11 @@ export const applyRenewScholarship = async (
 
     const checkPrevApplication = await prismaCheckApplicationDuplicate(accountId, scholarshipId);
     if (!checkPrevApplication) {
-      res
-        .status(400)
-        .json({ success: false, message: 'You Are not Qualified For this Scholarship!' });
+      res.status(400).json({ success: false, message: 'You Are not Qualified For this Scholarship!' });
       return;
     }
     const phase = `phase-${checkScholarship.phase}`;
-    const documentsNeeded: DocumentEntry[] = (
-      checkScholarship.documents as { [phase]: DocumentEntry[] }
-    )[phase];
+    const documentsNeeded: DocumentEntry[] = (checkScholarship.documents as { [phase]: DocumentEntry[] })[phase];
     if (!documentsNeeded) {
       res.status(400).json({ success: false, message: 'File Requirements Did not Find!' });
       return;
@@ -347,19 +243,14 @@ export const applyRenewScholarship = async (
     renewFiles[phase] = [];
     const supabasePath: string[] = [];
     for (const [key, value] of Object.entries(documentsNeeded)) {
-      const upload = (req.files as Express.Multer.File[]).find(
-        (file) => file.fieldname == value.label,
-      );
+      const upload = (req.files as Express.Multer.File[]).find((file) => file.fieldname == value.label);
       if (!upload && value.requirementType === 'required') {
         res.status(400).json({ success: false, message: 'File Requirements Did not met!' });
         await SupabaseDeletePrivateFile(supabasePath).catch((error) => console.log(error));
         return;
       }
       if (upload) {
-        const uploadResult: ResponseUploadSupabasePrivate = await UploadSupabasePrivate(
-          upload,
-          'student-application-files',
-        );
+        const uploadResult: ResponseUploadSupabasePrivate = await UploadSupabasePrivate(upload, 'student-application-files');
         if (!uploadResult) {
           res.status(500).json({ success: false, message: 'Upload Fail!' });
           return;
@@ -374,33 +265,20 @@ export const applyRenewScholarship = async (
         });
       }
     }
-    const allSupabasePath: string[] = [
-      ...supabasePath,
-      ...(checkPrevApplication.supabasePath as string[]),
-    ];
-    const renewApplication = await prismaRenewApplication(
-      checkPrevApplication.applicationId,
-      renewFiles,
-      allSupabasePath,
-    );
+    const allSupabasePath: string[] = [...supabasePath, ...(checkPrevApplication.supabasePath as string[])];
+    const renewApplication = await prismaRenewApplication(checkPrevApplication.applicationId, renewFiles, allSupabasePath);
     if (!renewApplication) {
       res.status(500).json({ success: false, message: 'Server Error!' });
       await SupabaseDeletePrivateFile(supabasePath).catch((error) => console.log(error));
       return;
     }
-    const inGov = checkAccount.Student?.Application.find(
-      (f) => f.Scholarship?.type === 'government',
-    )
-      ? true
-      : false;
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Application Submitted!',
-        inGov,
-        newApplication: DenormalizeApplication(renewApplication),
-      });
+    const inGov = checkAccount.Student?.Application.find((f) => f.Scholarship?.type === 'government') ? true : false;
+    res.status(200).json({
+      success: true,
+      message: 'Application Submitted!',
+      inGov,
+      newApplication: DenormalizeApplication(renewApplication),
+    });
     io.to(['ISPSU_Head', 'ISPSU_Staff']).emit('applyRenewScholarship', inGov, {
       newApplication: DenormalizeApplication(renewApplication),
       success: true,
@@ -409,14 +287,9 @@ export const applyRenewScholarship = async (
     next(error);
   }
 };
-export const downloadScholarshipForm = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const downloadScholarshipForm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipId } = (req as Request & { validated: downloadScholarshipFormZodType })
-      .validated.body;
+    const { scholarshipId } = (req as Request & { validated: downloadScholarshipFormZodType }).validated.body;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -433,9 +306,7 @@ export const downloadScholarshipForm = async (
     }
     const path = (checkScholarship.supabasePath as { form?: string }).form;
     if (!checkScholarship.form || !path) {
-      res
-        .status(400)
-        .json({ success: false, message: 'This Scholarship Does not Required a Form!' });
+      res.status(400).json({ success: false, message: 'This Scholarship Does not Required a Form!' });
       return;
     }
 
@@ -452,16 +323,9 @@ export const downloadScholarshipForm = async (
     next(error);
   }
 };
-export const tokenValidation = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const tokenValidation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const accountId =
-      typeof req.tokenPayload?.accountId === 'string'
-        ? Number(req.tokenPayload.accountId)
-        : req.tokenPayload.accountId;
+    const accountId = typeof req.tokenPayload?.accountId === 'string' ? Number(req.tokenPayload.accountId) : req.tokenPayload.accountId;
     const userData = await prismaGetAccountById(accountId);
     if (!userData) {
       res.clearCookie('token', cookieOptionsStudent);
@@ -469,35 +333,23 @@ export const tokenValidation = async (
       return;
     }
     const { hashedPassword, ...safeData } = userData;
-    const {
+    const { availableScholarshipCount, announcementCount, applicationCountPerStatus, applicationCount, applicationHistoryCount } = await prismaStudentCountsInToken(accountId);
+    const unreadNotifications = await prismaGetUnreadNotificationsCount(accountId);
+    res.status(200).json({
+      success: true,
+      userData: safeData,
+      unreadNotifications,
       availableScholarshipCount,
       announcementCount,
-      applicationCountPerStatus,
       applicationCount,
+      applicationCountPerStatus,
       applicationHistoryCount,
-    } = await prismaStudentCountsInToken(accountId);
-    const unreadNotifications = await prismaGetUnreadNotificationsCount(accountId);
-    res
-      .status(200)
-      .json({
-        success: true,
-        userData: safeData,
-        unreadNotifications,
-        availableScholarshipCount,
-        announcementCount,
-        applicationCount,
-        applicationCountPerStatus,
-        applicationHistoryCount,
-      });
+    });
   } catch (error) {
     next(error);
   }
 };
-export const getStudentById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getStudentById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { accountId } = (req as Request & { validated: getStudentByIdZodType }).validated.query;
     const getUser = await prismaGetAccountById(accountId);
@@ -511,15 +363,9 @@ export const getStudentById = async (
     next(error);
   }
 };
-export const getAnnouncements = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getAnnouncements = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, sortBy, order, status, search } = (
-      req as Request & { validated: getAnnouncementsZodType }
-    ).validated.query;
+    const { page, dataPerPage, sortBy, order, status, search } = (req as Request & { validated: getAnnouncementsZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -529,14 +375,7 @@ export const getAnnouncements = async (
       return;
     }
 
-    const annoucement = await prismaGetAllAnnouncement(
-      page,
-      dataPerPage,
-      sortBy,
-      order,
-      status,
-      search,
-    );
+    const annoucement = await prismaGetAllAnnouncement(page, dataPerPage, sortBy, order, status, search);
     const meta = {
       page: page || 'all',
       pageSize: dataPerPage || 'all',
@@ -551,14 +390,9 @@ export const getAnnouncements = async (
     next(error);
   }
 };
-export const getAnnouncementsById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getAnnouncementsById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { annoucementId } = (req as Request & { validated: getAnnouncementsByIdZodType })
-      .validated.query;
+    const { annoucementId } = (req as Request & { validated: getAnnouncementsByIdZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -578,15 +412,9 @@ export const getAnnouncementsById = async (
     next(error);
   }
 };
-export const getNotifications = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getNotifications = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, status, sortBy, order } = (
-      req as Request & { validated: getNotificationsZodType }
-    ).validated.query;
+    const { page, dataPerPage, status, sortBy, order } = (req as Request & { validated: getNotificationsZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -596,14 +424,7 @@ export const getNotifications = async (
       return;
     }
 
-    const notification = await prismaGetAllNotifications(
-      accountId,
-      page,
-      dataPerPage,
-      status,
-      sortBy,
-      order,
-    );
+    const notification = await prismaGetAllNotifications(accountId, page, dataPerPage, status, sortBy, order);
 
     const meta = {
       page: page || 'all',
@@ -620,15 +441,9 @@ export const getNotifications = async (
     next(error);
   }
 };
-export const getApplications = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getApplications = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, status, order, sortBy, search } = (
-      req as Request & { validated: getApplicationsZodType }
-    ).validated.query;
+    const { page, dataPerPage, status, order, sortBy, search } = (req as Request & { validated: getApplicationsZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -638,15 +453,7 @@ export const getApplications = async (
       return;
     }
 
-    const getData = await prismaGetAllAccountApplication(
-      accountId,
-      page,
-      dataPerPage,
-      status,
-      search,
-      order,
-      sortBy,
-    );
+    const getData = await prismaGetAllAccountApplication(accountId, page, dataPerPage, status, search, order, sortBy);
 
     const meta = {
       counts: getData.counts,
@@ -663,14 +470,9 @@ export const getApplications = async (
     next(error);
   }
 };
-export const getStudentApplicationById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getStudentApplicationById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { applicationId } = (req as Request & { validated: getStudentApplicationByIdZodType })
-      .validated.query;
+    const { applicationId } = (req as Request & { validated: getStudentApplicationByIdZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -689,28 +491,16 @@ export const getStudentApplicationById = async (
       res.status(400).json({ success: false, message: 'Application is not yours!' });
       return;
     }
-    const inGov = checkAccount.Student?.Application.find(
-      (f) => f.Scholarship?.type === 'government',
-    )
-      ? true
-      : false;
+    const inGov = checkAccount.Student?.Application.find((f) => f.Scholarship?.type === 'government') ? true : false;
 
-    res
-      .status(200)
-      .json({ success: true, inGov, application: DenormalizeApplication(application) });
+    res.status(200).json({ success: true, inGov, application: DenormalizeApplication(application) });
   } catch (error) {
     next(error);
   }
 };
-export const getApplicationHistory = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getApplicationHistory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, scholarshipId, status, sortBy, order, filter, search } = (
-      req as Request & { validated: getApplicationHistoryZodType }
-    ).validated.query;
+    const { page, dataPerPage, scholarshipId, status, sortBy, order, filter, search } = (req as Request & { validated: getApplicationHistoryZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -720,17 +510,7 @@ export const getApplicationHistory = async (
       return;
     }
 
-    const applications = await prismaGetApplicationHistory(
-      accountId,
-      page,
-      dataPerPage,
-      scholarshipId,
-      status,
-      sortBy,
-      order,
-      filter,
-      search,
-    );
+    const applications = await prismaGetApplicationHistory(accountId, page, dataPerPage, scholarshipId, status, sortBy, order, filter, search);
     const meta = {
       counts: applications.counts,
       page: page,

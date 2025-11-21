@@ -47,11 +47,7 @@ export const TokenAuth = (req: Request, res: Response, next: NextFunction) => {
     req.tokenPayload = valid;
     next();
   } catch (error) {
-    if (
-      (error as { name: string }).name === 'TokenExpiredError' ||
-      (error as { name: string }).name === 'JsonWebTokenError' ||
-      (error as { message: string }).message === 'Invalid Role'
-    ) {
+    if ((error as { name: string }).name === 'TokenExpiredError' || (error as { name: string }).name === 'JsonWebTokenError' || (error as { message: string }).message === 'Invalid Role') {
       res.clearCookie('token', cookieOptionsStudent);
       res.status(401).json({ success: false, message: 'Invalid or expired token' });
       return;
@@ -74,11 +70,7 @@ export const AdminTokenAuth = (req: Request, res: Response, next: NextFunction) 
     req.tokenPayload = valid;
     next();
   } catch (error) {
-    if (
-      (error as { name: string }).name === 'TokenExpiredError' ||
-      (error as { name: string }).name === 'JsonWebTokenError' ||
-      (error as { message: string }).message === 'Invalid Role'
-    ) {
+    if ((error as { name: string }).name === 'TokenExpiredError' || (error as { name: string }).name === 'JsonWebTokenError' || (error as { message: string }).message === 'Invalid Role') {
       res.clearCookie('AdminToken', cookieOptionsStaff);
       res.status(401).json({ success: false, message: 'Invalid or expired token' });
       return;

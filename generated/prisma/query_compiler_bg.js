@@ -7,11 +7,7 @@ var D = (e, t) => {
     for (var n in t) h(e, n, { get: t[n], enumerable: !0 });
   },
   O = (e, t, n, _) => {
-    if ((t && typeof t == 'object') || typeof t == 'function')
-      for (let r of M(t))
-        !j.call(e, r) &&
-          r !== n &&
-          h(e, r, { get: () => t[r], enumerable: !(_ = T(t, r)) || _.enumerable });
+    if ((t && typeof t == 'object') || typeof t == 'function') for (let r of M(t)) !j.call(e, r) && r !== n && h(e, r, { get: () => t[r], enumerable: !(_ = T(t, r)) || _.enumerable });
     return e;
   };
 var B = (e) => O(h({}, '__esModule', { value: !0 }), e);
@@ -73,11 +69,7 @@ y.decode();
 const U = 2146435072;
 let S = 0;
 function R(e, t) {
-  return (
-    (S += t),
-    S >= U && ((y = new TextDecoder('utf-8', { ignoreBOM: !0, fatal: !0 })), y.decode(), (S = t)),
-    y.decode(a().subarray(e, e + t))
-  );
+  return ((S += t), S >= U && ((y = new TextDecoder('utf-8', { ignoreBOM: !0, fatal: !0 })), y.decode(), (S = t)), y.decode(a().subarray(e, e + t)));
 }
 function m(e, t) {
   return ((e = e >>> 0), R(e, t));
@@ -120,13 +112,7 @@ function l(e, t, n) {
 }
 let b = null;
 function u() {
-  return (
-    (b === null ||
-      b.buffer.detached === !0 ||
-      (b.buffer.detached === void 0 && b.buffer !== o.memory.buffer)) &&
-      (b = new DataView(o.memory.buffer)),
-    b
-  );
+  return ((b === null || b.buffer.detached === !0 || (b.buffer.detached === void 0 && b.buffer !== o.memory.buffer)) && (b = new DataView(o.memory.buffer)), b);
 }
 function x(e) {
   return e == null;
@@ -172,10 +158,7 @@ function w(e) {
   const t = o.__wbindgen_externrefs.get(e);
   return (o.__externref_table_dealloc(e), t);
 }
-const E =
-  typeof FinalizationRegistry > 'u'
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry((e) => o.__wbg_querycompiler_free(e >>> 0, 1));
+const E = typeof FinalizationRegistry > 'u' ? { register: () => {}, unregister: () => {} } : new FinalizationRegistry((e) => o.__wbg_querycompiler_free(e >>> 0, 1));
 class F {
   __destroy_into_raw() {
     const t = this.__wbg_ptr;

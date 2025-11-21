@@ -5,17 +5,11 @@ export function ValidateApplication() {}
 
 export function DenormalizeApplication(Application: DenormalizeApplicationType) {
   const k: any = {};
-  for (const [key, value] of Object.entries(
-    Application.submittedDocuments as RecordApplicationFilesTypes,
-  )) {
+  for (const [key, value] of Object.entries(Application.submittedDocuments as RecordApplicationFilesTypes)) {
     k[key] = {
       documents: value,
-      Application_Decision: Application.Application_Decision.find(
-        (f) => `phase-${f.scholarshipPhase}` === key,
-      ),
-      Interview_Decision: Application.Interview_Decision.find(
-        (f) => `phase-${f.scholarshipPhase}` === key,
-      ),
+      Application_Decision: Application.Application_Decision.find((f) => `phase-${f.scholarshipPhase}` === key),
+      Interview_Decision: Application.Interview_Decision.find((f) => `phase-${f.scholarshipPhase}` === key),
     };
   }
 
@@ -41,7 +35,5 @@ export function GenerateAlphabet(start: string, end: string) {
   if (startCode < 65 || endCode > 90 || startCode > endCode) {
     return undefined;
   }
-  return Array.from({ length: endCode - startCode + 1 }, (_, i) =>
-    String.fromCharCode(startCode + i),
-  );
+  return Array.from({ length: endCode - startCode + 1 }, (_, i) => String.fromCharCode(startCode + i));
 }

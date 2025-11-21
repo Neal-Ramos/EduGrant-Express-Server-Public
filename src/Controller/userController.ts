@@ -18,26 +18,16 @@ import {
   UploadSupabase,
   UploadSupabasePrivate,
 } from '../Config/Supabase';
-import {
-  prismaGetAccountById,
-  prismaUpdateAccountLoginCredentials,
-  prismaUpdateStudentAccount,
-} from '../Models/AccountModels';
+import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateStudentAccount } from '../Models/AccountModels';
 import { compare, hash } from 'bcryptjs';
 import { CreateEmailOptions } from 'resend';
 import { SendAuthCode } from '../Config/Resend';
 import { authHTML } from '../utils/HTML-AuthCode';
-import {
-  prismaGetApplication,
-  prismaUpdateApplicationSubmittedFiles,
-} from '../Models/ApplicationModels';
+import { prismaGetApplication, prismaUpdateApplicationSubmittedFiles } from '../Models/ApplicationModels';
 import { prismaGetScholarshipsById } from '../Models/ScholarshipModels';
 import { applicationFilesTypes, RecordApplicationFilesTypes } from '../Types/postControllerTypes';
 import { prismaGetDashboardData } from '../Models/StudentModels';
-import {
-  prismaReadAllNotifications,
-  prismaReadTrueNotification,
-} from '../Models/Student_NotificationModels';
+import { prismaReadAllNotifications, prismaReadTrueNotification } from '../Models/Student_NotificationModels';
 import { GenerateCode } from '../Helper/CodeGenerator';
 import { AuthCode } from '../Models/Auth_CodeModels';
 import { cookieOptionsStudent } from '../Helper/TokenAuth';
@@ -45,11 +35,7 @@ import { error } from 'console';
 import { io } from '..';
 import { DenormalizeApplication } from '../Helper/ApplicationHelper';
 
-export const logoutUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const logoutUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     res.clearCookie('token', cookieOptionsStudent);
     res.status(200).json({ success: true, message: 'Logged out successfully!' });
@@ -57,29 +43,13 @@ export const logoutUser = async (
     next(error);
   }
 };
-export const updateStudentInfo = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const updateStudentInfo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const file = (req.files as Express.Multer.File[]).find((f) => f.fieldname === 'profileImg');
     const pathToDelete: string[] = [];
-    const {
-      contactNumber,
-      firstName,
-      middleName,
-      lastName,
-      gender,
-      dateOfBirth,
-      address,
-      course,
-      year,
-      section,
-      familyBackground,
-      pwd,
-      indigenous,
-    } = (req as Request & { validated: updateStudentInfoZodType }).validated.body;
+    const { contactNumber, firstName, middleName, lastName, gender, dateOfBirth, address, course, year, section, familyBackground, pwd, indigenous } = (
+      req as Request & { validated: updateStudentInfoZodType }
+    ).validated.body;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -130,9 +100,7 @@ export const updateStudentInfo = async (
     }
     const { hashedPassword, ...updatedStudent } = updateStudent;
 
-    res
-      .status(200)
-      .json({ success: true, message: 'Account Information Updated!', updatedStudent });
+    res.status(200).json({ success: true, message: 'Account Information Updated!', updatedStudent });
     if (pathToDelete.length)
       await DeleteSupabase(pathToDelete).catch((error) => {
         console.log(error);
@@ -141,15 +109,9 @@ export const updateStudentInfo = async (
     next(error);
   }
 };
-export const updateApplication = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const updateApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipId, applicationId } = (
-      req as Request & { validated: updateApplicationZodType }
-    ).validated.body;
+    const { scholarshipId, applicationId } = (req as Request & { validated: updateApplicationZodType }).validated.body;
     const newFiles = req.files as Express.Multer.File[];
     const accountId = Number(req.tokenPayload.accountId);
 
@@ -179,8 +141,7 @@ export const updateApplication = async (
       res.status(400).json({ success: false, message: 'Application Is not Yours!' });
       return;
     }
-    const submittedDocuments: RecordApplicationFilesTypes =
-      application.submittedDocuments as RecordApplicationFilesTypes;
+    const submittedDocuments: RecordApplicationFilesTypes = application.submittedDocuments as RecordApplicationFilesTypes;
     const prevPaths: string[] = [];
     const newPaths: string[] = [];
     if (!submittedDocuments) {
@@ -192,10 +153,7 @@ export const updateApplication = async (
       const file = newFiles.find((f) => f.fieldname === value.document);
       if (file) {
         prevPaths.push(value.supabasePath);
-        const newfile: ResponseUploadSupabasePrivate = await UploadSupabasePrivate(
-          file,
-          'student-application-files',
-        );
+        const newfile: ResponseUploadSupabasePrivate = await UploadSupabasePrivate(file, 'student-application-files');
         newPaths.push(newfile.path);
         value.fileFormat = file.mimetype;
         value.resourceType = file.mimetype;
@@ -203,40 +161,24 @@ export const updateApplication = async (
       }
     }
 
-    const allApplicationPaths: string[] = [
-      ...(application.supabasePath as string[]),
-      ...newPaths,
-    ].filter((f) => !prevPaths.includes(f));
-    const updateSubmittedFiles = await prismaUpdateApplicationSubmittedFiles(
-      applicationId,
-      accountId,
-      scholarshipId,
-      submittedDocuments,
-      allApplicationPaths,
-    );
+    const allApplicationPaths: string[] = [...(application.supabasePath as string[]), ...newPaths].filter((f) => !prevPaths.includes(f));
+    const updateSubmittedFiles = await prismaUpdateApplicationSubmittedFiles(applicationId, accountId, scholarshipId, submittedDocuments, allApplicationPaths);
     if (!updateSubmittedFiles) {
       res.status(500).json({ success: false, message: 'Server Error' });
       await SupabaseDeletePrivateFile(newPaths).catch((error) => console.log(error));
       return;
     }
 
-    res
-      .status(200)
-      .json({ success: true, updatedApplication: DenormalizeApplication(application) });
+    res.status(200).json({ success: true, updatedApplication: DenormalizeApplication(application) });
     io.emit('updateApplication', { updatedApplication: DenormalizeApplication(application) });
     await SupabaseDeletePrivateFile(prevPaths).catch((error) => console.log(error));
   } catch (error) {
     next(error);
   }
 };
-export const readNotification = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const readNotification = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { notifiactionId } = (req as Request & { validated: readNotificationZodType }).validated
-      .body;
+    const { notifiactionId } = (req as Request & { validated: readNotificationZodType }).validated.body;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -256,11 +198,7 @@ export const readNotification = async (
     next(error);
   }
 };
-export const markAllReadNotifications = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const markAllReadNotifications = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const accountId = Number(req.tokenPayload.accountId);
 
@@ -281,15 +219,9 @@ export const markAllReadNotifications = async (
     next(error);
   }
 };
-export const sendAuthCodeChangeAccountCred = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const sendAuthCodeChangeAccountCred = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { oldPassword, newPassword } = (
-      req as Request & { validated: sendAuthCodeChangeAccountCredZodType }
-    ).validated.body;
+    const { oldPassword, newPassword } = (req as Request & { validated: sendAuthCodeChangeAccountCredZodType }).validated.body;
     const origin = 'Change_Password';
     const accountId = Number(req.tokenPayload.accountId);
 
@@ -304,17 +236,14 @@ export const sendAuthCodeChangeAccountCred = async (
     if (Code) {
       const { validated } = await AuthCode.validate(Code.code, Code.owner, Code.origin);
       if (validated) {
-        const resendAvailableIn =
-          (new Date(Code.dateExpiry).getTime() - new Date().getTime()) / 1000;
-        res
-          .status(200)
-          .json({
-            success: true,
-            message: 'Email Already Sent!',
-            expiresAt: Code.dateExpiry,
-            ttl: 120,
-            resendAvailableIn,
-          });
+        const resendAvailableIn = (new Date(Code.dateExpiry).getTime() - new Date().getTime()) / 1000;
+        res.status(200).json({
+          success: true,
+          message: 'Email Already Sent!',
+          expiresAt: Code.dateExpiry,
+          ttl: 120,
+          resendAvailableIn,
+        });
         return;
       }
     }
@@ -340,22 +269,14 @@ export const sendAuthCodeChangeAccountCred = async (
       res.status(400).json({ success: false, message: send.message });
       return;
     }
-    res
-      .status(200)
-      .json({ success: false, message: 'Email Sent!', expiresAt, ttl: 120, resendAvailableIn: 60 });
+    res.status(200).json({ success: false, message: 'Email Sent!', expiresAt, ttl: 120, resendAvailableIn: 60 });
   } catch (error) {
     next(error);
   }
 };
-export const changePassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { oldPassword, newPassword, code, email } = (
-      req as Request & { validated: changePasswordZodType }
-    ).validated.body;
+    const { oldPassword, newPassword, code, email } = (req as Request & { validated: changePasswordZodType }).validated.body;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -379,12 +300,7 @@ export const changePassword = async (
       return;
     }
 
-    const update = await prismaUpdateAccountLoginCredentials(
-      accountId,
-      undefined,
-      undefined,
-      newPassword,
-    );
+    const update = await prismaUpdateAccountLoginCredentials(accountId, undefined, undefined, newPassword);
     if (!update) {
       res.status(500).json({ success: false, message: 'Server Error!' });
       return;
@@ -395,11 +311,7 @@ export const changePassword = async (
     next(error);
   }
 };
-export const getDashboard = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const accountId = Number(req.tokenPayload.accountId);
 
@@ -415,14 +327,9 @@ export const getDashboard = async (
     next(error);
   }
 };
-export const getFileUrl = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getFileUrl = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { applicationId, path } = (req as Request & { validated: getFileUrlZodType }).validated
-      .body;
+    const { applicationId, path } = (req as Request & { validated: getFileUrlZodType }).validated.body;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);
@@ -447,21 +354,14 @@ export const getFileUrl = async (
       res.status(500).json({ success: false, message: signedURLs.message });
       return;
     }
-    res
-      .status(200)
-      .json({ success: true, message: 'URL Genarated!', signedURL: signedURLs.signedURLs });
+    res.status(200).json({ success: true, message: 'URL Genarated!', signedURL: signedURLs.signedURLs });
   } catch (error) {
     next(error);
   }
 };
-export const downloadApplicationFile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const downloadApplicationFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { path, applicationId } = (req as Request & { validated: downloadApplicationFileZodType })
-      .validated.body;
+    const { path, applicationId } = (req as Request & { validated: downloadApplicationFileZodType }).validated.body;
     const accountId = Number(req.tokenPayload.accountId);
 
     const checkAccount = await prismaGetAccountById(accountId);

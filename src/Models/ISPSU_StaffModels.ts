@@ -10,13 +10,7 @@ export const prismaTotalCountStaff = async (accountId?: number): Promise<number>
   });
   return count;
 };
-export const prismaGetStaffAccounts = async (
-  page?: number,
-  dataPerPage?: number,
-  sortBy?: string,
-  id?: number | null,
-  order?: string,
-): Promise<prismaGetStaffAccountsType[]> => {
+export const prismaGetStaffAccounts = async (page?: number, dataPerPage?: number, sortBy?: string, id?: number | null, order?: string): Promise<prismaGetStaffAccountsType[]> => {
   const allowedSortByFields: string[] = ['fName', 'lName', 'mName', 'validated', 'dateCreated'];
   const allowedOrderByFields: string[] = ['asc', 'desc'];
 
@@ -27,11 +21,7 @@ export const prismaGetStaffAccounts = async (
       accountId: id ? id : undefined,
       role: 'ISPSU_Staff',
     },
-    orderBy: [
-      ...(allowedSortByFields.includes(sortBy || '')
-        ? [{ [sortBy as string]: allowedOrderByFields.includes(order || '') ? order : 'asc' }]
-        : []),
-    ],
+    orderBy: [...(allowedSortByFields.includes(sortBy || '') ? [{ [sortBy as string]: allowedOrderByFields.includes(order || '') ? order : 'asc' }] : [])],
     include: {
       ISPSU_Staff: true,
     },
@@ -53,35 +43,21 @@ export const prismaSearchISPUStaff = async (
     const staffAccounts = await tx.iSPSU_Staff.findMany({
       ...(dataPerPage ? { take: dataPerPage } : undefined),
       ...(page && dataPerPage ? { skip: (page - 1) * dataPerPage } : undefined),
-      orderBy: [
-        ...(allowedSortByFields.includes(sortBy || '')
-          ? [{ [sortBy as string]: allowedOrderByFields.includes(order || '') ? order : 'asc' }]
-          : []),
-      ],
+      orderBy: [...(allowedSortByFields.includes(sortBy || '') ? [{ [sortBy as string]: allowedOrderByFields.includes(order || '') ? order : 'asc' }] : [])],
       where: {
-        OR: [
-          { fName: { contains: search, mode: 'insensitive' } },
-          { lName: { contains: search, mode: 'insensitive' } },
-          { mName: { contains: search, mode: 'insensitive' } },
-        ],
+        OR: [{ fName: { contains: search, mode: 'insensitive' } }, { lName: { contains: search, mode: 'insensitive' } }, { mName: { contains: search, mode: 'insensitive' } }],
       },
     });
     const totalCount = await tx.iSPSU_Staff.count({
       where: {
-        OR: [
-          { fName: { contains: search, mode: 'insensitive' } },
-          { lName: { contains: search, mode: 'insensitive' } },
-          { mName: { contains: search, mode: 'insensitive' } },
-        ],
+        OR: [{ fName: { contains: search, mode: 'insensitive' } }, { lName: { contains: search, mode: 'insensitive' } }, { mName: { contains: search, mode: 'insensitive' } }],
       },
     });
     return { staffAccounts, totalCount };
   });
   return searchResult;
 };
-export const prismaGetStaffById = async (
-  accountId: number,
-): Promise<prismaGetStaffByIdType | null> => {
+export const prismaGetStaffById = async (accountId: number): Promise<prismaGetStaffByIdType | null> => {
   const staff = await prisma.account.findUnique({
     where: {
       accountId: accountId,
@@ -92,13 +68,7 @@ export const prismaGetStaffById = async (
   });
   return staff;
 };
-export const prismaUpdateStaffInfo = async (
-  accountId: number,
-  fName?: string,
-  mName?: string,
-  lName?: string,
-  newProfileImg?: ResponseUploadSupabase,
-): Promise<Account | undefined> => {
+export const prismaUpdateStaffInfo = async (accountId: number, fName?: string, mName?: string, lName?: string, newProfileImg?: ResponseUploadSupabase): Promise<Account | undefined> => {
   const update = await prisma.account.update({
     where: {
       accountId: accountId,
@@ -123,10 +93,7 @@ export const prismaUpdateStaffInfo = async (
 
   return update;
 };
-export const prismaValidateStaff = async (
-  staffId: number,
-  validatedValue: boolean,
-): Promise<ISPSU_Staff | null> => {
+export const prismaValidateStaff = async (staffId: number, validatedValue: boolean): Promise<ISPSU_Staff | null> => {
   const validateStaff = await prisma.iSPSU_Staff.update({
     where: {
       staffId: staffId,

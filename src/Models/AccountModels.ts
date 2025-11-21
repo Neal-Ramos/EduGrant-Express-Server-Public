@@ -1,10 +1,6 @@
 import { hashSync } from 'bcryptjs';
 import { ResponseUploadSupabase } from '../Config/Supabase';
-import {
-  AccountRelations,
-  prismaGetAccountByIdType,
-  prismaUpdateStaffAccountType,
-} from '../Types/AccountTypes';
+import { AccountRelations, prismaGetAccountByIdType, prismaUpdateStaffAccountType } from '../Types/AccountTypes';
 import { Account, prisma } from '../lib/prisma';
 
 export const prismaCheckEmailExist = async (email: string): Promise<AccountRelations | null> => {
@@ -16,9 +12,7 @@ export const prismaCheckEmailExist = async (email: string): Promise<AccountRelat
   });
   return emailExist;
 };
-export const prismaCheckStudentIdExist = async (
-  studentId: string,
-): Promise<AccountRelations | null> => {
+export const prismaCheckStudentIdExist = async (studentId: string): Promise<AccountRelations | null> => {
   const studentIdExist = await prisma.account.findFirst({
     where: {
       schoolId: studentId,
@@ -27,14 +21,7 @@ export const prismaCheckStudentIdExist = async (
   });
   return studentIdExist;
 };
-export const prismaCreateISPSU_Staff = async (
-  email: string,
-  firstName: string,
-  middleName: string | undefined,
-  lastName: string,
-  phone: string,
-  passwordHash: string,
-): Promise<Account> => {
+export const prismaCreateISPSU_Staff = async (email: string, firstName: string, middleName: string | undefined, lastName: string, phone: string, passwordHash: string): Promise<Account> => {
   const createHeadAccount = await prisma.account.create({
     data: {
       email: email,
@@ -124,9 +111,7 @@ export const getStaffByEmail = async (email: string): Promise<AccountRelations |
   return getStaff;
 };
 
-export const prismaGetAccountById = async (
-  accountId: number,
-): Promise<prismaGetAccountByIdType | null> => {
+export const prismaGetAccountById = async (accountId: number): Promise<prismaGetAccountByIdType | null> => {
   const getAccount = await prisma.account.findUnique({
     where: {
       accountId: accountId,
@@ -191,9 +176,7 @@ export const prismaUpdateStudentAccount = async (
           familyBackground: familyBackground,
           PWD: typeof pwd === 'string' ? pwd : undefined,
           indigenous: typeof pwd === 'string' ? indigenous : undefined,
-          ...(profileImg
-            ? { profileImg: { path: profileImg.path, publicUrl: profileImg.publicUrl } }
-            : {}),
+          ...(profileImg ? { profileImg: { path: profileImg.path, publicUrl: profileImg.publicUrl } } : {}),
         },
       },
     },
@@ -201,12 +184,7 @@ export const prismaUpdateStudentAccount = async (
   });
   return update;
 };
-export const prismaUpdateAccountLoginCredentials = async (
-  accountId: number,
-  schoolId: string | undefined,
-  newEmail: string | undefined,
-  newPassword: string | undefined,
-): Promise<Account | null> => {
+export const prismaUpdateAccountLoginCredentials = async (accountId: number, schoolId: string | undefined, newEmail: string | undefined, newPassword: string | undefined): Promise<Account | null> => {
   const result = await prisma.account.update({
     where: {
       accountId: accountId,
@@ -219,10 +197,7 @@ export const prismaUpdateAccountLoginCredentials = async (
   });
   return result;
 };
-export const prismaUpdateAccountPassword = async (
-  email: string,
-  hashedPassword: string,
-): Promise<AccountRelations | null> => {
+export const prismaUpdateAccountPassword = async (email: string, hashedPassword: string): Promise<AccountRelations | null> => {
   const updatePassword = await prisma.account.update({
     where: {
       email: email,
@@ -466,10 +441,7 @@ export const prismaHEADUpdateStudentAccount = async (
   });
   return update;
 };
-export const prismaUpdateWebTour = async (
-  accountId: number,
-  webTour: Record<string, boolean>,
-): Promise<Account | null> => {
+export const prismaUpdateWebTour = async (accountId: number, webTour: Record<string, boolean>): Promise<Account | null> => {
   return await prisma.account.update({
     where: {
       accountId: accountId,

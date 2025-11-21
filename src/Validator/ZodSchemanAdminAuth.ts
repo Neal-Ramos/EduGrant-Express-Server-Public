@@ -57,6 +57,4 @@ export const superAdminTokenAuthenticationZodSchema = z.object({
     AdminToken: z.string(),
   }),
 });
-export type superAdminTokenAuthenticationZodType = z.infer<
-  typeof superAdminTokenAuthenticationZodSchema
->;
+export type superAdminTokenAuthenticationZodType = z.infer<typeof superAdminTokenAuthenticationZodSchema>;

@@ -45,9 +45,7 @@ export const sendAuthCodeChangeAccountCredZodSchema = z.object({
     newPassword: z.string().min(8),
   }),
 });
-export type sendAuthCodeChangeAccountCredZodType = z.infer<
-  typeof sendAuthCodeChangeAccountCredZodSchema
->;
+export type sendAuthCodeChangeAccountCredZodType = z.infer<typeof sendAuthCodeChangeAccountCredZodSchema>;
 
 export const changePasswordZodSchema = z.object({
   body: z.object({

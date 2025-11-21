@@ -81,10 +81,7 @@ import {
   validateStaffZodSchema,
 } from '../Validator/ZodSchemaAdminPost';
 import { validate } from '../Validator/Validator';
-import {
-  downloadApplicationFileZodSchema,
-  getFileUrlZodSchema,
-} from '../Validator/ZodSchemaUserUser';
+import { downloadApplicationFileZodSchema, getFileUrlZodSchema } from '../Validator/ZodSchemaUserUser';
 import { createAccountZodSchema } from '../Validator/ZodSchemanAdminAuth';
 
 const AdminPostRoutes = Router();
@@ -103,89 +100,39 @@ AdminPostRoutes.get('/getAllAdmin', validate(getAllAdminZodSchema), getAllAdmin)
 AdminPostRoutes.get('/searchAdmin', validate(searchAdminZodSchema), searchAdmin);
 AdminPostRoutes.get('/getStaffById', validate(getStaffByIdZodSchema), getStaffById);
 //application
-AdminPostRoutes.post(
-  '/approveApplication',
-  validate(approveApplicationZodSchema),
-  approveApplication,
-);
+AdminPostRoutes.post('/approveApplication', validate(approveApplicationZodSchema), approveApplication);
 AdminPostRoutes.post('/forInterview', validate(forInterviewZodSchema), forInterview);
-AdminPostRoutes.post(
-  '/declineApplication',
-  validate(declineApplicationZodSchema),
-  declineApplication,
-);
+AdminPostRoutes.post('/declineApplication', validate(declineApplicationZodSchema), declineApplication);
 AdminPostRoutes.post('/getFileUrl', validate(getFileUrlZodSchema), getFileUrl);
-AdminPostRoutes.post(
-  '/downloadApplicationFile',
-  validate(downloadApplicationFileZodSchema),
-  downloadApplicationFile,
-);
+AdminPostRoutes.post('/downloadApplicationFile', validate(downloadApplicationFileZodSchema), downloadApplicationFile);
 
-AdminPostRoutes.get(
-  '/getApplicationById',
-  validate(getApplicationByIdZodSchema),
-  getApplicationById,
-);
+AdminPostRoutes.get('/getApplicationById', validate(getApplicationByIdZodSchema), getApplicationById);
 AdminPostRoutes.get('/getApplication', validate(getApplicationZodSchema), getApplication);
 AdminPostRoutes.get('/searchApplication', validate(searchApplicationZodSchema), searchApplication);
 //scholarschips
-AdminPostRoutes.post(
-  '/adminAddScholarships',
-  upload.any(),
-  validate(adminAddScholarshipsZodSchema),
-  adminAddScholarships,
-);
-AdminPostRoutes.put(
-  '/updateScholarship',
-  upload.any(),
-  validate(updateScholarshipZodSchema),
-  updateScholarship,
-);
-AdminPostRoutes.post(
-  '/renewScholarship',
-  validate(renewalScholarshipZodSchema),
-  renewalScholarship,
-);
+AdminPostRoutes.post('/adminAddScholarships', upload.any(), validate(adminAddScholarshipsZodSchema), adminAddScholarships);
+AdminPostRoutes.put('/updateScholarship', upload.any(), validate(updateScholarshipZodSchema), updateScholarship);
+AdminPostRoutes.post('/renewScholarship', validate(renewalScholarshipZodSchema), renewalScholarship);
 AdminPostRoutes.post('/endScholarship', validate(endScholarshipZodSchema), endScholarship);
 AdminPostRoutes.post('/deleteScholarship', validate(deleteScholarshipZodSchema), deleteScholarship);
 
 AdminPostRoutes.get('/getScholarship', validate(getScholarshipZodSchema), getScholarship);
-AdminPostRoutes.get(
-  '/getScholarshipsById',
-  validate(getScholarshipsByIdZodSchema),
-  getScholarshipsById,
-);
+AdminPostRoutes.get('/getScholarshipsById', validate(getScholarshipsByIdZodSchema), getScholarshipsById);
 AdminPostRoutes.get('/getFilterData', validate(getFilterDataZodSchema), getFilterData);
 
 //announcements
-AdminPostRoutes.post(
-  '/createAnnouncement',
-  validate(createAnnouncementZodSchema),
-  createAnnouncement,
-);
-AdminPostRoutes.post(
-  '/deleteAnnouncement',
-  validate(deleteAnnouncementZodSchema),
-  deleteAnnouncement,
-);
+AdminPostRoutes.post('/createAnnouncement', validate(createAnnouncementZodSchema), createAnnouncement);
+AdminPostRoutes.post('/deleteAnnouncement', validate(deleteAnnouncementZodSchema), deleteAnnouncement);
 AdminPostRoutes.post('/editAnnouncement', validate(editAnnouncementZodSchema), editAnnouncement);
 
 AdminPostRoutes.get('/getAnnouncement', validate(getAnnouncementZodSchema), getAnnouncement);
-AdminPostRoutes.get(
-  '/getAnnouncementById',
-  validate(getAnnouncementByIdZodSchema),
-  getAnnouncementById,
-);
+AdminPostRoutes.get('/getAnnouncementById', validate(getAnnouncementByIdZodSchema), getAnnouncementById);
 
 //logs
 AdminPostRoutes.get('/getStaffLogs', validate(getStaffLogsZodSchema), getStaffLogs);
 
 //students
-AdminPostRoutes.post(
-  '/updateStudentAccount',
-  validate(updateStudentAccountZodSchema),
-  updateStudentAccount,
-);
+AdminPostRoutes.post('/updateStudentAccount', validate(updateStudentAccountZodSchema), updateStudentAccount);
 AdminPostRoutes.post('/deleteStudent', validate(deleteStudentZodSchema), deleteStudent);
 
 AdminPostRoutes.get('/getStudents', validate(getStudentsZodSchema), getStudents);
@@ -194,16 +141,8 @@ AdminPostRoutes.get('/searchStudent', validate(searchStudentZodSchema), searchSt
 
 //CSV
 AdminPostRoutes.get('/getFiltersCSV', validate(getFiltersCSVZodSchema), getFiltersCSV);
-AdminPostRoutes.get(
-  '/downloadApplicationCSV',
-  validate(downloadApplicationCSVZodSchema),
-  downloadApplicationCSV,
-);
+AdminPostRoutes.get('/downloadApplicationCSV', validate(downloadApplicationCSVZodSchema), downloadApplicationCSV);
 AdminPostRoutes.get('/getFiltersStudentsCSV', getFiltersStudentsCSV);
-AdminPostRoutes.get(
-  '/downloadStudentsCSV',
-  validate(downloadStudentsCSVZodSchema),
-  downloadStudentsCSV,
-);
+AdminPostRoutes.get('/downloadStudentsCSV', validate(downloadStudentsCSVZodSchema), downloadStudentsCSV);
 
 export default AdminPostRoutes;

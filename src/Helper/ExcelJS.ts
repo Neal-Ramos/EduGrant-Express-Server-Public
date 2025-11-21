@@ -68,10 +68,7 @@ export const ExportToExcel = async (record: {}[], fileName: string, res: Respons
     column.width = maxLength < 15 ? 15 : maxLength + 2;
   });
 
-  res.setHeader(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  );
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', `attachment; filename="${fileName}.xlsx"`);
   await workBook.xlsx.write(res);
   res.end();

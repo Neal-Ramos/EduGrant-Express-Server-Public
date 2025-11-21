@@ -1,13 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Prisma } from '../lib/prisma';
-import {
-  DeleteSupabase,
-  ResponseUploadSupabase,
-  SupabaseCreateSignedUrl,
-  SupabaseDeletePrivateFile,
-  SupabaseDownloadFile,
-  UploadSupabase,
-} from '../Config/Supabase';
+import { DeleteSupabase, ResponseUploadSupabase, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase } from '../Config/Supabase';
 import {
   adminAddScholarshipsZodType,
   approveApplicationZodType,
@@ -47,21 +40,8 @@ import {
 import { CreateEmailOptions } from 'resend';
 import { ApproveHTML } from '../utils/HTML-ApprovedApplication';
 import { interviewHTML } from '../utils/HTML-InterviewApplication';
-import {
-  prismaGetStaffAccounts,
-  prismaGetStaffById,
-  prismaSearchISPUStaff,
-  prismaTotalCountStaff,
-  prismaValidateStaff,
-} from '../Models/ISPSU_StaffModels';
-import {
-  prismaCheckEmailExist,
-  prismaCreateISPSU_Staff,
-  prismaDeleteAccount,
-  prismaGetAccountById,
-  prismaGetHeadDashboard,
-  prismaHEADUpdateStudentAccount,
-} from '../Models/AccountModels';
+import { prismaGetStaffAccounts, prismaGetStaffById, prismaSearchISPUStaff, prismaTotalCountStaff, prismaValidateStaff } from '../Models/ISPSU_StaffModels';
+import { prismaCheckEmailExist, prismaCreateISPSU_Staff, prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from '../Models/AccountModels';
 import {
   prismaCreateScholarship,
   prismaDeleteScholarship,
@@ -86,22 +66,9 @@ import {
   prismaGetFiltersForApplicationsCSV,
   prismaSearchApplication,
 } from '../Models/ApplicationModels';
-import {
-  prismaExportCSV,
-  prismaFiltersStudent,
-  prismaGetFiltersStudentCSV,
-  prismaGetStudentById,
-  prismaGetStudents,
-  prismaSearchStudents,
-} from '../Models/StudentModels';
+import { prismaExportCSV, prismaFiltersStudent, prismaGetFiltersStudentCSV, prismaGetStudentById, prismaGetStudents, prismaSearchStudents } from '../Models/StudentModels';
 import { prismaGetApplicationByIdScholarshipId } from '../Models/Application_DecisionModels';
-import {
-  prismaCreateAnnouncement,
-  prismaDeleteAnnouncement,
-  prismaEditAnnouncement,
-  prismaGetAllAnnouncement,
-  prismaGetAnnouncementById,
-} from '../Models/AnnouncementModels';
+import { prismaCreateAnnouncement, prismaDeleteAnnouncement, prismaEditAnnouncement, prismaGetAllAnnouncement, prismaGetAnnouncementById } from '../Models/AnnouncementModels';
 import { declineHTML } from '../utils/HTML-DeclinedApplication';
 import { chunkArray } from '../Helper/Helpers';
 import { io } from '..';
@@ -115,11 +82,7 @@ import { createAccountZodType } from '../Validator/ZodSchemanAdminAuth';
 import { DenormalizeApplication } from '../Helper/ApplicationHelper';
 import { sendApplicationUpdate } from '../Config/Resend';
 
-export const getAllAdmin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getAllAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = Number(req.tokenPayload.accountId);
 
@@ -130,9 +93,7 @@ export const getAllAdmin = async (
       return;
     }
 
-    const { page, dataPerPage, sortBy, accountId, order } = (
-      req as Request & { validated: getAllAdminZodType }
-    ).validated.query;
+    const { page, dataPerPage, sortBy, accountId, order } = (req as Request & { validated: getAllAdminZodType }).validated.query;
 
     if (!page || !dataPerPage) {
       res.status(400).json({ success: false, message: 'Incomplete Credentials!' });
@@ -154,16 +115,10 @@ export const getAllAdmin = async (
     next(error);
   }
 };
-export const searchAdmin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const searchAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = Number(req.tokenPayload.accountId);
-    const { page, dataPerPage, accountId, search, sortBy, order } = (
-      req as Request & { validated: searchAdminZodType }
-    ).validated.query;
+    const { page, dataPerPage, accountId, search, sortBy, order } = (req as Request & { validated: searchAdminZodType }).validated.query;
 
     const HeadId = await prismaGetAccountById(userId);
     if (!HeadId || HeadId.role !== 'ISPSU_Head') {
@@ -177,14 +132,7 @@ export const searchAdmin = async (
       return;
     }
 
-    const getSearchAdmin = await prismaSearchISPUStaff(
-      search,
-      page,
-      dataPerPage,
-      sortBy,
-      order,
-      accountId,
-    );
+    const getSearchAdmin = await prismaSearchISPUStaff(search, page, dataPerPage, sortBy, order, accountId);
 
     const meta = {
       page: page,
@@ -201,11 +149,7 @@ export const searchAdmin = async (
     next(error);
   }
 };
-export const getStaffById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getStaffById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = Number(req.tokenPayload.accountId);
 
@@ -229,15 +173,9 @@ export const getStaffById = async (
     next(error);
   }
 };
-export const createISPSUStaffAccount = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const createISPSUStaffAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    let { email, firstName, middleName, lastName, phone, password } = (
-      req as Request & { validated: createAccountZodType }
-    ).validated.body;
+    let { email, firstName, middleName, lastName, phone, password } = (req as Request & { validated: createAccountZodType }).validated.body;
 
     const emailDuplicate = await prismaCheckEmailExist(email);
     if (emailDuplicate) {
@@ -246,14 +184,7 @@ export const createISPSUStaffAccount = async (
     }
 
     password = await hash(password, 10);
-    const insertAdminToDB = await prismaCreateISPSU_Staff(
-      email,
-      firstName,
-      middleName,
-      lastName,
-      phone,
-      password,
-    );
+    const insertAdminToDB = await prismaCreateISPSU_Staff(email, firstName, middleName, lastName, phone, password);
     if (!insertAdminToDB) {
       res.status(500).json({ success: false, message: 'Database Error!' });
       return;
@@ -265,11 +196,7 @@ export const createISPSUStaffAccount = async (
     next(error);
   }
 };
-export const deleteAdmin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const deleteAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const id = Number(req.tokenPayload.accountId);
 
@@ -284,23 +211,17 @@ export const deleteAdmin = async (
     const deleteAdmin = await prismaDeleteAccount(accountId);
     io.emit('deleteAdmin', { accountId });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Admin Accounts Deleted!',
-        affectedRows: deleteAdmin,
-        staffId: accountId,
-      });
+    res.status(200).json({
+      success: true,
+      message: 'Admin Accounts Deleted!',
+      affectedRows: deleteAdmin,
+      staffId: accountId,
+    });
   } catch (error) {
     next(error);
   }
 };
-export const validateStaff = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const validateStaff = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { staffId } = (req as Request & { validated: validateStaffZodType }).validated.body;
     const headId = Number(req.tokenPayload.accountId);
@@ -317,10 +238,7 @@ export const validateStaff = async (
       return;
     }
 
-    const validateStaff = await prismaValidateStaff(
-      staffId,
-      !checkStaffAccount.ISPSU_Staff?.validated,
-    );
+    const validateStaff = await prismaValidateStaff(staffId, !checkStaffAccount.ISPSU_Staff?.validated);
     if (!validateStaff) {
       res.status(500).json({ success: false, message: 'Server Error!' });
       return;
@@ -330,11 +248,7 @@ export const validateStaff = async (
     next(error);
   }
 };
-export const deleteISPSU_Staff = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const deleteISPSU_Staff = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { staffId } = (req as Request & { validated: deleteISPSU_StaffZodType }).validated.body;
     const headId = Number(req.tokenPayload.accountId);
@@ -363,19 +277,13 @@ export const deleteISPSU_Staff = async (
     }
     res.status(200).json({ success: false, message: 'Staff Deleted!' });
     if ((checkStaff.ISPSU_Staff?.profileImg as { path: string })?.path) {
-      await DeleteSupabase([(checkStaff.ISPSU_Staff?.profileImg as { path: string })?.path]).catch(
-        (error) => console.log(error),
-      );
+      await DeleteSupabase([(checkStaff.ISPSU_Staff?.profileImg as { path: string })?.path]).catch((error) => console.log(error));
     }
   } catch (error) {
     next(error);
   }
 };
-export const adminTokenAuthentication = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const adminTokenAuthentication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const accountId = Number(req.tokenPayload.accountId);
 
@@ -390,35 +298,23 @@ export const adminTokenAuthentication = async (
       res.status(401).json({ success: false, message: 'Account is not validated!' });
       return;
     }
-    const {
+    const { availableScholarshipCount, applicationCount, announcementCount, ISPSU_StaffCount, applicationCountPerStatus } = await prismaStudentCountsInToken();
+    const { hashedPassword, ...safeData } = ISPSU;
+    res.status(200).json({
+      success: true,
+      message: 'Access Granted!',
+      safeData: safeData,
       availableScholarshipCount,
       applicationCount,
       announcementCount,
       ISPSU_StaffCount,
       applicationCountPerStatus,
-    } = await prismaStudentCountsInToken();
-    const { hashedPassword, ...safeData } = ISPSU;
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Access Granted!',
-        safeData: safeData,
-        availableScholarshipCount,
-        applicationCount,
-        announcementCount,
-        ISPSU_StaffCount,
-        applicationCountPerStatus,
-      });
+    });
   } catch (error) {
     next(error);
   }
 };
-export const getDashboard = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const accountId = Number(req.tokenPayload.accountId);
 
@@ -435,11 +331,7 @@ export const getDashboard = async (
     next(error);
   }
 };
-export const headDashboard = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const headDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { accountId } = (req as Request & { tokenPayload: TokenPayload }).tokenPayload;
 
@@ -460,24 +352,11 @@ export const headDashboard = async (
   }
 };
 
-export const adminAddScholarships = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const adminAddScholarships = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const {
-      scholarshipType,
-      newScholarTitle,
-      newScholarProvider,
-      newScholarDeadline,
-      newScholarDescription,
-      scholarshipDocuments,
-      scholarshipAmount,
-      scholarshipLimit,
-      gwa,
-      isForInterview,
-    } = (req as Request & { validated: adminAddScholarshipsZodType }).validated.body;
+    const { scholarshipType, newScholarTitle, newScholarProvider, newScholarDeadline, newScholarDescription, scholarshipDocuments, scholarshipAmount, scholarshipLimit, gwa, isForInterview } = (
+      req as Request & { validated: adminAddScholarshipsZodType }
+    ).validated.body;
 
     const adminId = Number(req.tokenPayload.accountId);
 
@@ -488,9 +367,7 @@ export const adminAddScholarships = async (
       return;
     }
     if (!scholarshipDocuments.documents) {
-      res
-        .status(422)
-        .json({ success: false, message: 'Missing Field scholarshipDocuments.documents' });
+      res.status(422).json({ success: false, message: 'Missing Field scholarshipDocuments.documents' });
       return;
     }
     const docs: { label: string }[] = scholarshipDocuments.documents;
@@ -499,28 +376,17 @@ export const adminAddScholarships = async (
       return;
     }
 
-    const sponsorLogo = (req.files as Express.Multer.File[]).find(
-      (file) => file.fieldname === 'sponsorLogo',
-    );
-    const coverImg = (req.files as Express.Multer.File[]).find(
-      (file) => file.fieldname === 'coverImg',
-    );
-    const form = (req.files as Express.Multer.File[]).find(
-      (file) => file.fieldname === 'scholarshipForm',
-    );
+    const sponsorLogo = (req.files as Express.Multer.File[]).find((file) => file.fieldname === 'sponsorLogo');
+    const coverImg = (req.files as Express.Multer.File[]).find((file) => file.fieldname === 'coverImg');
+    const form = (req.files as Express.Multer.File[]).find((file) => file.fieldname === 'scholarshipForm');
     if (!sponsorLogo || !coverImg) {
       res.status(422).json({ success: false, message: 'Incomplete Image!' });
       return;
     }
 
-    const sponsorResult: ResponseUploadSupabase = await UploadSupabase(
-      sponsorLogo,
-      'scholarship-files',
-    );
+    const sponsorResult: ResponseUploadSupabase = await UploadSupabase(sponsorLogo, 'scholarship-files');
     const coverResult: ResponseUploadSupabase = await UploadSupabase(coverImg, 'scholarship-files');
-    const formResult: ResponseUploadSupabase | undefined = form
-      ? await UploadSupabase(form, 'scholarship-files')
-      : undefined;
+    const formResult: ResponseUploadSupabase | undefined = form ? await UploadSupabase(form, 'scholarship-files') : undefined;
 
     const insertScholarshipsData = await prismaCreateScholarship(
       scholarshipType,
@@ -550,15 +416,9 @@ export const adminAddScholarships = async (
   }
 };
 
-export const getScholarship = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { filters, page, dataPerPage, sortBy, order, status, search } = (
-      req as Request & { validated: getScholarshipZodType }
-    ).validated.query;
+    const { filters, page, dataPerPage, sortBy, order, status, search } = (req as Request & { validated: getScholarshipZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -568,16 +428,7 @@ export const getScholarship = async (
       return;
     }
 
-    const getScholarshipsData = await prismaGetScholarship(
-      page,
-      dataPerPage,
-      sortBy,
-      order,
-      status,
-      filters,
-      undefined,
-      search,
-    );
+    const getScholarshipsData = await prismaGetScholarship(page, dataPerPage, sortBy, order, status, filters, undefined, search);
 
     const meta = {
       count: {
@@ -588,9 +439,7 @@ export const getScholarship = async (
       page: page ? page : 'none',
       pageSize: dataPerPage ? dataPerPage : 'none',
       totalRows: getScholarshipsData.totalCount,
-      totalPage: Math.ceil(
-        getScholarshipsData.totalCount / (dataPerPage || getScholarshipsData.totalCount),
-      ),
+      totalPage: Math.ceil(getScholarshipsData.totalCount / (dataPerPage || getScholarshipsData.totalCount)),
       sortBy: sortBy ? sortBy : 'default',
       order: order ? order : 'default',
       filters: (filters as { id: string; value: string[] }[])?.map((f) => f.id),
@@ -601,14 +450,9 @@ export const getScholarship = async (
   }
 };
 
-export const getScholarshipsById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getScholarshipsById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipId } = (req as Request & { validated: getScholarshipsByIdZodType }).validated
-      .query;
+    const { scholarshipId } = (req as Request & { validated: getScholarshipsByIdZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -623,31 +467,17 @@ export const getScholarshipsById = async (
       res.status(404).json({ success: false, message: 'Scholarship Did not Found!!!' });
       return;
     }
-    res
-      .status(200)
-      .json({ success: true, message: 'Get Success!', scholarship: getScholarshipsByIdData });
+    res.status(200).json({ success: true, message: 'Get Success!', scholarship: getScholarshipsByIdData });
   } catch (error) {
     next(error);
   }
 };
 
-export const updateScholarship = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const updateScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    let {
-      scholarshipId,
-      newScholarProvider,
-      newScholarTitle,
-      newScholarDeadline,
-      newScholarDescription,
-      scholarshipAmount,
-      scholarshipLimit,
-      gwa,
-      scholarshipDocuments,
-    } = (req as Request & { validated: updateScholarshipZodType }).validated.body;
+    let { scholarshipId, newScholarProvider, newScholarTitle, newScholarDeadline, newScholarDescription, scholarshipAmount, scholarshipLimit, gwa, scholarshipDocuments } = (
+      req as Request & { validated: updateScholarshipZodType }
+    ).validated.body;
 
     const accountId = Number(req.tokenPayload.accountId);
 
@@ -671,15 +501,9 @@ export const updateScholarship = async (
     };
     const deleteOldFiles: string[] = [];
 
-    let scholarshipLogo: any = (req.files as Express.Multer.File[]).find(
-      (file) => file.fieldname === 'sponsorLogo',
-    );
-    let scholarshipCover: any = (req.files as Express.Multer.File[]).find(
-      (file) => file.fieldname === 'coverImg',
-    );
-    let scholarshipForm: any = (req.files as Express.Multer.File[]).find(
-      (file) => file.fieldname === 'scholarshipForm',
-    );
+    let scholarshipLogo: any = (req.files as Express.Multer.File[]).find((file) => file.fieldname === 'sponsorLogo');
+    let scholarshipCover: any = (req.files as Express.Multer.File[]).find((file) => file.fieldname === 'coverImg');
+    let scholarshipForm: any = (req.files as Express.Multer.File[]).find((file) => file.fieldname === 'scholarshipForm');
 
     if (scholarshipLogo) {
       scholarshipLogo = await UploadSupabase(scholarshipLogo, 'scholarship-files');
@@ -739,33 +563,20 @@ export const updateScholarship = async (
       if (scholarshipForm) {
         deletePaths.push(scholarshipForm.path);
       }
-      deletePaths.length &&
-        (await DeleteSupabase(deletePaths).catch((error) =>
-          console.log(`Delete Files Error: ${error}`),
-        ));
+      deletePaths.length && (await DeleteSupabase(deletePaths).catch((error) => console.log(`Delete Files Error: ${error}`)));
       return;
     }
-    await DeleteSupabase(deleteOldFiles).catch((error) =>
-      console.log(`Delete Files Error: ${error}`),
-    );
-    res
-      .status(200)
-      .json({ success: true, message: 'Scholarship Updated!', updatedScholarship: update });
+    await DeleteSupabase(deleteOldFiles).catch((error) => console.log(`Delete Files Error: ${error}`));
+    res.status(200).json({ success: true, message: 'Scholarship Updated!', updatedScholarship: update });
     io.emit('updateScholarship', { update });
   } catch (error) {
     next(error);
   }
 };
 
-export const renewalScholarship = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const renewalScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipId, renewDeadline, renewDocuments, isForInterview } = (
-      req as Request & { validated: renewalScholarshipZodType }
-    ).validated.body;
+    const { scholarshipId, renewDeadline, renewDocuments, isForInterview } = (req as Request & { validated: renewalScholarshipZodType }).validated.body;
 
     const accountId = Number(req.tokenPayload.accountId);
 
@@ -797,35 +608,22 @@ export const renewalScholarship = async (
     const updatedRequirements = scholarship.documents as Record<string, { [k: string]: string }>;
     updatedRequirements[`phase-${scholarship.phase + 1}`] = renewDocuments;
 
-    const renewScholar = await prismaRenewScholarship(
-      accountId,
-      scholarshipId,
-      updatedRequirements,
-      renewDeadline,
-      isForInterview,
-    );
+    const renewScholar = await prismaRenewScholarship(accountId, scholarshipId, updatedRequirements, renewDeadline, isForInterview);
     if (!renewScholar) {
       res.status(500).json({ success: false, message: 'Server Error!' });
       return;
     }
     const emitTo: string[] = renewScholar.Application.map((f) => f.ownerId.toString());
-    res
-      .status(200)
-      .json({ success: false, message: 'Scholarship Renewed!', renewedScholarship: renewScholar });
+    res.status(200).json({ success: false, message: 'Scholarship Renewed!', renewedScholarship: renewScholar });
     io.to(['ISPSU_Head', 'ISPSU_Staff', ...emitTo]).emit('renewScholarship', { renewScholar });
   } catch (error) {
     next(error);
   }
 };
 
-export const endScholarship = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const endScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipId } = (req as Request & { validated: endScholarshipZodType }).validated
-      .body;
+    const { scholarshipId } = (req as Request & { validated: endScholarshipZodType }).validated.body;
     const accountId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(accountId);
@@ -840,9 +638,7 @@ export const endScholarship = async (
       res.status(500).json({ success: false, message: 'Server Error!' });
       return;
     }
-    res
-      .status(200)
-      .json({ success: true, message: 'Scholarship Ended!', endedScholarship: endScholar });
+    res.status(200).json({ success: true, message: 'Scholarship Ended!', endedScholarship: endScholar });
     io.emit('endScholarship', {
       endedScholarship: endScholar.endedScholarship,
       endedApplications: endScholar.endenApplications,
@@ -852,14 +648,9 @@ export const endScholarship = async (
   }
 };
 
-export const deleteScholarship = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const deleteScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipId } = (req as Request & { validated: deleteScholarshipZodType }).validated
-      .body;
+    const { scholarshipId } = (req as Request & { validated: deleteScholarshipZodType }).validated.body;
     const userId = Number(req.tokenPayload.accountId);
     const user = await prismaGetAccountById(userId);
     if (!user || user.role !== 'ISPSU_Head') {
@@ -891,20 +682,17 @@ export const deleteScholarship = async (
       scholarshipStatus = 'EXPIRED';
     }
 
-    res
-      .status(200)
-      .json({ success: true, message: 'Scholarship Deleted!!', scholarshipId, scholarshipStatus });
+    res.status(200).json({ success: true, message: 'Scholarship Deleted!!', scholarshipId, scholarshipStatus });
     io.emit('deleteScholarship', {
       deletedScholarship: scholarship,
       deletedApplicationsIds: scholarship.Application.map((f) => f.applicationId),
       scholarshipStatus,
     });
 
-    const applicationIDs: { id: number; supabasePath: { [key: string]: string } }[] =
-      scholarship.Application.map((e) => ({
-        id: e.applicationId,
-        supabasePath: e.supabasePath as { [key: string]: string },
-      }));
+    const applicationIDs: { id: number; supabasePath: { [key: string]: string } }[] = scholarship.Application.map((e) => ({
+      id: e.applicationId,
+      supabasePath: e.supabasePath as { [key: string]: string },
+    }));
     const batchIDs = chunkArray(applicationIDs, 20);
 
     for (let i = 0; i < batchIDs.length; i++) {
@@ -921,14 +709,9 @@ export const deleteScholarship = async (
   }
 };
 
-export const getApplicationById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getApplicationById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { applicationId } = (req as Request & { validated: getApplicationByIdZodType }).validated
-      .query;
+    const { applicationId } = (req as Request & { validated: getApplicationByIdZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -950,15 +733,9 @@ export const getApplicationById = async (
   }
 };
 
-export const searchApplication = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const searchApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { search, status, sortBy, order, page, dataPerPage } = (
-      req as Request & { validated: searchApplicationZodType }
-    ).validated.query;
+    const { search, status, sortBy, order, page, dataPerPage } = (req as Request & { validated: searchApplicationZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -970,23 +747,13 @@ export const searchApplication = async (
 
     const allowedStatusFilter = ['DECLINED', 'PENDING', 'APPROVED'];
 
-    const searchedApplication = await prismaSearchApplication(
-      search,
-      status,
-      sortBy,
-      order,
-      page,
-      dataPerPage,
-    );
+    const searchedApplication = await prismaSearchApplication(search, status, sortBy, order, page, dataPerPage);
 
     const meta = {
       page: page,
       pageSize: dataPerPage,
       totalRows: searchedApplication.totalCount,
-      totalPage: Math.ceil(
-        searchedApplication.totalCount /
-          (dataPerPage ? dataPerPage : searchedApplication.totalCount),
-      ),
+      totalPage: Math.ceil(searchedApplication.totalCount / (dataPerPage ? dataPerPage : searchedApplication.totalCount)),
       sortBy: sortBy ? sortBy : 'default',
       order: order ? order : 'default',
       filters: JSON.stringify({
@@ -999,15 +766,9 @@ export const searchApplication = async (
   }
 };
 
-export const getFilterData = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getFilterData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { scholarshipStatus, applicationStatus } = (
-      req as Request & { validated: getFilterDataZodType }
-    ).validated.query;
+    const { scholarshipStatus, applicationStatus } = (req as Request & { validated: getFilterDataZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -1026,15 +787,9 @@ export const getFilterData = async (
   }
 };
 
-export const approveApplication = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const approveApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { applicationId, scholarshipId, rejectMessage } = (
-      req as Request & { validated: approveApplicationZodType }
-    ).validated.body;
+    const { applicationId, scholarshipId, rejectMessage } = (req as Request & { validated: approveApplicationZodType }).validated.body;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -1044,10 +799,7 @@ export const approveApplication = async (
       res.status(401).json({ success: false, message: 'Account Did not Find!' });
       return;
     }
-    const checkApplication = await prismaGetApplicationByIdScholarshipId(
-      applicationId,
-      scholarshipId,
-    );
+    const checkApplication = await prismaGetApplicationByIdScholarshipId(applicationId, scholarshipId);
     if (!checkApplication) {
       res.status(404).json({ success: false, message: 'Application Did not Find' });
       return;
@@ -1057,9 +809,7 @@ export const approveApplication = async (
       return;
     }
     if (!['PENDING', 'INTERVIEW'].includes(checkApplication.status)) {
-      res
-        .status(400)
-        .json({ success: false, message: `Application Already ${checkApplication.status}` });
+      res.status(400).json({ success: false, message: `Application Already ${checkApplication.status}` });
       return;
     }
     const scholarship = await prismaGetScholarshipsById(scholarshipId);
@@ -1068,9 +818,7 @@ export const approveApplication = async (
       return;
     }
     if (scholarship.ended) {
-      res
-        .status(400)
-        .json({ success: false, message: 'Scholarship Ended Cannot process Anymore!' });
+      res.status(400).json({ success: false, message: 'Scholarship Ended Cannot process Anymore!' });
       return;
     }
     if (scholarship.interview === true && checkApplication.status !== 'INTERVIEW') {
@@ -1079,23 +827,16 @@ export const approveApplication = async (
     }
     const checkApproveGov = await prismaCheckApproveGov(checkApplication.ownerId);
     if (checkApproveGov && scholarship.type === 'government') {
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: 'This Student already have a Government Scholarship!',
-          action: 'Application Blocked!',
-        });
+      res.status(400).json({
+        success: false,
+        message: 'This Student already have a Government Scholarship!',
+        action: 'Application Blocked!',
+      });
       await prismaBlockApplicationByApplicationId(applicationId);
       return;
     }
 
-    const { Application, notification, BlockedApplications } = await prismaApproveApplication(
-      applicationId,
-      userId,
-      rejectMessage,
-      scholarship.phase,
-    );
+    const { Application, notification, BlockedApplications } = await prismaApproveApplication(applicationId, userId, rejectMessage, scholarship.phase);
     if (!Application) {
       res.status(500).json({ success: false, message: 'Server Error!' });
       return;
@@ -1112,23 +853,18 @@ export const approveApplication = async (
     const inGov = checkApproveGov ? true : false;
 
     sendApplicationUpdate(mailOptions);
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Application Approved!',
-        approvedApplication: DenormalizeApplication(Application),
-        BlockedApplications,
-        notification: notification,
-      });
-    io.to(['ISPSU_Staff', 'ISPSU_Head', checkApplication.ownerId.toString()]).emit(
-      'approveApplication',
-      {
-        approvedApplication: DenormalizeApplication(Application),
-        BlockedApplications,
-        notification: notification,
-      },
-    );
+    res.status(200).json({
+      success: true,
+      message: 'Application Approved!',
+      approvedApplication: DenormalizeApplication(Application),
+      BlockedApplications,
+      notification: notification,
+    });
+    io.to(['ISPSU_Staff', 'ISPSU_Head', checkApplication.ownerId.toString()]).emit('approveApplication', {
+      approvedApplication: DenormalizeApplication(Application),
+      BlockedApplications,
+      notification: notification,
+    });
   } catch (error: any) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2034') {
       res.status(400).json({ success: false, message: 'This Application Has Been Processed!' });
@@ -1138,15 +874,9 @@ export const approveApplication = async (
   }
 };
 
-export const forInterview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const forInterview = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { applicationId, scholarshipId, rejectMessage } = (
-      req as Request & { validated: forInterviewZondType }
-    ).validated.body;
+    const { applicationId, scholarshipId, rejectMessage } = (req as Request & { validated: forInterviewZondType }).validated.body;
 
     const accountId = Number(req.tokenPayload.accountId);
 
@@ -1157,18 +887,13 @@ export const forInterview = async (
       return;
     }
 
-    const checkApplication = await prismaGetApplicationByIdScholarshipId(
-      applicationId,
-      scholarshipId,
-    );
+    const checkApplication = await prismaGetApplicationByIdScholarshipId(applicationId, scholarshipId);
     if (!checkApplication) {
       res.status(404).json({ success: false, message: 'Application Did not Find!' });
       return;
     }
     if (!['PENDING'].includes(checkApplication.status)) {
-      res
-        .status(400)
-        .json({ success: false, message: `Application Is Already ${checkApplication.status}` });
+      res.status(400).json({ success: false, message: `Application Is Already ${checkApplication.status}` });
       return;
     }
     const checkScholarship = await prismaGetScholarshipsById(scholarshipId);
@@ -1177,24 +902,15 @@ export const forInterview = async (
       return;
     }
     if (checkScholarship.ended) {
-      res
-        .status(400)
-        .json({ success: false, message: 'Scholarship Ended Cannot process Anymore!' });
+      res.status(400).json({ success: false, message: 'Scholarship Ended Cannot process Anymore!' });
       return;
     }
     if (checkScholarship.interview === false) {
-      res
-        .status(400)
-        .json({ success: false, message: 'This Sholarship Does not Required Interview!' });
+      res.status(400).json({ success: false, message: 'This Sholarship Does not Required Interview!' });
       return;
     }
 
-    const { interviewApplication, notification } = await prismaAcceptForInterview(
-      applicationId,
-      accountId,
-      rejectMessage,
-      checkScholarship.phase,
-    );
+    const { interviewApplication, notification } = await prismaAcceptForInterview(applicationId, accountId, rejectMessage, checkScholarship.phase);
     if (!interviewApplication) {
       res.status(500).json({ success: false, message: 'Server Error!' });
       return;
@@ -1213,23 +929,18 @@ export const forInterview = async (
     const inGov = checkApproveGov ? true : false;
 
     sendApplicationUpdate(mailOptions);
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Application Is now For Interview!',
-        interviewedApplication: DenormalizeApplication(interviewApplication),
-        notification: notification,
-        inGov,
-      });
-    io.to(['ISPSU_Staff', 'ISPSU_Head', checkApplication.Student.studentId.toString()]).emit(
-      'forInterview',
-      {
-        interviewApplication: DenormalizeApplication(interviewApplication),
-        notification: notification,
-        inGov,
-      },
-    );
+    res.status(200).json({
+      success: true,
+      message: 'Application Is now For Interview!',
+      interviewedApplication: DenormalizeApplication(interviewApplication),
+      notification: notification,
+      inGov,
+    });
+    io.to(['ISPSU_Staff', 'ISPSU_Head', checkApplication.Student.studentId.toString()]).emit('forInterview', {
+      interviewApplication: DenormalizeApplication(interviewApplication),
+      notification: notification,
+      inGov,
+    });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2034') {
       res.status(400).json({ success: false, message: 'This Application Has Been Processed!' });
@@ -1239,15 +950,9 @@ export const forInterview = async (
   }
 };
 
-export const declineApplication = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const declineApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { applicationId, scholarshipId, rejectMessage } = (
-      req as Request & { validated: declineApplicationZodType }
-    ).validated.body;
+    const { applicationId, scholarshipId, rejectMessage } = (req as Request & { validated: declineApplicationZodType }).validated.body;
     const adminId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(adminId);
@@ -1257,18 +962,13 @@ export const declineApplication = async (
       return;
     }
 
-    const checkApplication = await prismaGetApplicationByIdScholarshipId(
-      applicationId,
-      scholarshipId,
-    );
+    const checkApplication = await prismaGetApplicationByIdScholarshipId(applicationId, scholarshipId);
     if (!checkApplication) {
       res.status(404).json({ success: false, message: 'Application Did not Find' });
       return;
     }
     if (!['PENDING', 'INTERVIEW'].includes(checkApplication.status)) {
-      res
-        .status(400)
-        .json({ success: false, message: `Application Already ${checkApplication.status}` });
+      res.status(400).json({ success: false, message: `Application Already ${checkApplication.status}` });
       return;
     }
 
@@ -1278,18 +978,11 @@ export const declineApplication = async (
       return;
     }
     if (scholarship.ended) {
-      res
-        .status(400)
-        .json({ success: false, message: 'Scholarship Ended Cannot process Anymore!' });
+      res.status(400).json({ success: false, message: 'Scholarship Ended Cannot process Anymore!' });
       return;
     }
 
-    const { declineApplication, notification } = await prismaDeclineApplication(
-      applicationId,
-      adminId,
-      rejectMessage,
-      scholarship.phase,
-    );
+    const { declineApplication, notification } = await prismaDeclineApplication(applicationId, adminId, rejectMessage, scholarship.phase);
     if (!declineApplication) {
       res.status(500).json({ success: false, message: 'Server Error' });
       return;
@@ -1308,22 +1001,17 @@ export const declineApplication = async (
     const inGov = checkApproveGov ? true : false;
 
     sendApplicationUpdate(mailOptions);
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Application Declined!',
-        declinedApplication: DenormalizeApplication(declineApplication),
-        inGov,
-      });
-    io.to(['ISPSU_Staff', 'ISPSU_Head', checkApplication.Student.studentId.toString()]).emit(
-      'declineApplication',
-      {
-        declineApplication: DenormalizeApplication(declineApplication),
-        notification: notification,
-        inGov,
-      },
-    );
+    res.status(200).json({
+      success: true,
+      message: 'Application Declined!',
+      declinedApplication: DenormalizeApplication(declineApplication),
+      inGov,
+    });
+    io.to(['ISPSU_Staff', 'ISPSU_Head', checkApplication.Student.studentId.toString()]).emit('declineApplication', {
+      declineApplication: DenormalizeApplication(declineApplication),
+      notification: notification,
+      inGov,
+    });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2034') {
       res.status(400).json({ success: false, message: 'This Application Has Been Processed!' });
@@ -1333,15 +1021,9 @@ export const declineApplication = async (
   }
 };
 
-export const getApplication = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { status, page, dataPerPage, sortBy, order, filters, scholarshipId } = (
-      req as Request & { validated: getApplicationZodType }
-    ).validated.query;
+    const { status, page, dataPerPage, sortBy, order, filters, scholarshipId } = (req as Request & { validated: getApplicationZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -1351,25 +1033,14 @@ export const getApplication = async (
       return;
     }
 
-    const getApplication = await prismaGetAllApplication(
-      status,
-      page,
-      dataPerPage,
-      sortBy,
-      order,
-      filters,
-      scholarshipId,
-    );
+    const getApplication = await prismaGetAllApplication(status, page, dataPerPage, sortBy, order, filters, scholarshipId);
 
     const meta = {
       counts: getApplication.countsByStatus,
       page: page,
       pageSize: dataPerPage,
       totalRows: getApplication.applicationsCount,
-      totalPage: Math.ceil(
-        getApplication.applicationsCount /
-          (dataPerPage ? dataPerPage : getApplication.applicationsCount),
-      ),
+      totalPage: Math.ceil(getApplication.applicationsCount / (dataPerPage ? dataPerPage : getApplication.applicationsCount)),
       sortBy: sortBy ? sortBy : 'default',
       order: order ? order : 'default',
       filters: filters?.map((data) => data.id),
@@ -1381,14 +1052,9 @@ export const getApplication = async (
   }
 };
 
-export const getFileUrl = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getFileUrl = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { path, applicationId } = (req as Request & { validated: getFileUrlZodType }).validated
-      .body;
+    const { path, applicationId } = (req as Request & { validated: getFileUrlZodType }).validated.body;
     const adminId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(adminId);
@@ -1420,14 +1086,9 @@ export const getFileUrl = async (
   }
 };
 
-export const downloadApplicationFile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const downloadApplicationFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { path, applicationId } = (req as Request & { validated: downloadApplicationFileZodType })
-      .validated.body;
+    const { path, applicationId } = (req as Request & { validated: downloadApplicationFileZodType }).validated.body;
     const adminId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(adminId);
@@ -1467,15 +1128,9 @@ export const downloadApplicationFile = async (
   }
 };
 
-export const createAnnouncement = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const createAnnouncement = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { announcementTitle, announcementDescription, announcementTags } = (
-      req as Request & { validated: createAnnouncementZodType }
-    ).validated.body;
+    const { announcementTitle, announcementDescription, announcementTags } = (req as Request & { validated: createAnnouncementZodType }).validated.body;
     const adminId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(adminId);
@@ -1490,12 +1145,7 @@ export const createAnnouncement = async (
       return;
     }
 
-    const newAnnouncement = await prismaCreateAnnouncement(
-      adminId,
-      announcementTitle,
-      announcementDescription,
-      announcementTags,
-    );
+    const newAnnouncement = await prismaCreateAnnouncement(adminId, announcementTitle, announcementDescription, announcementTags);
     if (!newAnnouncement) {
       res.status(500).json({ success: false, message: 'Database Error!' });
       return;
@@ -1507,15 +1157,9 @@ export const createAnnouncement = async (
   }
 };
 
-export const getAnnouncement = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getAnnouncement = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, sortBy, order, status, search } = (
-      req as Request & { validated: getAnnouncementZodType }
-    ).validated.query;
+    const { page, dataPerPage, sortBy, order, status, search } = (req as Request & { validated: getAnnouncementZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -1525,14 +1169,7 @@ export const getAnnouncement = async (
       return;
     }
 
-    const getData = await prismaGetAllAnnouncement(
-      page,
-      dataPerPage,
-      sortBy,
-      order,
-      status,
-      search,
-    );
+    const getData = await prismaGetAllAnnouncement(page, dataPerPage, sortBy, order, status, search);
 
     const meta = {
       page: page,
@@ -1549,14 +1186,9 @@ export const getAnnouncement = async (
     next(error);
   }
 };
-export const getAnnouncementById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getAnnouncementById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { announcementId } = (req as Request & { validated: getAnnouncementByIdZodType })
-      .validated.query;
+    const { announcementId } = (req as Request & { validated: getAnnouncementByIdZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -1572,14 +1204,9 @@ export const getAnnouncementById = async (
     next(error);
   }
 };
-export const deleteAnnouncement = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const deleteAnnouncement = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { announcementId } = (req as Request & { validated: deleteAnnouncementZodType }).validated
-      .body;
+    const { announcementId } = (req as Request & { validated: deleteAnnouncementZodType }).validated.body;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -1600,15 +1227,9 @@ export const deleteAnnouncement = async (
     next(error);
   }
 };
-export const editAnnouncement = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const editAnnouncement = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { announcementId, title, description, tags } = (
-      req as Request & { validated: editAnnouncementZodType }
-    ).validated.body;
+    const { announcementId, title, description, tags } = (req as Request & { validated: editAnnouncementZodType }).validated.body;
 
     const userId = Number(req.tokenPayload.accountId);
     const user = await prismaGetAccountById(userId);
@@ -1628,15 +1249,9 @@ export const editAnnouncement = async (
     next(error);
   }
 };
-export const getStaffLogs = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getStaffLogs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, sortBy, order, ownderId, filters } = (
-      req as Request & { validated: getStaffLogsZodType }
-    ).validated.query;
+    const { page, dataPerPage, sortBy, order, ownderId, filters } = (req as Request & { validated: getStaffLogsZodType }).validated.query;
     const accountId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(accountId);
@@ -1648,15 +1263,7 @@ export const getStaffLogs = async (
 
     const isStaff = user.role === 'ISPSU_Staff' ? accountId : undefined;
     const isHead: boolean = user.role === 'ISPSU_Head';
-    const { logs, totalCount } = await prismaGetStaffLogs(
-      isHead,
-      page,
-      dataPerPage,
-      sortBy,
-      order,
-      isStaff,
-      filters,
-    );
+    const { logs, totalCount } = await prismaGetStaffLogs(isHead, page, dataPerPage, sortBy, order, isStaff, filters);
 
     const meta = {
       page: page || 'default',
@@ -1673,31 +1280,11 @@ export const getStaffLogs = async (
     next(error);
   }
 };
-export const updateStudentAccount = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const updateStudentAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const {
-      ownerId,
-      email,
-      newPassword,
-      schoolId,
-      fName,
-      lName,
-      mName,
-      contactNumber,
-      gender,
-      address,
-      indigenous,
-      PWD,
-      institute,
-      course,
-      year,
-      section,
-      dateOfBirth,
-    } = (req as Request & { validated: updateStudentAccountZodType }).validated.body;
+    const { ownerId, email, newPassword, schoolId, fName, lName, mName, contactNumber, gender, address, indigenous, PWD, institute, course, year, section, dateOfBirth } = (
+      req as Request & { validated: updateStudentAccountZodType }
+    ).validated.body;
 
     const userId = Number(req.tokenPayload.accountId);
 
@@ -1751,11 +1338,7 @@ export const updateStudentAccount = async (
     next(error);
   }
 };
-export const deleteStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const deleteStudent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { ownerId } = (req as Request & { validated: deleteStudentZodType }).validated.body;
 
@@ -1786,24 +1369,16 @@ export const deleteStudent = async (
 
     res.status(200).json({ success: true, message: 'Student Account Deleted!' });
     for (const value of checkStudentAccount.Application) {
-      await SupabaseDeletePrivateFile(value.supabasePath as string[]).catch((error) =>
-        console.log(error),
-      );
+      await SupabaseDeletePrivateFile(value.supabasePath as string[]).catch((error) => console.log(error));
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   } catch (error) {
     next(error);
   }
 };
-export const getStudents = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getStudents = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, sortBy, order, ownderId, filters } = (
-      req as Request & { validated: getStudentsZodType }
-    ).validated.query;
+    const { page, dataPerPage, sortBy, order, ownderId, filters } = (req as Request & { validated: getStudentsZodType }).validated.query;
 
     const userId = Number(req.tokenPayload.accountId);
 
@@ -1831,11 +1406,7 @@ export const getStudents = async (
     next(error);
   }
 };
-export const getStudentsById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getStudentsById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { ownerId } = (req as Request & { validated: getStudentsByIdZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
@@ -1862,15 +1433,9 @@ export const getStudentsById = async (
     next(error);
   }
 };
-export const searchStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const searchStudent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { search, page, dataPerPage, sortBy, order, ownderId, filters } = (
-      req as Request & { validated: searchStudentZodType }
-    ).validated.query;
+    const { search, page, dataPerPage, sortBy, order, ownderId, filters } = (req as Request & { validated: searchStudentZodType }).validated.query;
 
     const userId = Number(req.tokenPayload.accountId);
 
@@ -1881,15 +1446,7 @@ export const searchStudent = async (
       return;
     }
 
-    const students = await prismaSearchStudents(
-      search,
-      page,
-      dataPerPage,
-      sortBy,
-      order,
-      ownderId,
-      filters,
-    );
+    const students = await prismaSearchStudents(search, page, dataPerPage, sortBy, order, ownderId, filters);
 
     const meta = {
       page: page || 'default',
@@ -1906,20 +1463,9 @@ export const searchStudent = async (
     next(error);
   }
 };
-export const getFiltersCSV = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getFiltersCSV = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const {
-      scholarship,
-      applicationStatus,
-      studentInstitute,
-      studentCourse,
-      studentYear,
-      studentSection,
-    } = (req as Request & { validated: getFiltersCSVZodType }).validated.query;
+    const { scholarship, applicationStatus, studentInstitute, studentCourse, studentYear, studentSection } = (req as Request & { validated: getFiltersCSVZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -1929,14 +1475,7 @@ export const getFiltersCSV = async (
       return;
     }
 
-    const getFiltersForApplicationsCSV = await prismaGetFiltersForApplicationsCSV(
-      scholarship,
-      applicationStatus,
-      studentInstitute,
-      studentCourse,
-      studentYear,
-      studentSection,
-    );
+    const getFiltersForApplicationsCSV = await prismaGetFiltersForApplicationsCSV(scholarship, applicationStatus, studentInstitute, studentCourse, studentYear, studentSection);
     const dataSelections = [
       'status',
       'title',
@@ -1967,15 +1506,9 @@ export const getFiltersCSV = async (
     next(error);
   }
 };
-export const downloadApplicationCSV = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const downloadApplicationCSV = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { filters, dataSelections, AtoZ, order, gender } = (
-      req as Request & { validated: downloadApplicationCSVZodType }
-    ).validated.query;
+    const { filters, dataSelections, AtoZ, order, gender } = (req as Request & { validated: downloadApplicationCSVZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -1985,13 +1518,7 @@ export const downloadApplicationCSV = async (
       return;
     }
 
-    const ApplicationsCSV = await prismaGetApplicationsCSV(
-      dataSelections,
-      filters,
-      AtoZ,
-      order,
-      gender,
-    );
+    const ApplicationsCSV = await prismaGetApplicationsCSV(dataSelections, filters, AtoZ, order, gender);
     if (ApplicationsCSV.length === 0) {
       res.status(404).json({ success: false, message: 'No Record Found!' });
       return;
@@ -2002,11 +1529,7 @@ export const downloadApplicationCSV = async (
     next(error);
   }
 };
-export const getFiltersStudentsCSV = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getFiltersStudentsCSV = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = Number(req.tokenPayload.accountId);
 
@@ -2024,14 +1547,9 @@ export const getFiltersStudentsCSV = async (
     next(error);
   }
 };
-export const downloadStudentsCSV = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const downloadStudentsCSV = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { filters, dataSelections } = (req as Request & { validated: downloadStudentsCSVZodType })
-      .validated.query;
+    const { filters, dataSelections } = (req as Request & { validated: downloadStudentsCSVZodType }).validated.query;
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);

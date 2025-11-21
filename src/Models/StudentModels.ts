@@ -26,15 +26,7 @@ export const prismaFiltersStudent = async (status?: string): Promise<{}> => {
   };
 };
 export const prismaGetDashboardData = async (accountId?: number): Promise<{}> => {
-  const [
-    totalApplicationsCount,
-    approvedApplicationsCount,
-    interviewApplicationCount,
-    pendingApplicationCount,
-    recentApplications,
-    announcements,
-    onGoingScholarships,
-  ] = await Promise.all([
+  const [totalApplicationsCount, approvedApplicationsCount, interviewApplicationCount, pendingApplicationCount, recentApplications, announcements, onGoingScholarships] = await Promise.all([
     prisma.application.count({ where: { ownerId: accountId } }),
     prisma.application.count({ where: { ownerId: accountId, status: 'APPROVED' } }),
     prisma.application.count({ where: { ownerId: accountId, status: 'INTERVIEW' } }),
@@ -98,19 +90,7 @@ export const prismaGetStudents = async (
   filters?: { id: string; value: string[] }[],
   search?: string,
 ): Promise<{ students: Student[]; totalCount: number }> => {
-  const allowedSort: string[] = [
-    'fName',
-    'lName',
-    'mName',
-    'contactNumber',
-    'gender',
-    'address',
-    'institute',
-    'course',
-    'year',
-    'section',
-    'dateCreated',
-  ];
+  const allowedSort: string[] = ['fName', 'lName', 'mName', 'contactNumber', 'gender', 'address', 'institute', 'course', 'year', 'section', 'dateCreated'];
 
   const [students, totalCount] = await Promise.all([
     prisma.student.findMany({
@@ -133,9 +113,7 @@ export const prismaGetStudents = async (
         ],
       },
       orderBy: {
-        ...(allowedSort.includes(sortBy || '')
-          ? { [sortBy as string]: order ? order : 'asc' }
-          : {}),
+        ...(allowedSort.includes(sortBy || '') ? { [sortBy as string]: order ? order : 'asc' } : {}),
       },
       include: {
         Application: {
@@ -183,9 +161,7 @@ export const prismaGetStudents = async (
   ]);
   return { students, totalCount };
 };
-export const prismaGetStudentById = async (
-  accountId: number,
-): Promise<AccountWithRelationsType | null> => {
+export const prismaGetStudentById = async (accountId: number): Promise<AccountWithRelationsType | null> => {
   const student = await prisma.student.findUnique({
     where: { studentId: accountId },
     include: {
@@ -218,27 +194,14 @@ export const prismaSearchStudents = async (
   ownderId?: number,
   filters?: { id: string; value: string[] }[],
 ): Promise<{ students: Student[]; totalCount: number }> => {
-  const allowedSortBy: string[] = [
-    'fName',
-    'lName',
-    'mName',
-    'contactNumber',
-    'gender',
-    'address',
-    'institute',
-    'course',
-    'year',
-    'section',
-  ];
+  const allowedSortBy: string[] = ['fName', 'lName', 'mName', 'contactNumber', 'gender', 'address', 'institute', 'course', 'year', 'section'];
 
   const [students, totalCount] = await Promise.all([
     prisma.student.findMany({
       take: dataPerPage,
       skip: page ? (page - 1) * (dataPerPage || 0) : undefined,
       orderBy: {
-        ...(allowedSortBy.includes(sortBy || '')
-          ? { [sortBy as string]: order ? order : 'asc' }
-          : {}),
+        ...(allowedSortBy.includes(sortBy || '') ? { [sortBy as string]: order ? order : 'asc' } : {}),
       },
       where: {
         OR: [
@@ -309,10 +272,7 @@ export const prismaGetFiltersStudentCSV = async (): Promise<any> => {
   ];
   return { filters, dataSelections };
 };
-export const prismaExportCSV = async (
-  filters: { id: string; value: string[] }[],
-  dataSelections: string[],
-): Promise<{}[]> => {
+export const prismaExportCSV = async (filters: { id: string; value: string[] }[], dataSelections: string[]): Promise<{}[]> => {
   const Students = await prisma.student.findMany({
     where: {
       gender: { in: filters?.find((f) => f.id === 'gender')?.value },
@@ -347,8 +307,7 @@ export const prismaExportCSV = async (
     },
   });
 
-  const clean = (obj: Record<string, any>) =>
-    Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
+  const clean = (obj: Record<string, any>) => Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
   const CSV = Students.map((m) => ({
     ['First Name']: m.fName,
     ['Last Name']: m.lName,

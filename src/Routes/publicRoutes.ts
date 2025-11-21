@@ -8,10 +8,6 @@ const PublicRoutes = Router();
 
 PublicRoutes.post('/uploadWasabi', upload.any(), uploadWasabi);
 
-PublicRoutes.get(
-  '/getAnnouncementsPublic',
-  validate(getAnnouncementsZodSchema),
-  getAnnouncementsPublic,
-);
+PublicRoutes.get('/getAnnouncementsPublic', validate(getAnnouncementsZodSchema), getAnnouncementsPublic);
 
 export default PublicRoutes;

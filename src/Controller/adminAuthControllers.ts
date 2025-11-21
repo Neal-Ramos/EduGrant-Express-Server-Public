@@ -2,30 +2,16 @@ import { NextFunction, Request, Response } from 'express';
 import { SendAuthCode } from '../Config/Resend';
 import { sign } from 'jsonwebtoken';
 import { compare, hash } from 'bcryptjs';
-import {
-  adminCodeAuthenticationZodType,
-  adminLoginZodType,
-  forgetPassZodType,
-  sendAuthCodeForgetPassZodType,
-} from '../Validator/ZodSchemanAdminAuth';
+import { adminCodeAuthenticationZodType, adminLoginZodType, forgetPassZodType, sendAuthCodeForgetPassZodType } from '../Validator/ZodSchemanAdminAuth';
 import { authHTML } from '../utils/HTML-AuthCode';
-import {
-  getStaffByEmail,
-  prismaCheckEmailExist,
-  prismaUpdateAccountPassword,
-} from '../Models/AccountModels';
+import { getStaffByEmail, prismaCheckEmailExist, prismaUpdateAccountPassword } from '../Models/AccountModels';
 import { GenerateCode } from '../Helper/CodeGenerator';
 import { CreateEmailOptions } from 'resend';
 import { AuthCode } from '../Models/Auth_CodeModels';
 
-export const adminLogIn = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const adminLogIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { adminEmail, adminPassword } = (req as Request & { validated: adminLoginZodType })
-      .validated.body;
+    const { adminEmail, adminPassword } = (req as Request & { validated: adminLoginZodType }).validated.body;
 
     const correctCredenatials = await getStaffByEmail(adminEmail);
     if (!correctCredenatials || correctCredenatials.role === 'Student') {
@@ -60,28 +46,18 @@ export const adminLogIn = async (
     };
     const sendMail = await SendAuthCode(mailOptions, 'adminLogin', adminEmail, sendCode, expiresAt);
     if (sendMail.success === false) {
-      res
-        .status(500)
-        .json({ success: false, message: 'Email Not Sent!!', error: sendMail.message });
+      res.status(500).json({ success: false, message: 'Email Not Sent!!', error: sendMail.message });
       return;
     }
-    res
-      .status(200)
-      .json({ success: true, message: 'Email Sent!!', expiresAt, ttl: 120, resendAvailableIn: 60 });
+    res.status(200).json({ success: true, message: 'Email Sent!!', expiresAt, ttl: 120, resendAvailableIn: 60 });
   } catch (error) {
     next(error);
   }
 };
 
-export const adminCodeAuthentication = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const adminCodeAuthentication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { code, adminPassword, adminEmail } = (
-      req as Request & { validated: adminCodeAuthenticationZodType }
-    ).validated.body;
+    const { code, adminPassword, adminEmail } = (req as Request & { validated: adminCodeAuthenticationZodType }).validated.body;
 
     const validAccount = await getStaffByEmail(adminEmail);
     if (!validAccount) {
@@ -113,28 +89,21 @@ export const adminCodeAuthentication = async (
     await AuthCode.DeleteAll(adminEmail, 'adminLogin');
 
     const { hashedPassword, ...safeData } = validAccount;
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Login Success!',
-        role: validAccount.role,
-        safeData: safeData,
-      });
+    res.status(200).json({
+      success: true,
+      message: 'Login Success!',
+      role: validAccount.role,
+      safeData: safeData,
+    });
     await AuthCode.DeleteAll(adminEmail, Code.AuthCode.origin);
   } catch (error) {
     next(error);
   }
 };
 
-export const sendAuthCodeForgetPass = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const sendAuthCodeForgetPass = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email } = (req as Request & { validated: sendAuthCodeForgetPassZodType }).validated
-      .body;
+    const { email } = (req as Request & { validated: sendAuthCodeForgetPassZodType }).validated.body;
     const origin = 'ISPSU_ForgetPassword';
 
     const checkAccount = await prismaCheckEmailExist(email);
@@ -147,17 +116,14 @@ export const sendAuthCodeForgetPass = async (
     if (prevCode) {
       const { validated } = await AuthCode.validate(prevCode.code, prevCode.owner, prevCode.origin);
       if (validated) {
-        const resendAvailableIn =
-          (new Date(prevCode.dateCreated).getTime() - new Date().getTime()) / 1000;
-        res
-          .status(200)
-          .json({
-            success: true,
-            message: 'Email Already Sent!',
-            expiresAt: prevCode.dateExpiry,
-            ttl: 120,
-            resendAvailableIn,
-          });
+        const resendAvailableIn = (new Date(prevCode.dateCreated).getTime() - new Date().getTime()) / 1000;
+        res.status(200).json({
+          success: true,
+          message: 'Email Already Sent!',
+          expiresAt: prevCode.dateExpiry,
+          ttl: 120,
+          resendAvailableIn,
+        });
         return;
       }
     }
@@ -175,21 +141,14 @@ export const sendAuthCodeForgetPass = async (
       res.status(500).json({ success: false, messagel: 'Email Not Sent!' });
       return;
     }
-    res
-      .status(200)
-      .json({ success: true, message: 'Email Sent!', expiresAt, ttl: 120, resendAvailableIn: 60 });
+    res.status(200).json({ success: true, message: 'Email Sent!', expiresAt, ttl: 120, resendAvailableIn: 60 });
   } catch (error) {
     next(error);
   }
 };
-export const forgetPass = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const forgetPass = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email, newPassword, code } = (req as Request & { validated: forgetPassZodType })
-      .validated.body;
+    const { email, newPassword, code } = (req as Request & { validated: forgetPassZodType }).validated.body;
 
     const checkAccount = await prismaCheckEmailExist(email);
     if (!checkAccount || !['ISPSU_Head', 'ISPSU_Staff'].includes(checkAccount.role)) {

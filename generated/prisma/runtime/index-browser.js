@@ -10,11 +10,7 @@ var a = (e, t) => {
     for (var n in t) s(e, n, { get: t[n], enumerable: !0 });
   },
   y = (e, t, n, r) => {
-    if ((t && typeof t == 'object') || typeof t == 'function')
-      for (let i of p(t))
-        !f.call(e, i) &&
-          i !== n &&
-          s(e, i, { get: () => t[i], enumerable: !(r = g(t, i)) || r.enumerable });
+    if ((t && typeof t == 'object') || typeof t == 'function') for (let i of p(t)) !f.call(e, i) && i !== n && s(e, i, { get: () => t[i], enumerable: !(r = g(t, i)) || r.enumerable });
     return e;
   };
 var x = (e) => y(s({}, '__esModule', { value: !0 }), e);
@@ -38,15 +34,7 @@ a(l, { validator: () => d });
 function d(...e) {
   return (t) => t;
 }
-var b = new Set([
-  'toJSON',
-  '$$typeof',
-  'asymmetricMatch',
-  Symbol.iterator,
-  Symbol.toStringTag,
-  Symbol.isConcatSpreadable,
-  Symbol.toPrimitive,
-]);
+var b = new Set(['toJSON', '$$typeof', 'asymmetricMatch', Symbol.iterator, Symbol.toStringTag, Symbol.isConcatSpreadable, Symbol.toPrimitive]);
 function u(e) {
   return new Proxy(e, {
     get(t, n) {
@@ -57,17 +45,11 @@ function u(e) {
 }
 var N = () => {
     var e, t;
-    return (
-      ((t = (e = globalThis.process) == null ? void 0 : e.release) == null ? void 0 : t.name) ===
-      'node'
-    );
+    return ((t = (e = globalThis.process) == null ? void 0 : e.release) == null ? void 0 : t.name) === 'node';
   },
   S = () => {
     var e, t;
-    return (
-      !!globalThis.Bun ||
-      !!((t = (e = globalThis.process) == null ? void 0 : e.versions) != null && t.bun)
-    );
+    return !!globalThis.Bun || !!((t = (e = globalThis.process) == null ? void 0 : e.versions) != null && t.bun);
   },
   E = () => !!globalThis.Deno,
   R = () => typeof globalThis.Netlify == 'object',
@@ -96,8 +78,7 @@ var M = {
   workerd: 'Cloudflare Workers',
   deno: 'Deno and Deno Deploy',
   netlify: 'Netlify Edge Functions',
-  'edge-light':
-    'Edge Runtime (Vercel Edge Functions, Vercel Edge Middleware, Next.js (Pages Router) Edge API Routes, Next.js (App Router) Edge Route Handlers or Next.js Middleware)',
+  'edge-light': 'Edge Runtime (Vercel Edge Functions, Vercel Edge Middleware, Next.js (Pages Router) Edge API Routes, Next.js (App Router) Edge Route Handlers or Next.js Middleware)',
 };
 function c() {
   let e = k();

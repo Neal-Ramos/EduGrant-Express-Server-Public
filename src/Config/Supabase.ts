@@ -2,10 +2,7 @@ import { FileObject, StorageError } from '@supabase/storage-js';
 import { createClient } from '@supabase/supabase-js';
 import { normalizeString } from '../Helper/normalizeString';
 
-export const supabase = createClient(
-  process.env.SUPABASE_PROJECT_URL as string,
-  process.env.SUPABASE_SERVICE_KEY as string,
-);
+export const supabase = createClient(process.env.SUPABASE_PROJECT_URL as string, process.env.SUPABASE_SERVICE_KEY as string);
 
 export const UploadSupabase = async (file: Express.Multer.File, folderName: string) => {
   if (!file) {
@@ -14,12 +11,10 @@ export const UploadSupabase = async (file: Express.Multer.File, folderName: stri
 
   const filePath = `${normalizeString(folderName)}/${normalizeString(file.fieldname)}-${Date.now()}-${normalizeString(file.originalname)}`;
 
-  const { data, error } = await supabase.storage
-    .from('Edugrant-Files')
-    .upload(filePath, file.buffer, {
-      contentType: file.mimetype,
-      upsert: false,
-    });
+  const { data, error } = await supabase.storage.from('Edugrant-Files').upload(filePath, file.buffer, {
+    contentType: file.mimetype,
+    upsert: false,
+  });
 
   if (error) {
     throw new Error(error.message);
@@ -30,9 +25,7 @@ export const UploadSupabase = async (file: Express.Multer.File, folderName: stri
   return { success: true, path: data?.path, publicUrl: publicUrlData.publicUrl };
 };
 
-export const DeleteSupabase = async (
-  Files: Array<string>,
-): Promise<{ success: boolean; data?: FileObject[]; error?: StorageError | unknown }> => {
+export const DeleteSupabase = async (Files: Array<string>): Promise<{ success: boolean; data?: FileObject[]; error?: StorageError | unknown }> => {
   try {
     const { data, error } = await supabase.storage.from('Edugrant-Files').remove(Files);
     if (error) {
@@ -44,19 +37,14 @@ export const DeleteSupabase = async (
   }
 };
 
-export const UploadSupabasePrivate = async (
-  file: Express.Multer.File,
-  folderName: string,
-): Promise<{ path: string; id: string; fullPath: string }> => {
+export const UploadSupabasePrivate = async (file: Express.Multer.File, folderName: string): Promise<{ path: string; id: string; fullPath: string }> => {
   if (!file) {
     throw new Error('No file provided');
   }
 
   const filePath = `${normalizeString(folderName)}/${normalizeString(file.fieldname)}-${Date.now()}-${normalizeString(file.originalname)}`;
 
-  const { data, error } = await supabase.storage
-    .from('Student-Files')
-    .upload(filePath, file.buffer, { contentType: file.mimetype });
+  const { data, error } = await supabase.storage.from('Student-Files').upload(filePath, file.buffer, { contentType: file.mimetype });
 
   if (error) {
     throw new Error(error.message);
@@ -64,9 +52,7 @@ export const UploadSupabasePrivate = async (
   return { path: data.path, id: data.id, fullPath: data.fullPath };
 };
 
-export const SupabaseDeletePrivateFile = async (
-  Files: Array<string>,
-): Promise<{ success: boolean; data?: FileObject[]; error?: StorageError | unknown }> => {
+export const SupabaseDeletePrivateFile = async (Files: Array<string>): Promise<{ success: boolean; data?: FileObject[]; error?: StorageError | unknown }> => {
   try {
     const { data, error } = await supabase.storage.from('Student-Files').remove(Files);
     if (error) {
@@ -78,13 +64,9 @@ export const SupabaseDeletePrivateFile = async (
   }
 };
 
-export const SupabaseCreateSignedUrl = async (
-  path: string,
-): Promise<{ success: boolean; message: string; signedURLs?: string }> => {
+export const SupabaseCreateSignedUrl = async (path: string): Promise<{ success: boolean; message: string; signedURLs?: string }> => {
   try {
-    const { data, error } = await supabase.storage
-      .from('Student-Files')
-      .createSignedUrl(path, 2 * 60);
+    const { data, error } = await supabase.storage.from('Student-Files').createSignedUrl(path, 2 * 60);
     if (error) {
       return { success: false, message: 'Create Sign URL Error!' };
     }
@@ -96,9 +78,7 @@ export const SupabaseCreateSignedUrl = async (
   }
 };
 
-export const SupabaseDownloadFile = async (
-  path: string,
-): Promise<{ success: boolean; message: string; downloadURL?: string }> => {
+export const SupabaseDownloadFile = async (path: string): Promise<{ success: boolean; message: string; downloadURL?: string }> => {
   try {
     const { data, error } = await supabase.storage.from('Student-Files').createSignedUrl(path, 60);
     if (error) {

@@ -19,12 +19,7 @@ export class AuthCode {
       },
     });
   }
-  static async Create(
-    origin: string,
-    receiver: string,
-    sendCode: string,
-    expiresAt: Date,
-  ): Promise<Auth_Code> {
+  static async Create(origin: string, receiver: string, sendCode: string, expiresAt: Date): Promise<Auth_Code> {
     await prisma.auth_Code.deleteMany({
       where: {
         owner: receiver,
@@ -39,11 +34,7 @@ export class AuthCode {
       },
     });
   }
-  static async validate(
-    code: string,
-    owner: string,
-    origin: string,
-  ): Promise<{ validated: boolean; message: string; AuthCode?: Auth_Code }> {
+  static async validate(code: string, owner: string, origin: string): Promise<{ validated: boolean; message: string; AuthCode?: Auth_Code }> {
     const AuthCode = await prisma.auth_Code.findFirst({
       where: {
         code: code,

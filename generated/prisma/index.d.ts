@@ -93,11 +93,7 @@ export type Announcement = $Result.DefaultSelection<Prisma.$AnnouncementPayload>
  */
 export class PrismaClient<
   ClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
-  const U = 'log' extends keyof ClientOptions
-    ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition>
-      ? Prisma.GetEvents<ClientOptions['log']>
-      : never
-    : never,
+  const U = 'log' extends keyof ClientOptions ? (ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never) : never,
   ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
 > {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] };
@@ -118,10 +114,7 @@ export class PrismaClient<
    */
 
   constructor(optionsArg?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>);
-  $on<V extends U>(
-    eventType: V,
-    callback: (event: V extends 'query' ? Prisma.QueryEvent : Prisma.LogEvent) => void,
-  ): PrismaClient;
+  $on<V extends U>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : Prisma.LogEvent) => void): PrismaClient;
 
   /**
    * Connect with the database
@@ -142,10 +135,7 @@ export class PrismaClient<
    *
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $executeRaw<T = unknown>(
-    query: TemplateStringsArray | Prisma.Sql,
-    ...values: any[]
-  ): Prisma.PrismaPromise<number>;
+  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
 
   /**
    * Executes a raw query and returns the number of affected rows.
@@ -168,10 +158,7 @@ export class PrismaClient<
    *
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $queryRaw<T = unknown>(
-    query: TemplateStringsArray | Prisma.Sql,
-    ...values: any[]
-  ): Prisma.PrismaPromise<T>;
+  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
 
   /**
    * Performs a raw query and returns the `SELECT` data.
@@ -198,10 +185,7 @@ export class PrismaClient<
    *
    * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(
-    arg: [...P],
-    options?: { isolationLevel?: Prisma.TransactionIsolationLevel },
-  ): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>;
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>;
 
   $transaction<R>(
     fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => $Utils.JsPromise<R>,
@@ -505,9 +489,7 @@ export namespace Prisma {
   /**
    * Get the return type of a function which returns a Promise.
    */
-  export type PromiseReturnType<T extends (...args: any) => $Utils.JsPromise<any>> = PromiseType<
-    ReturnType<T>
-  >;
+  export type PromiseReturnType<T extends (...args: any) => $Utils.JsPromise<any>> = PromiseType<ReturnType<T>>;
 
   /**
    * From T, pick a set of properties whose keys are in the union K
@@ -543,11 +525,7 @@ export namespace Prisma {
    */
   export type SelectSubset<T, U> = {
     [key in keyof T]: key extends keyof U ? T[key] : never;
-  } & (T extends SelectAndInclude
-    ? 'Please either choose `select` or `include`.'
-    : T extends SelectAndOmit
-      ? 'Please either choose `select` or `omit`.'
-      : {});
+  } & (T extends SelectAndInclude ? 'Please either choose `select` or `include`.' : T extends SelectAndOmit ? 'Please either choose `select` or `omit`.' : {});
 
   /**
    * Subset + Intersection
@@ -563,27 +541,12 @@ export namespace Prisma {
    * XOR is needed to have a real mutually exclusive union type
    * https://stackoverflow.com/questions/42123407/does-typescript-support-mutually-exclusive-types
    */
-  type XOR<T, U> = T extends object
-    ? U extends object
-      ? (Without<T, U> & U) | (Without<U, T> & T)
-      : U
-    : T;
+  type XOR<T, U> = T extends object ? (U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : U) : T;
 
   /**
    * Is T a Record?
    */
-  type IsObject<T extends any> =
-    T extends Array<any>
-      ? False
-      : T extends Date
-        ? False
-        : T extends Uint8Array
-          ? False
-          : T extends BigInt
-            ? False
-            : T extends object
-              ? True
-              : False;
+  type IsObject<T extends any> = T extends Array<any> ? False : T extends Date ? False : T extends Uint8Array ? False : T extends BigInt ? False : T extends object ? True : False;
 
   /**
    * If it's T[], return T
@@ -609,9 +572,7 @@ export namespace Prisma {
     0: EitherLoose<O, K>;
   }[strict];
 
-  type Either<O extends object, K extends Key, strict extends Boolean = 1> = O extends unknown
-    ? _Either<O, K, strict>
-    : never;
+  type Either<O extends object, K extends Key, strict extends Boolean = 1> = O extends unknown ? _Either<O, K, strict> : never;
 
   export type Union = any;
 
@@ -620,11 +581,7 @@ export namespace Prisma {
   } & {};
 
   /** Helper Types for "Merge" **/
-  export type IntersectOf<U extends Union> = (U extends unknown ? (k: U) => void : never) extends (
-    k: infer I,
-  ) => void
-    ? I
-    : never;
+  export type IntersectOf<U extends Union> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
   export type Overwrite<O extends object, O1 extends object> = {
     [K in keyof O]: K extends keyof O1 ? O1[K] : O[K];
@@ -667,16 +624,10 @@ export namespace Prisma {
 
   // this type assumes the passed object is entirely optional
   type AtLeast<O extends object, K extends string> = NoExpand<
-    O extends unknown
-      ?
-          | (K extends keyof O ? { [P in K]: O[P] } & O : O)
-          | ({ [P in keyof O as P extends K ? P : never]-?: O[P] } & O)
-      : never
+    O extends unknown ? (K extends keyof O ? { [P in K]: O[P] } & O : O) | ({ [P in keyof O as P extends K ? P : never]-?: O[P] } & O) : never
   >;
 
-  type _Strict<U, _U = U> = U extends unknown
-    ? U & OptionalFlat<_Record<Exclude<Keys<_U>, keyof U>, never>>
-    : never;
+  type _Strict<U, _U = U> = U extends unknown ? U & OptionalFlat<_Record<Exclude<Keys<_U>, keyof U>, never>> : never;
 
   export type Strict<U extends object> = ComputeRaw<_Strict<U>>;
   /** End Helper Types for "Merge" **/
@@ -738,8 +689,7 @@ export namespace Prisma {
       }
     : never;
 
-  type FieldPaths<T, U = Omit<T, '_avg' | '_sum' | '_count' | '_min' | '_max'>> =
-    IsObject<T> extends True ? U : T;
+  type FieldPaths<T, U = Omit<T, '_avg' | '_sum' | '_count' | '_min' | '_max'>> = IsObject<T> extends True ? U : T;
 
   type GetHavingFields<T> = {
     [K in keyof T]: Or<Or<Extends<'OR', K>, Extends<'AND', K>>, Extends<'NOT', K>> extends True
@@ -764,10 +714,7 @@ export namespace Prisma {
   /**
    * Like `Pick`, but additionally can also accept an array of keys
    */
-  type PickEnumerable<T, K extends Enumerable<keyof T> | keyof T> = Prisma__Pick<
-    T,
-    MaybeTupleToUnion<K>
-  >;
+  type PickEnumerable<T, K extends Enumerable<keyof T> | keyof T> = Prisma__Pick<T, MaybeTupleToUnion<K>>;
 
   /**
    * Exclude all keys with underscores
@@ -776,9 +723,7 @@ export namespace Prisma {
 
   export type FieldRef<Model, FieldType> = runtime.FieldRef<Model, FieldType>;
 
-  type FieldRefInputType<Model, FieldType> = Model extends never
-    ? never
-    : FieldRef<Model, FieldType>;
+  type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRef<Model, FieldType>;
 
   export const ModelName: {
     Account: 'Account';
@@ -798,18 +743,11 @@ export namespace Prisma {
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName];
 
-  interface TypeMapCb<ClientOptions = {}>
-    extends $Utils.Fn<{ extArgs: $Extensions.InternalArgs }, $Utils.Record<string, any>> {
-    returns: Prisma.TypeMap<
-      this['params']['extArgs'],
-      ClientOptions extends { omit: infer OmitOptions } ? OmitOptions : {}
-    >;
+  interface TypeMapCb<ClientOptions = {}> extends $Utils.Fn<{ extArgs: $Extensions.InternalArgs }, $Utils.Record<string, any>> {
+    returns: Prisma.TypeMap<this['params']['extArgs'], ClientOptions extends { omit: infer OmitOptions } ? OmitOptions : {}>;
   }
 
-  export type TypeMap<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > = {
+  export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> = {
     globalOmitOptions: {
       omit: GlobalOmitOptions;
     };
@@ -1817,11 +1755,7 @@ export namespace Prisma {
       };
     };
   };
-  export const defineExtension: $Extensions.ExtendsHook<
-    'define',
-    Prisma.TypeMapCb,
-    $Extensions.DefaultArgs
-  >;
+  export const defineExtension: $Extensions.ExtendsHook<'define', Prisma.TypeMapCb, $Extensions.DefaultArgs>;
   export type DefaultPrismaClient = PrismaClient;
   export type ErrorFormat = 'pretty' | 'colorless' | 'minimal';
   export interface PrismaClientOptions {
@@ -1915,8 +1849,7 @@ export namespace Prisma {
 
   export type GetLogType<T> = CheckIsLogLevel<T extends LogDefinition ? T['level'] : T>;
 
-  export type GetEvents<T extends any[]> =
-    T extends Array<LogLevel | LogDefinition> ? GetLogType<T[number]> : never;
+  export type GetEvents<T extends any[]> = T extends Array<LogLevel | LogDefinition> ? GetLogType<T[number]> : never;
 
   export type QueryEvent = {
     timestamp: Date;
@@ -1981,9 +1914,7 @@ export namespace Prisma {
     Scholarship: number;
   };
 
-  export type ISPSU_HeadCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Announcement?: boolean | ISPSU_HeadCountOutputTypeCountAnnouncementArgs;
     Scholarship?: boolean | ISPSU_HeadCountOutputTypeCountScholarshipArgs;
   };
@@ -1992,9 +1923,7 @@ export namespace Prisma {
   /**
    * ISPSU_HeadCountOutputType without action
    */
-  export type ISPSU_HeadCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_HeadCountOutputType
      */
@@ -2004,18 +1933,14 @@ export namespace Prisma {
   /**
    * ISPSU_HeadCountOutputType without action
    */
-  export type ISPSU_HeadCountOutputTypeCountAnnouncementArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadCountOutputTypeCountAnnouncementArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AnnouncementWhereInput;
   };
 
   /**
    * ISPSU_HeadCountOutputType without action
    */
-  export type ISPSU_HeadCountOutputTypeCountScholarshipArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadCountOutputTypeCountScholarshipArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ScholarshipWhereInput;
   };
 
@@ -2029,9 +1954,7 @@ export namespace Prisma {
     Staff_Logs: number;
   };
 
-  export type ISPSU_StaffCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application_Decision?: boolean | ISPSU_StaffCountOutputTypeCountApplication_DecisionArgs;
     Interview_Decision?: boolean | ISPSU_StaffCountOutputTypeCountInterview_DecisionArgs;
     Staff_Logs?: boolean | ISPSU_StaffCountOutputTypeCountStaff_LogsArgs;
@@ -2041,9 +1964,7 @@ export namespace Prisma {
   /**
    * ISPSU_StaffCountOutputType without action
    */
-  export type ISPSU_StaffCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_StaffCountOutputType
      */
@@ -2053,27 +1974,21 @@ export namespace Prisma {
   /**
    * ISPSU_StaffCountOutputType without action
    */
-  export type ISPSU_StaffCountOutputTypeCountApplication_DecisionArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffCountOutputTypeCountApplication_DecisionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Application_DecisionWhereInput;
   };
 
   /**
    * ISPSU_StaffCountOutputType without action
    */
-  export type ISPSU_StaffCountOutputTypeCountInterview_DecisionArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffCountOutputTypeCountInterview_DecisionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Interview_DecisionWhereInput;
   };
 
   /**
    * ISPSU_StaffCountOutputType without action
    */
-  export type ISPSU_StaffCountOutputTypeCountStaff_LogsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffCountOutputTypeCountStaff_LogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Staff_LogsWhereInput;
   };
 
@@ -2086,9 +2001,7 @@ export namespace Prisma {
     Student_Notification: number;
   };
 
-  export type StudentCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | StudentCountOutputTypeCountApplicationArgs;
     Student_Notification?: boolean | StudentCountOutputTypeCountStudent_NotificationArgs;
   };
@@ -2097,9 +2010,7 @@ export namespace Prisma {
   /**
    * StudentCountOutputType without action
    */
-  export type StudentCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the StudentCountOutputType
      */
@@ -2109,18 +2020,14 @@ export namespace Prisma {
   /**
    * StudentCountOutputType without action
    */
-  export type StudentCountOutputTypeCountApplicationArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentCountOutputTypeCountApplicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApplicationWhereInput;
   };
 
   /**
    * StudentCountOutputType without action
    */
-  export type StudentCountOutputTypeCountStudent_NotificationArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentCountOutputTypeCountStudent_NotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Student_NotificationWhereInput;
   };
 
@@ -2134,9 +2041,7 @@ export namespace Prisma {
     Student_Notifications: number;
   };
 
-  export type ScholarshipCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | ScholarshipCountOutputTypeCountApplicationArgs;
     Staff_Logs?: boolean | ScholarshipCountOutputTypeCountStaff_LogsArgs;
     Student_Notifications?: boolean | ScholarshipCountOutputTypeCountStudent_NotificationsArgs;
@@ -2146,9 +2051,7 @@ export namespace Prisma {
   /**
    * ScholarshipCountOutputType without action
    */
-  export type ScholarshipCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ScholarshipCountOutputType
      */
@@ -2158,27 +2061,21 @@ export namespace Prisma {
   /**
    * ScholarshipCountOutputType without action
    */
-  export type ScholarshipCountOutputTypeCountApplicationArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipCountOutputTypeCountApplicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApplicationWhereInput;
   };
 
   /**
    * ScholarshipCountOutputType without action
    */
-  export type ScholarshipCountOutputTypeCountStaff_LogsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipCountOutputTypeCountStaff_LogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Staff_LogsWhereInput;
   };
 
   /**
    * ScholarshipCountOutputType without action
    */
-  export type ScholarshipCountOutputTypeCountStudent_NotificationsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipCountOutputTypeCountStudent_NotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Student_NotificationWhereInput;
   };
 
@@ -2193,9 +2090,7 @@ export namespace Prisma {
     Student_Notifications: number;
   };
 
-  export type ApplicationCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application_Decision?: boolean | ApplicationCountOutputTypeCountApplication_DecisionArgs;
     Interview_Decision?: boolean | ApplicationCountOutputTypeCountInterview_DecisionArgs;
     Staff_Logs?: boolean | ApplicationCountOutputTypeCountStaff_LogsArgs;
@@ -2206,9 +2101,7 @@ export namespace Prisma {
   /**
    * ApplicationCountOutputType without action
    */
-  export type ApplicationCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ApplicationCountOutputType
      */
@@ -2218,36 +2111,28 @@ export namespace Prisma {
   /**
    * ApplicationCountOutputType without action
    */
-  export type ApplicationCountOutputTypeCountApplication_DecisionArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationCountOutputTypeCountApplication_DecisionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Application_DecisionWhereInput;
   };
 
   /**
    * ApplicationCountOutputType without action
    */
-  export type ApplicationCountOutputTypeCountInterview_DecisionArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationCountOutputTypeCountInterview_DecisionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Interview_DecisionWhereInput;
   };
 
   /**
    * ApplicationCountOutputType without action
    */
-  export type ApplicationCountOutputTypeCountStaff_LogsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationCountOutputTypeCountStaff_LogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Staff_LogsWhereInput;
   };
 
   /**
    * ApplicationCountOutputType without action
    */
-  export type ApplicationCountOutputTypeCountStudent_NotificationsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationCountOutputTypeCountStudent_NotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Student_NotificationWhereInput;
   };
 
@@ -2341,9 +2226,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type AccountAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Account to aggregate.
      */
@@ -2405,16 +2288,10 @@ export namespace Prisma {
   };
 
   export type GetAccountAggregateType<T extends AccountAggregateArgs> = {
-    [P in keyof T & keyof AggregateAccount]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateAccount[P]>
-      : GetScalarType<T[P], AggregateAccount[P]>;
+    [P in keyof T & keyof AggregateAccount]: P extends '_count' | 'count' ? (T[P] extends true ? number : GetScalarType<T[P], AggregateAccount[P]>) : GetScalarType<T[P], AggregateAccount[P]>;
   };
 
-  export type AccountGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AccountWhereInput;
     orderBy?: AccountOrderByWithAggregationInput | AccountOrderByWithAggregationInput[];
     by: AccountScalarFieldEnum[] | AccountScalarFieldEnum;
@@ -2455,26 +2332,23 @@ export namespace Prisma {
     >
   >;
 
-  export type AccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetSelect<
-      {
-        accountId?: boolean;
-        email?: boolean;
-        hashedPassword?: boolean;
-        schoolId?: boolean;
-        role?: boolean;
-        dateCreated?: boolean;
-        webTours?: boolean;
-        ISPSU_Head?: boolean | Account$ISPSU_HeadArgs<ExtArgs>;
-        ISPSU_Staff?: boolean | Account$ISPSU_StaffArgs<ExtArgs>;
-        Student?: boolean | Account$StudentArgs<ExtArgs>;
-      },
-      ExtArgs['result']['account']
-    >;
+  export type AccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
+    {
+      accountId?: boolean;
+      email?: boolean;
+      hashedPassword?: boolean;
+      schoolId?: boolean;
+      role?: boolean;
+      dateCreated?: boolean;
+      webTours?: boolean;
+      ISPSU_Head?: boolean | Account$ISPSU_HeadArgs<ExtArgs>;
+      ISPSU_Staff?: boolean | Account$ISPSU_StaffArgs<ExtArgs>;
+      Student?: boolean | Account$StudentArgs<ExtArgs>;
+    },
+    ExtArgs['result']['account']
+  >;
 
-  export type AccountSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type AccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       accountId?: boolean;
       email?: boolean;
@@ -2487,9 +2361,7 @@ export namespace Prisma {
     ExtArgs['result']['account']
   >;
 
-  export type AccountSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type AccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       accountId?: boolean;
       email?: boolean;
@@ -2512,60 +2384,47 @@ export namespace Prisma {
     webTours?: boolean;
   };
 
-  export type AccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetOmit<
-      'accountId' | 'email' | 'hashedPassword' | 'schoolId' | 'role' | 'dateCreated' | 'webTours',
-      ExtArgs['result']['account']
-    >;
+  export type AccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'accountId' | 'email' | 'hashedPassword' | 'schoolId' | 'role' | 'dateCreated' | 'webTours',
+    ExtArgs['result']['account']
+  >;
   export type AccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ISPSU_Head?: boolean | Account$ISPSU_HeadArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Account$ISPSU_StaffArgs<ExtArgs>;
     Student?: boolean | Account$StudentArgs<ExtArgs>;
   };
-  export type AccountIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {};
-  export type AccountIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {};
+  export type AccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {};
+  export type AccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {};
 
-  export type $AccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    {
-      name: 'Account';
-      objects: {
-        ISPSU_Head: Prisma.$ISPSU_HeadPayload<ExtArgs> | null;
-        ISPSU_Staff: Prisma.$ISPSU_StaffPayload<ExtArgs> | null;
-        Student: Prisma.$StudentPayload<ExtArgs> | null;
-      };
-      scalars: $Extensions.GetPayloadResult<
-        {
-          accountId: number;
-          email: string;
-          hashedPassword: string;
-          schoolId: string | null;
-          role: string;
-          dateCreated: Date;
-          webTours: Prisma.JsonValue;
-        },
-        ExtArgs['result']['account']
-      >;
-      composites: {};
+  export type $AccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: 'Account';
+    objects: {
+      ISPSU_Head: Prisma.$ISPSU_HeadPayload<ExtArgs> | null;
+      ISPSU_Staff: Prisma.$ISPSU_StaffPayload<ExtArgs> | null;
+      Student: Prisma.$StudentPayload<ExtArgs> | null;
     };
+    scalars: $Extensions.GetPayloadResult<
+      {
+        accountId: number;
+        email: string;
+        hashedPassword: string;
+        schoolId: string | null;
+        role: string;
+        dateCreated: Date;
+        webTours: Prisma.JsonValue;
+      },
+      ExtArgs['result']['account']
+    >;
+    composites: {};
+  };
 
-  type AccountGetPayload<S extends boolean | null | undefined | AccountDefaultArgs> =
-    $Result.GetResult<Prisma.$AccountPayload, S>;
+  type AccountGetPayload<S extends boolean | null | undefined | AccountDefaultArgs> = $Result.GetResult<Prisma.$AccountPayload, S>;
 
-  type AccountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<
-    AccountFindManyArgs,
-    'select' | 'include' | 'distinct' | 'omit'
-  > & {
+  type AccountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<AccountFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
     select?: AccountCountAggregateInputType | true;
   };
 
-  export interface AccountDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface AccountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Account']; meta: { name: 'Account' } };
     /**
      * Find zero or one Account that matches the filter.
@@ -2580,12 +2439,7 @@ export namespace Prisma {
      */
     findUnique<T extends AccountFindUniqueArgs>(
       args: SelectSubset<T, AccountFindUniqueArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      $Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Account that matches the filter or throw an error with `error.code='P2025'`
@@ -2601,12 +2455,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends AccountFindUniqueOrThrowArgs>(
       args: SelectSubset<T, AccountFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      $Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Account that matches the filter.
@@ -2623,12 +2472,7 @@ export namespace Prisma {
      */
     findFirst<T extends AccountFindFirstArgs>(
       args?: SelectSubset<T, AccountFindFirstArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      $Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Account that matches the filter or
@@ -2646,12 +2490,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends AccountFindFirstOrThrowArgs>(
       args?: SelectSubset<T, AccountFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      $Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Accounts that matches the filter.
@@ -2671,9 +2510,7 @@ export namespace Prisma {
      */
     findMany<T extends AccountFindManyArgs>(
       args?: SelectSubset<T, AccountFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Account.
@@ -2689,12 +2526,7 @@ export namespace Prisma {
      */
     create<T extends AccountCreateArgs>(
       args: SelectSubset<T, AccountCreateArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      $Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Accounts.
@@ -2708,9 +2540,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends AccountCreateManyArgs>(
-      args?: SelectSubset<T, AccountCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends AccountCreateManyArgs>(args?: SelectSubset<T, AccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Accounts and returns the data saved in the database.
@@ -2736,14 +2566,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends AccountCreateManyAndReturnArgs>(
       args?: SelectSubset<T, AccountCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$AccountPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Account.
@@ -2759,12 +2582,7 @@ export namespace Prisma {
      */
     delete<T extends AccountDeleteArgs>(
       args: SelectSubset<T, AccountDeleteArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      $Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Account.
@@ -2783,12 +2601,7 @@ export namespace Prisma {
      */
     update<T extends AccountUpdateArgs>(
       args: SelectSubset<T, AccountUpdateArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      $Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Accounts.
@@ -2802,9 +2615,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends AccountDeleteManyArgs>(
-      args?: SelectSubset<T, AccountDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends AccountDeleteManyArgs>(args?: SelectSubset<T, AccountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Accounts.
@@ -2823,9 +2634,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends AccountUpdateManyArgs>(
-      args: SelectSubset<T, AccountUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends AccountUpdateManyArgs>(args: SelectSubset<T, AccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Accounts and returns the data updated in the database.
@@ -2857,14 +2666,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends AccountUpdateManyAndReturnArgs>(
       args: SelectSubset<T, AccountUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$AccountPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Account.
@@ -2885,12 +2687,7 @@ export namespace Prisma {
      */
     upsert<T extends AccountUpsertArgs>(
       args: SelectSubset<T, AccountUpsertArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      $Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Accounts.
@@ -2907,13 +2704,7 @@ export namespace Prisma {
      **/
     count<T extends AccountCountArgs>(
       args?: Subset<T, AccountCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], AccountCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], AccountCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Account.
@@ -2939,9 +2730,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends AccountAggregateArgs>(
-      args: Subset<T, AccountAggregateArgs>,
-    ): Prisma.PrismaPromise<GetAccountAggregateType<T>>;
+    aggregate<T extends AccountAggregateArgs>(args: Subset<T, AccountAggregateArgs>): Prisma.PrismaPromise<GetAccountAggregateType<T>>;
 
     /**
      * Group by Account.
@@ -2964,9 +2753,7 @@ export namespace Prisma {
     groupBy<
       T extends AccountGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: AccountGroupByArgs['orderBy'] }
-        : { orderBy?: AccountGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: AccountGroupByArgs['orderBy'] } : { orderBy?: AccountGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -2988,9 +2775,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -2998,17 +2783,13 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, AccountGroupByArgs, OrderByArg> & InputErrors,
@@ -3025,52 +2806,17 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__AccountClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__AccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     ISPSU_Head<T extends Account$ISPSU_HeadArgs<ExtArgs> = {}>(
       args?: Subset<T, Account$ISPSU_HeadArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_HeadPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     ISPSU_Staff<T extends Account$ISPSU_StaffArgs<ExtArgs> = {}>(
       args?: Subset<T, Account$ISPSU_StaffArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     Student<T extends Account$StudentArgs<ExtArgs> = {}>(
       args?: Subset<T, Account$StudentArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      $Result.GetResult<
-        Prisma.$StudentPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3086,9 +2832,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -3115,9 +2859,7 @@ export namespace Prisma {
   /**
    * Account findUnique
    */
-  export type AccountFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3139,9 +2881,7 @@ export namespace Prisma {
   /**
    * Account findUniqueOrThrow
    */
-  export type AccountFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3163,9 +2903,7 @@ export namespace Prisma {
   /**
    * Account findFirst
    */
-  export type AccountFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3217,9 +2955,7 @@ export namespace Prisma {
   /**
    * Account findFirstOrThrow
    */
-  export type AccountFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3271,9 +3007,7 @@ export namespace Prisma {
   /**
    * Account findMany
    */
-  export type AccountFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3320,9 +3054,7 @@ export namespace Prisma {
   /**
    * Account create
    */
-  export type AccountCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3344,9 +3076,7 @@ export namespace Prisma {
   /**
    * Account createMany
    */
-  export type AccountCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Accounts.
      */
@@ -3357,9 +3087,7 @@ export namespace Prisma {
   /**
    * Account createManyAndReturn
    */
-  export type AccountCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3378,9 +3106,7 @@ export namespace Prisma {
   /**
    * Account update
    */
-  export type AccountUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3406,9 +3132,7 @@ export namespace Prisma {
   /**
    * Account updateMany
    */
-  export type AccountUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Accounts.
      */
@@ -3426,9 +3150,7 @@ export namespace Prisma {
   /**
    * Account updateManyAndReturn
    */
-  export type AccountUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3454,9 +3176,7 @@ export namespace Prisma {
   /**
    * Account upsert
    */
-  export type AccountUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3486,9 +3206,7 @@ export namespace Prisma {
   /**
    * Account delete
    */
-  export type AccountDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3510,9 +3228,7 @@ export namespace Prisma {
   /**
    * Account deleteMany
    */
-  export type AccountDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Accounts to delete
      */
@@ -3526,9 +3242,7 @@ export namespace Prisma {
   /**
    * Account.ISPSU_Head
    */
-  export type Account$ISPSU_HeadArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Account$ISPSU_HeadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -3547,9 +3261,7 @@ export namespace Prisma {
   /**
    * Account.ISPSU_Staff
    */
-  export type Account$ISPSU_StaffArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Account$ISPSU_StaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -3568,9 +3280,7 @@ export namespace Prisma {
   /**
    * Account.Student
    */
-  export type Account$StudentArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Account$StudentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -3589,9 +3299,7 @@ export namespace Prisma {
   /**
    * Account without action
    */
-  export type AccountDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AccountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -3698,9 +3406,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type ISPSU_HeadAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which ISPSU_Head to aggregate.
      */
@@ -3762,16 +3468,10 @@ export namespace Prisma {
   };
 
   export type GetISPSU_HeadAggregateType<T extends ISPSU_HeadAggregateArgs> = {
-    [P in keyof T & keyof AggregateISPSU_Head]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateISPSU_Head[P]>
-      : GetScalarType<T[P], AggregateISPSU_Head[P]>;
+    [P in keyof T & keyof AggregateISPSU_Head]: P extends '_count' | 'count' ? (T[P] extends true ? number : GetScalarType<T[P], AggregateISPSU_Head[P]>) : GetScalarType<T[P], AggregateISPSU_Head[P]>;
   };
 
-  export type ISPSU_HeadGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ISPSU_HeadWhereInput;
     orderBy?: ISPSU_HeadOrderByWithAggregationInput | ISPSU_HeadOrderByWithAggregationInput[];
     by: ISPSU_HeadScalarFieldEnum[] | ISPSU_HeadScalarFieldEnum;
@@ -3813,28 +3513,25 @@ export namespace Prisma {
     >
   >;
 
-  export type ISPSU_HeadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetSelect<
-      {
-        headId?: boolean;
-        dateCreated?: boolean;
-        fName?: boolean;
-        lName?: boolean;
-        mName?: boolean;
-        addres?: boolean;
-        gender?: boolean;
-        profileImg?: boolean;
-        Announcement?: boolean | ISPSU_Head$AnnouncementArgs<ExtArgs>;
-        Account?: boolean | AccountDefaultArgs<ExtArgs>;
-        Scholarship?: boolean | ISPSU_Head$ScholarshipArgs<ExtArgs>;
-        _count?: boolean | ISPSU_HeadCountOutputTypeDefaultArgs<ExtArgs>;
-      },
-      ExtArgs['result']['iSPSU_Head']
-    >;
+  export type ISPSU_HeadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
+    {
+      headId?: boolean;
+      dateCreated?: boolean;
+      fName?: boolean;
+      lName?: boolean;
+      mName?: boolean;
+      addres?: boolean;
+      gender?: boolean;
+      profileImg?: boolean;
+      Announcement?: boolean | ISPSU_Head$AnnouncementArgs<ExtArgs>;
+      Account?: boolean | AccountDefaultArgs<ExtArgs>;
+      Scholarship?: boolean | ISPSU_Head$ScholarshipArgs<ExtArgs>;
+      _count?: boolean | ISPSU_HeadCountOutputTypeDefaultArgs<ExtArgs>;
+    },
+    ExtArgs['result']['iSPSU_Head']
+  >;
 
-  export type ISPSU_HeadSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ISPSU_HeadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       headId?: boolean;
       dateCreated?: boolean;
@@ -3849,9 +3546,7 @@ export namespace Prisma {
     ExtArgs['result']['iSPSU_Head']
   >;
 
-  export type ISPSU_HeadSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ISPSU_HeadSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       headId?: boolean;
       dateCreated?: boolean;
@@ -3877,33 +3572,24 @@ export namespace Prisma {
     profileImg?: boolean;
   };
 
-  export type ISPSU_HeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetOmit<
-      'headId' | 'dateCreated' | 'fName' | 'lName' | 'mName' | 'addres' | 'gender' | 'profileImg',
-      ExtArgs['result']['iSPSU_Head']
-    >;
-  export type ISPSU_HeadInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'headId' | 'dateCreated' | 'fName' | 'lName' | 'mName' | 'addres' | 'gender' | 'profileImg',
+    ExtArgs['result']['iSPSU_Head']
+  >;
+  export type ISPSU_HeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Announcement?: boolean | ISPSU_Head$AnnouncementArgs<ExtArgs>;
     Account?: boolean | AccountDefaultArgs<ExtArgs>;
     Scholarship?: boolean | ISPSU_Head$ScholarshipArgs<ExtArgs>;
     _count?: boolean | ISPSU_HeadCountOutputTypeDefaultArgs<ExtArgs>;
   };
-  export type ISPSU_HeadIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Account?: boolean | AccountDefaultArgs<ExtArgs>;
   };
-  export type ISPSU_HeadIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Account?: boolean | AccountDefaultArgs<ExtArgs>;
   };
 
-  export type $ISPSU_HeadPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $ISPSU_HeadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'ISPSU_Head';
     objects: {
       Announcement: Prisma.$AnnouncementPayload<ExtArgs>[];
@@ -3926,18 +3612,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type ISPSU_HeadGetPayload<S extends boolean | null | undefined | ISPSU_HeadDefaultArgs> =
-    $Result.GetResult<Prisma.$ISPSU_HeadPayload, S>;
+  type ISPSU_HeadGetPayload<S extends boolean | null | undefined | ISPSU_HeadDefaultArgs> = $Result.GetResult<Prisma.$ISPSU_HeadPayload, S>;
 
-  type ISPSU_HeadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<ISPSU_HeadFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: ISPSU_HeadCountAggregateInputType | true;
-    };
+  type ISPSU_HeadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<ISPSU_HeadFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ISPSU_HeadCountAggregateInputType | true;
+  };
 
-  export interface ISPSU_HeadDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface ISPSU_HeadDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['ISPSU_Head'];
       meta: { name: 'ISPSU_Head' };
@@ -3955,17 +3636,7 @@ export namespace Prisma {
      */
     findUnique<T extends ISPSU_HeadFindUniqueArgs>(
       args: SelectSubset<T, ISPSU_HeadFindUniqueArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_HeadPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one ISPSU_Head that matches the filter or throw an error with `error.code='P2025'`
@@ -3981,17 +3652,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends ISPSU_HeadFindUniqueOrThrowArgs>(
       args: SelectSubset<T, ISPSU_HeadFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_HeadPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first ISPSU_Head that matches the filter.
@@ -4008,17 +3669,7 @@ export namespace Prisma {
      */
     findFirst<T extends ISPSU_HeadFindFirstArgs>(
       args?: SelectSubset<T, ISPSU_HeadFindFirstArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_HeadPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first ISPSU_Head that matches the filter or
@@ -4036,17 +3687,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends ISPSU_HeadFindFirstOrThrowArgs>(
       args?: SelectSubset<T, ISPSU_HeadFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_HeadPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more ISPSU_Heads that matches the filter.
@@ -4066,9 +3707,7 @@ export namespace Prisma {
      */
     findMany<T extends ISPSU_HeadFindManyArgs>(
       args?: SelectSubset<T, ISPSU_HeadFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a ISPSU_Head.
@@ -4084,12 +3723,7 @@ export namespace Prisma {
      */
     create<T extends ISPSU_HeadCreateArgs>(
       args: SelectSubset<T, ISPSU_HeadCreateArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many ISPSU_Heads.
@@ -4103,9 +3737,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends ISPSU_HeadCreateManyArgs>(
-      args?: SelectSubset<T, ISPSU_HeadCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends ISPSU_HeadCreateManyArgs>(args?: SelectSubset<T, ISPSU_HeadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many ISPSU_Heads and returns the data saved in the database.
@@ -4131,14 +3763,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends ISPSU_HeadCreateManyAndReturnArgs>(
       args?: SelectSubset<T, ISPSU_HeadCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$ISPSU_HeadPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a ISPSU_Head.
@@ -4154,12 +3779,7 @@ export namespace Prisma {
      */
     delete<T extends ISPSU_HeadDeleteArgs>(
       args: SelectSubset<T, ISPSU_HeadDeleteArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one ISPSU_Head.
@@ -4178,12 +3798,7 @@ export namespace Prisma {
      */
     update<T extends ISPSU_HeadUpdateArgs>(
       args: SelectSubset<T, ISPSU_HeadUpdateArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more ISPSU_Heads.
@@ -4197,9 +3812,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends ISPSU_HeadDeleteManyArgs>(
-      args?: SelectSubset<T, ISPSU_HeadDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends ISPSU_HeadDeleteManyArgs>(args?: SelectSubset<T, ISPSU_HeadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more ISPSU_Heads.
@@ -4218,9 +3831,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends ISPSU_HeadUpdateManyArgs>(
-      args: SelectSubset<T, ISPSU_HeadUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends ISPSU_HeadUpdateManyArgs>(args: SelectSubset<T, ISPSU_HeadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more ISPSU_Heads and returns the data updated in the database.
@@ -4252,14 +3863,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends ISPSU_HeadUpdateManyAndReturnArgs>(
       args: SelectSubset<T, ISPSU_HeadUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$ISPSU_HeadPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one ISPSU_Head.
@@ -4280,12 +3884,7 @@ export namespace Prisma {
      */
     upsert<T extends ISPSU_HeadUpsertArgs>(
       args: SelectSubset<T, ISPSU_HeadUpsertArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of ISPSU_Heads.
@@ -4302,13 +3901,7 @@ export namespace Prisma {
      **/
     count<T extends ISPSU_HeadCountArgs>(
       args?: Subset<T, ISPSU_HeadCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ISPSU_HeadCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], ISPSU_HeadCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a ISPSU_Head.
@@ -4334,9 +3927,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends ISPSU_HeadAggregateArgs>(
-      args: Subset<T, ISPSU_HeadAggregateArgs>,
-    ): Prisma.PrismaPromise<GetISPSU_HeadAggregateType<T>>;
+    aggregate<T extends ISPSU_HeadAggregateArgs>(args: Subset<T, ISPSU_HeadAggregateArgs>): Prisma.PrismaPromise<GetISPSU_HeadAggregateType<T>>;
 
     /**
      * Group by ISPSU_Head.
@@ -4359,9 +3950,7 @@ export namespace Prisma {
     groupBy<
       T extends ISPSU_HeadGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ISPSU_HeadGroupByArgs['orderBy'] }
-        : { orderBy?: ISPSU_HeadGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: ISPSU_HeadGroupByArgs['orderBy'] } : { orderBy?: ISPSU_HeadGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -4383,9 +3972,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -4393,17 +3980,13 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, ISPSU_HeadGroupByArgs, OrderByArg> & InputErrors,
@@ -4420,39 +4003,17 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__ISPSU_HeadClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__ISPSU_HeadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     Announcement<T extends ISPSU_Head$AnnouncementArgs<ExtArgs> = {}>(
       args?: Subset<T, ISPSU_Head$AnnouncementArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     Account<T extends AccountDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, AccountDefaultArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      | $Result.GetResult<
-          Prisma.$AccountPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     Scholarship<T extends ISPSU_Head$ScholarshipArgs<ExtArgs> = {}>(
       args?: Subset<T, ISPSU_Head$ScholarshipArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4468,9 +4029,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -4498,9 +4057,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head findUnique
    */
-  export type ISPSU_HeadFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4522,9 +4079,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head findUniqueOrThrow
    */
-  export type ISPSU_HeadFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4546,9 +4101,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head findFirst
    */
-  export type ISPSU_HeadFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4600,9 +4153,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head findFirstOrThrow
    */
-  export type ISPSU_HeadFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4654,9 +4205,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head findMany
    */
-  export type ISPSU_HeadFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4703,9 +4252,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head create
    */
-  export type ISPSU_HeadCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4727,9 +4274,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head createMany
    */
-  export type ISPSU_HeadCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many ISPSU_Heads.
      */
@@ -4740,9 +4285,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head createManyAndReturn
    */
-  export type ISPSU_HeadCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4765,9 +4308,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head update
    */
-  export type ISPSU_HeadUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4793,9 +4334,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head updateMany
    */
-  export type ISPSU_HeadUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update ISPSU_Heads.
      */
@@ -4813,9 +4352,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head updateManyAndReturn
    */
-  export type ISPSU_HeadUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4845,9 +4382,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head upsert
    */
-  export type ISPSU_HeadUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4877,9 +4412,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head delete
    */
-  export type ISPSU_HeadDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -4901,9 +4434,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head deleteMany
    */
-  export type ISPSU_HeadDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which ISPSU_Heads to delete
      */
@@ -4917,9 +4448,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head.Announcement
    */
-  export type ISPSU_Head$AnnouncementArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_Head$AnnouncementArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -4943,9 +4472,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head.Scholarship
    */
-  export type ISPSU_Head$ScholarshipArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_Head$ScholarshipArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -4969,9 +4496,7 @@ export namespace Prisma {
   /**
    * ISPSU_Head without action
    */
-  export type ISPSU_HeadDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_HeadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -5072,9 +4597,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type ISPSU_StaffAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which ISPSU_Staff to aggregate.
      */
@@ -5143,9 +4666,7 @@ export namespace Prisma {
       : GetScalarType<T[P], AggregateISPSU_Staff[P]>;
   };
 
-  export type ISPSU_StaffGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ISPSU_StaffWhereInput;
     orderBy?: ISPSU_StaffOrderByWithAggregationInput | ISPSU_StaffOrderByWithAggregationInput[];
     by: ISPSU_StaffScalarFieldEnum[] | ISPSU_StaffScalarFieldEnum;
@@ -5186,9 +4707,7 @@ export namespace Prisma {
     >
   >;
 
-  export type ISPSU_StaffSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ISPSU_StaffSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       staffId?: boolean;
       fName?: boolean;
@@ -5206,9 +4725,7 @@ export namespace Prisma {
     ExtArgs['result']['iSPSU_Staff']
   >;
 
-  export type ISPSU_StaffSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ISPSU_StaffSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       staffId?: boolean;
       fName?: boolean;
@@ -5222,9 +4739,7 @@ export namespace Prisma {
     ExtArgs['result']['iSPSU_Staff']
   >;
 
-  export type ISPSU_StaffSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ISPSU_StaffSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       staffId?: boolean;
       fName?: boolean;
@@ -5248,34 +4763,25 @@ export namespace Prisma {
     validated?: boolean;
   };
 
-  export type ISPSU_StaffOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetOmit<
-      'staffId' | 'fName' | 'lName' | 'mName' | 'dateCreated' | 'profileImg' | 'validated',
-      ExtArgs['result']['iSPSU_Staff']
-    >;
-  export type ISPSU_StaffInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'staffId' | 'fName' | 'lName' | 'mName' | 'dateCreated' | 'profileImg' | 'validated',
+    ExtArgs['result']['iSPSU_Staff']
+  >;
+  export type ISPSU_StaffInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application_Decision?: boolean | ISPSU_Staff$Application_DecisionArgs<ExtArgs>;
     Account?: boolean | AccountDefaultArgs<ExtArgs>;
     Interview_Decision?: boolean | ISPSU_Staff$Interview_DecisionArgs<ExtArgs>;
     Staff_Logs?: boolean | ISPSU_Staff$Staff_LogsArgs<ExtArgs>;
     _count?: boolean | ISPSU_StaffCountOutputTypeDefaultArgs<ExtArgs>;
   };
-  export type ISPSU_StaffIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Account?: boolean | AccountDefaultArgs<ExtArgs>;
   };
-  export type ISPSU_StaffIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Account?: boolean | AccountDefaultArgs<ExtArgs>;
   };
 
-  export type $ISPSU_StaffPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $ISPSU_StaffPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'ISPSU_Staff';
     objects: {
       Application_Decision: Prisma.$Application_DecisionPayload<ExtArgs>[];
@@ -5298,18 +4804,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type ISPSU_StaffGetPayload<S extends boolean | null | undefined | ISPSU_StaffDefaultArgs> =
-    $Result.GetResult<Prisma.$ISPSU_StaffPayload, S>;
+  type ISPSU_StaffGetPayload<S extends boolean | null | undefined | ISPSU_StaffDefaultArgs> = $Result.GetResult<Prisma.$ISPSU_StaffPayload, S>;
 
-  type ISPSU_StaffCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<ISPSU_StaffFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: ISPSU_StaffCountAggregateInputType | true;
-    };
+  type ISPSU_StaffCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<ISPSU_StaffFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ISPSU_StaffCountAggregateInputType | true;
+  };
 
-  export interface ISPSU_StaffDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface ISPSU_StaffDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['ISPSU_Staff'];
       meta: { name: 'ISPSU_Staff' };
@@ -5327,17 +4828,7 @@ export namespace Prisma {
      */
     findUnique<T extends ISPSU_StaffFindUniqueArgs>(
       args: SelectSubset<T, ISPSU_StaffFindUniqueArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one ISPSU_Staff that matches the filter or throw an error with `error.code='P2025'`
@@ -5353,17 +4844,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends ISPSU_StaffFindUniqueOrThrowArgs>(
       args: SelectSubset<T, ISPSU_StaffFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first ISPSU_Staff that matches the filter.
@@ -5380,17 +4861,7 @@ export namespace Prisma {
      */
     findFirst<T extends ISPSU_StaffFindFirstArgs>(
       args?: SelectSubset<T, ISPSU_StaffFindFirstArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first ISPSU_Staff that matches the filter or
@@ -5408,17 +4879,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends ISPSU_StaffFindFirstOrThrowArgs>(
       args?: SelectSubset<T, ISPSU_StaffFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more ISPSU_Staffs that matches the filter.
@@ -5438,9 +4899,7 @@ export namespace Prisma {
      */
     findMany<T extends ISPSU_StaffFindManyArgs>(
       args?: SelectSubset<T, ISPSU_StaffFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a ISPSU_Staff.
@@ -5456,12 +4915,7 @@ export namespace Prisma {
      */
     create<T extends ISPSU_StaffCreateArgs>(
       args: SelectSubset<T, ISPSU_StaffCreateArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many ISPSU_Staffs.
@@ -5475,9 +4929,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends ISPSU_StaffCreateManyArgs>(
-      args?: SelectSubset<T, ISPSU_StaffCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends ISPSU_StaffCreateManyArgs>(args?: SelectSubset<T, ISPSU_StaffCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many ISPSU_Staffs and returns the data saved in the database.
@@ -5503,14 +4955,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends ISPSU_StaffCreateManyAndReturnArgs>(
       args?: SelectSubset<T, ISPSU_StaffCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a ISPSU_Staff.
@@ -5526,12 +4971,7 @@ export namespace Prisma {
      */
     delete<T extends ISPSU_StaffDeleteArgs>(
       args: SelectSubset<T, ISPSU_StaffDeleteArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one ISPSU_Staff.
@@ -5550,12 +4990,7 @@ export namespace Prisma {
      */
     update<T extends ISPSU_StaffUpdateArgs>(
       args: SelectSubset<T, ISPSU_StaffUpdateArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more ISPSU_Staffs.
@@ -5569,9 +5004,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends ISPSU_StaffDeleteManyArgs>(
-      args?: SelectSubset<T, ISPSU_StaffDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends ISPSU_StaffDeleteManyArgs>(args?: SelectSubset<T, ISPSU_StaffDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more ISPSU_Staffs.
@@ -5590,9 +5023,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends ISPSU_StaffUpdateManyArgs>(
-      args: SelectSubset<T, ISPSU_StaffUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends ISPSU_StaffUpdateManyArgs>(args: SelectSubset<T, ISPSU_StaffUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more ISPSU_Staffs and returns the data updated in the database.
@@ -5624,14 +5055,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends ISPSU_StaffUpdateManyAndReturnArgs>(
       args: SelectSubset<T, ISPSU_StaffUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one ISPSU_Staff.
@@ -5652,12 +5076,7 @@ export namespace Prisma {
      */
     upsert<T extends ISPSU_StaffUpsertArgs>(
       args: SelectSubset<T, ISPSU_StaffUpsertArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of ISPSU_Staffs.
@@ -5674,13 +5093,7 @@ export namespace Prisma {
      **/
     count<T extends ISPSU_StaffCountArgs>(
       args?: Subset<T, ISPSU_StaffCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ISPSU_StaffCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], ISPSU_StaffCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a ISPSU_Staff.
@@ -5706,9 +5119,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends ISPSU_StaffAggregateArgs>(
-      args: Subset<T, ISPSU_StaffAggregateArgs>,
-    ): Prisma.PrismaPromise<GetISPSU_StaffAggregateType<T>>;
+    aggregate<T extends ISPSU_StaffAggregateArgs>(args: Subset<T, ISPSU_StaffAggregateArgs>): Prisma.PrismaPromise<GetISPSU_StaffAggregateType<T>>;
 
     /**
      * Group by ISPSU_Staff.
@@ -5731,9 +5142,7 @@ export namespace Prisma {
     groupBy<
       T extends ISPSU_StaffGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ISPSU_StaffGroupByArgs['orderBy'] }
-        : { orderBy?: ISPSU_StaffGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: ISPSU_StaffGroupByArgs['orderBy'] } : { orderBy?: ISPSU_StaffGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -5755,9 +5164,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -5765,17 +5172,13 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, ISPSU_StaffGroupByArgs, OrderByArg> & InputErrors,
@@ -5792,54 +5195,20 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__ISPSU_StaffClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__ISPSU_StaffClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     Application_Decision<T extends ISPSU_Staff$Application_DecisionArgs<ExtArgs> = {}>(
       args?: Subset<T, ISPSU_Staff$Application_DecisionArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<
-          Prisma.$Application_DecisionPayload<ExtArgs>,
-          T,
-          'findMany',
-          GlobalOmitOptions
-        >
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     Account<T extends AccountDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, AccountDefaultArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      | $Result.GetResult<
-          Prisma.$AccountPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     Interview_Decision<T extends ISPSU_Staff$Interview_DecisionArgs<ExtArgs> = {}>(
       args?: Subset<T, ISPSU_Staff$Interview_DecisionArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<
-          Prisma.$Interview_DecisionPayload<ExtArgs>,
-          T,
-          'findMany',
-          GlobalOmitOptions
-        >
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     Staff_Logs<T extends ISPSU_Staff$Staff_LogsArgs<ExtArgs> = {}>(
       args?: Subset<T, ISPSU_Staff$Staff_LogsArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5855,9 +5224,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -5884,9 +5251,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff findUnique
    */
-  export type ISPSU_StaffFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -5908,9 +5273,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff findUniqueOrThrow
    */
-  export type ISPSU_StaffFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -5932,9 +5295,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff findFirst
    */
-  export type ISPSU_StaffFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -5986,9 +5347,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff findFirstOrThrow
    */
-  export type ISPSU_StaffFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -6040,9 +5399,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff findMany
    */
-  export type ISPSU_StaffFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -6089,9 +5446,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff create
    */
-  export type ISPSU_StaffCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -6113,9 +5468,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff createMany
    */
-  export type ISPSU_StaffCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many ISPSU_Staffs.
      */
@@ -6126,9 +5479,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff createManyAndReturn
    */
-  export type ISPSU_StaffCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -6151,9 +5502,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff update
    */
-  export type ISPSU_StaffUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -6179,9 +5528,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff updateMany
    */
-  export type ISPSU_StaffUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update ISPSU_Staffs.
      */
@@ -6199,9 +5546,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff updateManyAndReturn
    */
-  export type ISPSU_StaffUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -6231,9 +5576,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff upsert
    */
-  export type ISPSU_StaffUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -6263,9 +5606,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff delete
    */
-  export type ISPSU_StaffDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -6287,9 +5628,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff deleteMany
    */
-  export type ISPSU_StaffDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which ISPSU_Staffs to delete
      */
@@ -6303,9 +5642,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff.Application_Decision
    */
-  export type ISPSU_Staff$Application_DecisionArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_Staff$Application_DecisionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -6319,9 +5656,7 @@ export namespace Prisma {
      */
     include?: Application_DecisionInclude<ExtArgs> | null;
     where?: Application_DecisionWhereInput;
-    orderBy?:
-      | Application_DecisionOrderByWithRelationInput
-      | Application_DecisionOrderByWithRelationInput[];
+    orderBy?: Application_DecisionOrderByWithRelationInput | Application_DecisionOrderByWithRelationInput[];
     cursor?: Application_DecisionWhereUniqueInput;
     take?: number;
     skip?: number;
@@ -6331,9 +5666,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff.Interview_Decision
    */
-  export type ISPSU_Staff$Interview_DecisionArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_Staff$Interview_DecisionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -6347,9 +5680,7 @@ export namespace Prisma {
      */
     include?: Interview_DecisionInclude<ExtArgs> | null;
     where?: Interview_DecisionWhereInput;
-    orderBy?:
-      | Interview_DecisionOrderByWithRelationInput
-      | Interview_DecisionOrderByWithRelationInput[];
+    orderBy?: Interview_DecisionOrderByWithRelationInput | Interview_DecisionOrderByWithRelationInput[];
     cursor?: Interview_DecisionWhereUniqueInput;
     take?: number;
     skip?: number;
@@ -6359,9 +5690,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff.Staff_Logs
    */
-  export type ISPSU_Staff$Staff_LogsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_Staff$Staff_LogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -6385,9 +5714,7 @@ export namespace Prisma {
   /**
    * ISPSU_Staff without action
    */
-  export type ISPSU_StaffDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ISPSU_StaffDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -6574,9 +5901,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type StudentAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Student to aggregate.
      */
@@ -6638,16 +5963,10 @@ export namespace Prisma {
   };
 
   export type GetStudentAggregateType<T extends StudentAggregateArgs> = {
-    [P in keyof T & keyof AggregateStudent]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateStudent[P]>
-      : GetScalarType<T[P], AggregateStudent[P]>;
+    [P in keyof T & keyof AggregateStudent]: P extends '_count' | 'count' ? (T[P] extends true ? number : GetScalarType<T[P], AggregateStudent[P]>) : GetScalarType<T[P], AggregateStudent[P]>;
   };
 
-  export type StudentGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StudentWhereInput;
     orderBy?: StudentOrderByWithAggregationInput | StudentOrderByWithAggregationInput[];
     by: StudentScalarFieldEnum[] | StudentScalarFieldEnum;
@@ -6703,42 +6022,39 @@ export namespace Prisma {
     >
   >;
 
-  export type StudentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetSelect<
-      {
-        studentId?: boolean;
-        fName?: boolean;
-        lName?: boolean;
-        mName?: boolean;
-        prefixName?: boolean;
-        contactNumber?: boolean;
-        gender?: boolean;
-        address?: boolean;
-        indigenous?: boolean;
-        PWD?: boolean;
-        institute?: boolean;
-        course?: boolean;
-        year?: boolean;
-        section?: boolean;
-        familyBackground?: boolean;
-        dateOfBirth?: boolean;
-        dateCreated?: boolean;
-        profileImg?: boolean;
-        civilStatus?: boolean;
-        dswdMember?: boolean;
-        fourPsMember?: boolean;
-        studentType?: boolean;
-        Application?: boolean | Student$ApplicationArgs<ExtArgs>;
-        Account?: boolean | AccountDefaultArgs<ExtArgs>;
-        Student_Notification?: boolean | Student$Student_NotificationArgs<ExtArgs>;
-        _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>;
-      },
-      ExtArgs['result']['student']
-    >;
+  export type StudentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
+    {
+      studentId?: boolean;
+      fName?: boolean;
+      lName?: boolean;
+      mName?: boolean;
+      prefixName?: boolean;
+      contactNumber?: boolean;
+      gender?: boolean;
+      address?: boolean;
+      indigenous?: boolean;
+      PWD?: boolean;
+      institute?: boolean;
+      course?: boolean;
+      year?: boolean;
+      section?: boolean;
+      familyBackground?: boolean;
+      dateOfBirth?: boolean;
+      dateCreated?: boolean;
+      profileImg?: boolean;
+      civilStatus?: boolean;
+      dswdMember?: boolean;
+      fourPsMember?: boolean;
+      studentType?: boolean;
+      Application?: boolean | Student$ApplicationArgs<ExtArgs>;
+      Account?: boolean | AccountDefaultArgs<ExtArgs>;
+      Student_Notification?: boolean | Student$Student_NotificationArgs<ExtArgs>;
+      _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>;
+    },
+    ExtArgs['result']['student']
+  >;
 
-  export type StudentSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type StudentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       studentId?: boolean;
       fName?: boolean;
@@ -6767,9 +6083,7 @@ export namespace Prisma {
     ExtArgs['result']['student']
   >;
 
-  export type StudentSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type StudentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       studentId?: boolean;
       fName?: boolean;
@@ -6823,101 +6137,88 @@ export namespace Prisma {
     studentType?: boolean;
   };
 
-  export type StudentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetOmit<
-      | 'studentId'
-      | 'fName'
-      | 'lName'
-      | 'mName'
-      | 'prefixName'
-      | 'contactNumber'
-      | 'gender'
-      | 'address'
-      | 'indigenous'
-      | 'PWD'
-      | 'institute'
-      | 'course'
-      | 'year'
-      | 'section'
-      | 'familyBackground'
-      | 'dateOfBirth'
-      | 'dateCreated'
-      | 'profileImg'
-      | 'civilStatus'
-      | 'dswdMember'
-      | 'fourPsMember'
-      | 'studentType',
-      ExtArgs['result']['student']
-    >;
+  export type StudentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    | 'studentId'
+    | 'fName'
+    | 'lName'
+    | 'mName'
+    | 'prefixName'
+    | 'contactNumber'
+    | 'gender'
+    | 'address'
+    | 'indigenous'
+    | 'PWD'
+    | 'institute'
+    | 'course'
+    | 'year'
+    | 'section'
+    | 'familyBackground'
+    | 'dateOfBirth'
+    | 'dateCreated'
+    | 'profileImg'
+    | 'civilStatus'
+    | 'dswdMember'
+    | 'fourPsMember'
+    | 'studentType',
+    ExtArgs['result']['student']
+  >;
   export type StudentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | Student$ApplicationArgs<ExtArgs>;
     Account?: boolean | AccountDefaultArgs<ExtArgs>;
     Student_Notification?: boolean | Student$Student_NotificationArgs<ExtArgs>;
     _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>;
   };
-  export type StudentIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Account?: boolean | AccountDefaultArgs<ExtArgs>;
   };
-  export type StudentIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Account?: boolean | AccountDefaultArgs<ExtArgs>;
   };
 
-  export type $StudentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    {
-      name: 'Student';
-      objects: {
-        Application: Prisma.$ApplicationPayload<ExtArgs>[];
-        Account: Prisma.$AccountPayload<ExtArgs>;
-        Student_Notification: Prisma.$Student_NotificationPayload<ExtArgs>[];
-      };
-      scalars: $Extensions.GetPayloadResult<
-        {
-          studentId: number;
-          fName: string;
-          lName: string;
-          mName: string | null;
-          prefixName: string | null;
-          contactNumber: string;
-          gender: string;
-          address: string;
-          indigenous: string;
-          PWD: string;
-          institute: string;
-          course: string;
-          year: string;
-          section: string;
-          familyBackground: Prisma.JsonValue | null;
-          dateOfBirth: Date;
-          dateCreated: Date;
-          profileImg: Prisma.JsonValue | null;
-          civilStatus: string;
-          dswdMember: boolean;
-          fourPsMember: boolean;
-          studentType: string;
-        },
-        ExtArgs['result']['student']
-      >;
-      composites: {};
+  export type $StudentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: 'Student';
+    objects: {
+      Application: Prisma.$ApplicationPayload<ExtArgs>[];
+      Account: Prisma.$AccountPayload<ExtArgs>;
+      Student_Notification: Prisma.$Student_NotificationPayload<ExtArgs>[];
     };
+    scalars: $Extensions.GetPayloadResult<
+      {
+        studentId: number;
+        fName: string;
+        lName: string;
+        mName: string | null;
+        prefixName: string | null;
+        contactNumber: string;
+        gender: string;
+        address: string;
+        indigenous: string;
+        PWD: string;
+        institute: string;
+        course: string;
+        year: string;
+        section: string;
+        familyBackground: Prisma.JsonValue | null;
+        dateOfBirth: Date;
+        dateCreated: Date;
+        profileImg: Prisma.JsonValue | null;
+        civilStatus: string;
+        dswdMember: boolean;
+        fourPsMember: boolean;
+        studentType: string;
+      },
+      ExtArgs['result']['student']
+    >;
+    composites: {};
+  };
 
-  type StudentGetPayload<S extends boolean | null | undefined | StudentDefaultArgs> =
-    $Result.GetResult<Prisma.$StudentPayload, S>;
+  type StudentGetPayload<S extends boolean | null | undefined | StudentDefaultArgs> = $Result.GetResult<Prisma.$StudentPayload, S>;
 
-  type StudentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<
-    StudentFindManyArgs,
-    'select' | 'include' | 'distinct' | 'omit'
-  > & {
+  type StudentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<StudentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
     select?: StudentCountAggregateInputType | true;
   };
 
-  export interface StudentDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface StudentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Student']; meta: { name: 'Student' } };
     /**
      * Find zero or one Student that matches the filter.
@@ -6932,12 +6233,7 @@ export namespace Prisma {
      */
     findUnique<T extends StudentFindUniqueArgs>(
       args: SelectSubset<T, StudentFindUniqueArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      $Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Student that matches the filter or throw an error with `error.code='P2025'`
@@ -6953,12 +6249,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends StudentFindUniqueOrThrowArgs>(
       args: SelectSubset<T, StudentFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      $Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Student that matches the filter.
@@ -6975,12 +6266,7 @@ export namespace Prisma {
      */
     findFirst<T extends StudentFindFirstArgs>(
       args?: SelectSubset<T, StudentFindFirstArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      $Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Student that matches the filter or
@@ -6998,12 +6284,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends StudentFindFirstOrThrowArgs>(
       args?: SelectSubset<T, StudentFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      $Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Students that matches the filter.
@@ -7023,9 +6304,7 @@ export namespace Prisma {
      */
     findMany<T extends StudentFindManyArgs>(
       args?: SelectSubset<T, StudentFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Student.
@@ -7041,12 +6320,7 @@ export namespace Prisma {
      */
     create<T extends StudentCreateArgs>(
       args: SelectSubset<T, StudentCreateArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      $Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Students.
@@ -7060,9 +6334,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends StudentCreateManyArgs>(
-      args?: SelectSubset<T, StudentCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends StudentCreateManyArgs>(args?: SelectSubset<T, StudentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Students and returns the data saved in the database.
@@ -7088,14 +6360,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends StudentCreateManyAndReturnArgs>(
       args?: SelectSubset<T, StudentCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$StudentPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Student.
@@ -7111,12 +6376,7 @@ export namespace Prisma {
      */
     delete<T extends StudentDeleteArgs>(
       args: SelectSubset<T, StudentDeleteArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      $Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Student.
@@ -7135,12 +6395,7 @@ export namespace Prisma {
      */
     update<T extends StudentUpdateArgs>(
       args: SelectSubset<T, StudentUpdateArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      $Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Students.
@@ -7154,9 +6409,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends StudentDeleteManyArgs>(
-      args?: SelectSubset<T, StudentDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends StudentDeleteManyArgs>(args?: SelectSubset<T, StudentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Students.
@@ -7175,9 +6428,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends StudentUpdateManyArgs>(
-      args: SelectSubset<T, StudentUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends StudentUpdateManyArgs>(args: SelectSubset<T, StudentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Students and returns the data updated in the database.
@@ -7209,14 +6460,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends StudentUpdateManyAndReturnArgs>(
       args: SelectSubset<T, StudentUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$StudentPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Student.
@@ -7237,12 +6481,7 @@ export namespace Prisma {
      */
     upsert<T extends StudentUpsertArgs>(
       args: SelectSubset<T, StudentUpsertArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      $Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Students.
@@ -7259,13 +6498,7 @@ export namespace Prisma {
      **/
     count<T extends StudentCountArgs>(
       args?: Subset<T, StudentCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], StudentCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], StudentCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Student.
@@ -7291,9 +6524,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends StudentAggregateArgs>(
-      args: Subset<T, StudentAggregateArgs>,
-    ): Prisma.PrismaPromise<GetStudentAggregateType<T>>;
+    aggregate<T extends StudentAggregateArgs>(args: Subset<T, StudentAggregateArgs>): Prisma.PrismaPromise<GetStudentAggregateType<T>>;
 
     /**
      * Group by Student.
@@ -7316,9 +6547,7 @@ export namespace Prisma {
     groupBy<
       T extends StudentGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: StudentGroupByArgs['orderBy'] }
-        : { orderBy?: StudentGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: StudentGroupByArgs['orderBy'] } : { orderBy?: StudentGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -7340,9 +6569,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -7350,17 +6577,13 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, StudentGroupByArgs, OrderByArg> & InputErrors,
@@ -7377,44 +6600,17 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__StudentClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__StudentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     Application<T extends Student$ApplicationArgs<ExtArgs> = {}>(
       args?: Subset<T, Student$ApplicationArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     Account<T extends AccountDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, AccountDefaultArgs<ExtArgs>>,
-    ): Prisma__AccountClient<
-      | $Result.GetResult<
-          Prisma.$AccountPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     Student_Notification<T extends Student$Student_NotificationArgs<ExtArgs> = {}>(
       args?: Subset<T, Student$Student_NotificationArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<
-          Prisma.$Student_NotificationPayload<ExtArgs>,
-          T,
-          'findMany',
-          GlobalOmitOptions
-        >
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7430,9 +6626,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -7474,9 +6668,7 @@ export namespace Prisma {
   /**
    * Student findUnique
    */
-  export type StudentFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7498,9 +6690,7 @@ export namespace Prisma {
   /**
    * Student findUniqueOrThrow
    */
-  export type StudentFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7522,9 +6712,7 @@ export namespace Prisma {
   /**
    * Student findFirst
    */
-  export type StudentFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7576,9 +6764,7 @@ export namespace Prisma {
   /**
    * Student findFirstOrThrow
    */
-  export type StudentFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7630,9 +6816,7 @@ export namespace Prisma {
   /**
    * Student findMany
    */
-  export type StudentFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7679,9 +6863,7 @@ export namespace Prisma {
   /**
    * Student create
    */
-  export type StudentCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7703,9 +6885,7 @@ export namespace Prisma {
   /**
    * Student createMany
    */
-  export type StudentCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Students.
      */
@@ -7716,9 +6896,7 @@ export namespace Prisma {
   /**
    * Student createManyAndReturn
    */
-  export type StudentCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7741,9 +6919,7 @@ export namespace Prisma {
   /**
    * Student update
    */
-  export type StudentUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7769,9 +6945,7 @@ export namespace Prisma {
   /**
    * Student updateMany
    */
-  export type StudentUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Students.
      */
@@ -7789,9 +6963,7 @@ export namespace Prisma {
   /**
    * Student updateManyAndReturn
    */
-  export type StudentUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7821,9 +6993,7 @@ export namespace Prisma {
   /**
    * Student upsert
    */
-  export type StudentUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7853,9 +7023,7 @@ export namespace Prisma {
   /**
    * Student delete
    */
-  export type StudentDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -7877,9 +7045,7 @@ export namespace Prisma {
   /**
    * Student deleteMany
    */
-  export type StudentDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Students to delete
      */
@@ -7893,9 +7059,7 @@ export namespace Prisma {
   /**
    * Student.Application
    */
-  export type Student$ApplicationArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student$ApplicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -7919,9 +7083,7 @@ export namespace Prisma {
   /**
    * Student.Student_Notification
    */
-  export type Student$Student_NotificationArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student$Student_NotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -7935,9 +7097,7 @@ export namespace Prisma {
      */
     include?: Student_NotificationInclude<ExtArgs> | null;
     where?: Student_NotificationWhereInput;
-    orderBy?:
-      | Student_NotificationOrderByWithRelationInput
-      | Student_NotificationOrderByWithRelationInput[];
+    orderBy?: Student_NotificationOrderByWithRelationInput | Student_NotificationOrderByWithRelationInput[];
     cursor?: Student_NotificationWhereUniqueInput;
     take?: number;
     skip?: number;
@@ -7947,9 +7107,7 @@ export namespace Prisma {
   /**
    * Student without action
    */
-  export type StudentDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type StudentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student
      */
@@ -8048,9 +7206,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type Auth_CodeAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Auth_Code to aggregate.
      */
@@ -8112,16 +7268,10 @@ export namespace Prisma {
   };
 
   export type GetAuth_CodeAggregateType<T extends Auth_CodeAggregateArgs> = {
-    [P in keyof T & keyof AggregateAuth_Code]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateAuth_Code[P]>
-      : GetScalarType<T[P], AggregateAuth_Code[P]>;
+    [P in keyof T & keyof AggregateAuth_Code]: P extends '_count' | 'count' ? (T[P] extends true ? number : GetScalarType<T[P], AggregateAuth_Code[P]>) : GetScalarType<T[P], AggregateAuth_Code[P]>;
   };
 
-  export type Auth_CodeGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Auth_CodeWhereInput;
     orderBy?: Auth_CodeOrderByWithAggregationInput | Auth_CodeOrderByWithAggregationInput[];
     by: Auth_CodeScalarFieldEnum[] | Auth_CodeScalarFieldEnum;
@@ -8161,22 +7311,7 @@ export namespace Prisma {
     >
   >;
 
-  export type Auth_CodeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetSelect<
-      {
-        codeId?: boolean;
-        owner?: boolean;
-        origin?: boolean;
-        code?: boolean;
-        dateExpiry?: boolean;
-        dateCreated?: boolean;
-      },
-      ExtArgs['result']['auth_Code']
-    >;
-
-  export type Auth_CodeSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Auth_CodeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       codeId?: boolean;
       owner?: boolean;
@@ -8188,9 +7323,19 @@ export namespace Prisma {
     ExtArgs['result']['auth_Code']
   >;
 
-  export type Auth_CodeSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Auth_CodeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
+    {
+      codeId?: boolean;
+      owner?: boolean;
+      origin?: boolean;
+      code?: boolean;
+      dateExpiry?: boolean;
+      dateCreated?: boolean;
+    },
+    ExtArgs['result']['auth_Code']
+  >;
+
+  export type Auth_CodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       codeId?: boolean;
       owner?: boolean;
@@ -8211,15 +7356,12 @@ export namespace Prisma {
     dateCreated?: boolean;
   };
 
-  export type Auth_CodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetOmit<
-      'codeId' | 'owner' | 'origin' | 'code' | 'dateExpiry' | 'dateCreated',
-      ExtArgs['result']['auth_Code']
-    >;
+  export type Auth_CodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'codeId' | 'owner' | 'origin' | 'code' | 'dateExpiry' | 'dateCreated',
+    ExtArgs['result']['auth_Code']
+  >;
 
-  export type $Auth_CodePayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $Auth_CodePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'Auth_Code';
     objects: {};
     scalars: $Extensions.GetPayloadResult<
@@ -8236,18 +7378,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type Auth_CodeGetPayload<S extends boolean | null | undefined | Auth_CodeDefaultArgs> =
-    $Result.GetResult<Prisma.$Auth_CodePayload, S>;
+  type Auth_CodeGetPayload<S extends boolean | null | undefined | Auth_CodeDefaultArgs> = $Result.GetResult<Prisma.$Auth_CodePayload, S>;
 
-  type Auth_CodeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<Auth_CodeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: Auth_CodeCountAggregateInputType | true;
-    };
+  type Auth_CodeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<Auth_CodeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: Auth_CodeCountAggregateInputType | true;
+  };
 
-  export interface Auth_CodeDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface Auth_CodeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['Auth_Code'];
       meta: { name: 'Auth_Code' };
@@ -8265,17 +7402,7 @@ export namespace Prisma {
      */
     findUnique<T extends Auth_CodeFindUniqueArgs>(
       args: SelectSubset<T, Auth_CodeFindUniqueArgs<ExtArgs>>,
-    ): Prisma__Auth_CodeClient<
-      $Result.GetResult<
-        Prisma.$Auth_CodePayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Auth_CodeClient<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Auth_Code that matches the filter or throw an error with `error.code='P2025'`
@@ -8291,17 +7418,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends Auth_CodeFindUniqueOrThrowArgs>(
       args: SelectSubset<T, Auth_CodeFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__Auth_CodeClient<
-      $Result.GetResult<
-        Prisma.$Auth_CodePayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Auth_CodeClient<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Auth_Code that matches the filter.
@@ -8318,17 +7435,7 @@ export namespace Prisma {
      */
     findFirst<T extends Auth_CodeFindFirstArgs>(
       args?: SelectSubset<T, Auth_CodeFindFirstArgs<ExtArgs>>,
-    ): Prisma__Auth_CodeClient<
-      $Result.GetResult<
-        Prisma.$Auth_CodePayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Auth_CodeClient<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Auth_Code that matches the filter or
@@ -8346,17 +7453,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends Auth_CodeFindFirstOrThrowArgs>(
       args?: SelectSubset<T, Auth_CodeFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__Auth_CodeClient<
-      $Result.GetResult<
-        Prisma.$Auth_CodePayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Auth_CodeClient<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Auth_Codes that matches the filter.
@@ -8376,9 +7473,7 @@ export namespace Prisma {
      */
     findMany<T extends Auth_CodeFindManyArgs>(
       args?: SelectSubset<T, Auth_CodeFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Auth_Code.
@@ -8394,12 +7489,7 @@ export namespace Prisma {
      */
     create<T extends Auth_CodeCreateArgs>(
       args: SelectSubset<T, Auth_CodeCreateArgs<ExtArgs>>,
-    ): Prisma__Auth_CodeClient<
-      $Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Auth_CodeClient<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Auth_Codes.
@@ -8413,9 +7503,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends Auth_CodeCreateManyArgs>(
-      args?: SelectSubset<T, Auth_CodeCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends Auth_CodeCreateManyArgs>(args?: SelectSubset<T, Auth_CodeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Auth_Codes and returns the data saved in the database.
@@ -8441,14 +7529,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends Auth_CodeCreateManyAndReturnArgs>(
       args?: SelectSubset<T, Auth_CodeCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Auth_CodePayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Auth_Code.
@@ -8464,12 +7545,7 @@ export namespace Prisma {
      */
     delete<T extends Auth_CodeDeleteArgs>(
       args: SelectSubset<T, Auth_CodeDeleteArgs<ExtArgs>>,
-    ): Prisma__Auth_CodeClient<
-      $Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Auth_CodeClient<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Auth_Code.
@@ -8488,12 +7564,7 @@ export namespace Prisma {
      */
     update<T extends Auth_CodeUpdateArgs>(
       args: SelectSubset<T, Auth_CodeUpdateArgs<ExtArgs>>,
-    ): Prisma__Auth_CodeClient<
-      $Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Auth_CodeClient<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Auth_Codes.
@@ -8507,9 +7578,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends Auth_CodeDeleteManyArgs>(
-      args?: SelectSubset<T, Auth_CodeDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends Auth_CodeDeleteManyArgs>(args?: SelectSubset<T, Auth_CodeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Auth_Codes.
@@ -8528,9 +7597,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends Auth_CodeUpdateManyArgs>(
-      args: SelectSubset<T, Auth_CodeUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends Auth_CodeUpdateManyArgs>(args: SelectSubset<T, Auth_CodeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Auth_Codes and returns the data updated in the database.
@@ -8562,14 +7629,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends Auth_CodeUpdateManyAndReturnArgs>(
       args: SelectSubset<T, Auth_CodeUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Auth_CodePayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Auth_Code.
@@ -8590,12 +7650,7 @@ export namespace Prisma {
      */
     upsert<T extends Auth_CodeUpsertArgs>(
       args: SelectSubset<T, Auth_CodeUpsertArgs<ExtArgs>>,
-    ): Prisma__Auth_CodeClient<
-      $Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Auth_CodeClient<$Result.GetResult<Prisma.$Auth_CodePayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Auth_Codes.
@@ -8612,13 +7667,7 @@ export namespace Prisma {
      **/
     count<T extends Auth_CodeCountArgs>(
       args?: Subset<T, Auth_CodeCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], Auth_CodeCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], Auth_CodeCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Auth_Code.
@@ -8644,9 +7693,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends Auth_CodeAggregateArgs>(
-      args: Subset<T, Auth_CodeAggregateArgs>,
-    ): Prisma.PrismaPromise<GetAuth_CodeAggregateType<T>>;
+    aggregate<T extends Auth_CodeAggregateArgs>(args: Subset<T, Auth_CodeAggregateArgs>): Prisma.PrismaPromise<GetAuth_CodeAggregateType<T>>;
 
     /**
      * Group by Auth_Code.
@@ -8669,9 +7716,7 @@ export namespace Prisma {
     groupBy<
       T extends Auth_CodeGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: Auth_CodeGroupByArgs['orderBy'] }
-        : { orderBy?: Auth_CodeGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: Auth_CodeGroupByArgs['orderBy'] } : { orderBy?: Auth_CodeGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -8693,9 +7738,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -8703,17 +7746,13 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, Auth_CodeGroupByArgs, OrderByArg> & InputErrors,
@@ -8730,12 +7769,7 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Auth_CodeClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__Auth_CodeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8752,9 +7786,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -8780,9 +7812,7 @@ export namespace Prisma {
   /**
    * Auth_Code findUnique
    */
-  export type Auth_CodeFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -8800,9 +7830,7 @@ export namespace Prisma {
   /**
    * Auth_Code findUniqueOrThrow
    */
-  export type Auth_CodeFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -8820,9 +7848,7 @@ export namespace Prisma {
   /**
    * Auth_Code findFirst
    */
-  export type Auth_CodeFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -8870,9 +7896,7 @@ export namespace Prisma {
   /**
    * Auth_Code findFirstOrThrow
    */
-  export type Auth_CodeFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -8920,9 +7944,7 @@ export namespace Prisma {
   /**
    * Auth_Code findMany
    */
-  export type Auth_CodeFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -8965,9 +7987,7 @@ export namespace Prisma {
   /**
    * Auth_Code create
    */
-  export type Auth_CodeCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -8985,9 +8005,7 @@ export namespace Prisma {
   /**
    * Auth_Code createMany
    */
-  export type Auth_CodeCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Auth_Codes.
      */
@@ -8998,9 +8016,7 @@ export namespace Prisma {
   /**
    * Auth_Code createManyAndReturn
    */
-  export type Auth_CodeCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -9019,9 +8035,7 @@ export namespace Prisma {
   /**
    * Auth_Code update
    */
-  export type Auth_CodeUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -9043,9 +8057,7 @@ export namespace Prisma {
   /**
    * Auth_Code updateMany
    */
-  export type Auth_CodeUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Auth_Codes.
      */
@@ -9063,9 +8075,7 @@ export namespace Prisma {
   /**
    * Auth_Code updateManyAndReturn
    */
-  export type Auth_CodeUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -9091,9 +8101,7 @@ export namespace Prisma {
   /**
    * Auth_Code upsert
    */
-  export type Auth_CodeUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -9119,9 +8127,7 @@ export namespace Prisma {
   /**
    * Auth_Code delete
    */
-  export type Auth_CodeDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -9139,9 +8145,7 @@ export namespace Prisma {
   /**
    * Auth_Code deleteMany
    */
-  export type Auth_CodeDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Auth_Codes to delete
      */
@@ -9155,9 +8159,7 @@ export namespace Prisma {
   /**
    * Auth_Code without action
    */
-  export type Auth_CodeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Auth_CodeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Auth_Code
      */
@@ -9234,9 +8236,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type Scholarship_ProviderAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Scholarship_Provider to aggregate.
      */
@@ -9246,9 +8246,7 @@ export namespace Prisma {
      *
      * Determine the order of Scholarship_Providers to fetch.
      */
-    orderBy?:
-      | Scholarship_ProviderOrderByWithRelationInput
-      | Scholarship_ProviderOrderByWithRelationInput[];
+    orderBy?: Scholarship_ProviderOrderByWithRelationInput | Scholarship_ProviderOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -9307,13 +8305,9 @@ export namespace Prisma {
       : GetScalarType<T[P], AggregateScholarship_Provider[P]>;
   };
 
-  export type Scholarship_ProviderGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Scholarship_ProviderWhereInput;
-    orderBy?:
-      | Scholarship_ProviderOrderByWithAggregationInput
-      | Scholarship_ProviderOrderByWithAggregationInput[];
+    orderBy?: Scholarship_ProviderOrderByWithAggregationInput | Scholarship_ProviderOrderByWithAggregationInput[];
     by: Scholarship_ProviderScalarFieldEnum[] | Scholarship_ProviderScalarFieldEnum;
     having?: Scholarship_ProviderScalarWhereWithAggregatesInput;
     take?: number;
@@ -9336,22 +8330,19 @@ export namespace Prisma {
     _max: Scholarship_ProviderMaxAggregateOutputType | null;
   };
 
-  type GetScholarship_ProviderGroupByPayload<T extends Scholarship_ProviderGroupByArgs> =
-    Prisma.PrismaPromise<
-      Array<
-        PickEnumerable<Scholarship_ProviderGroupByOutputType, T['by']> & {
-          [P in keyof T & keyof Scholarship_ProviderGroupByOutputType]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], Scholarship_ProviderGroupByOutputType[P]>
-            : GetScalarType<T[P], Scholarship_ProviderGroupByOutputType[P]>;
-        }
-      >
-    >;
+  type GetScholarship_ProviderGroupByPayload<T extends Scholarship_ProviderGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Scholarship_ProviderGroupByOutputType, T['by']> & {
+        [P in keyof T & keyof Scholarship_ProviderGroupByOutputType]: P extends '_count'
+          ? T[P] extends boolean
+            ? number
+            : GetScalarType<T[P], Scholarship_ProviderGroupByOutputType[P]>
+          : GetScalarType<T[P], Scholarship_ProviderGroupByOutputType[P]>;
+      }
+    >
+  >;
 
-  export type Scholarship_ProviderSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Scholarship_ProviderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       SPId?: boolean;
       name?: boolean;
@@ -9361,9 +8352,7 @@ export namespace Prisma {
     ExtArgs['result']['scholarship_Provider']
   >;
 
-  export type Scholarship_ProviderSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Scholarship_ProviderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       SPId?: boolean;
       name?: boolean;
@@ -9373,9 +8362,7 @@ export namespace Prisma {
     ExtArgs['result']['scholarship_Provider']
   >;
 
-  export type Scholarship_ProviderSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Scholarship_ProviderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       SPId?: boolean;
       name?: boolean;
@@ -9391,31 +8378,21 @@ export namespace Prisma {
     dateCreated?: boolean;
   };
 
-  export type Scholarship_ProviderOmit<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetOmit<
+  export type Scholarship_ProviderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
     'SPId' | 'name' | 'dateCreated',
     ExtArgs['result']['scholarship_Provider']
   >;
-  export type Scholarship_ProviderInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
   };
-  export type Scholarship_ProviderIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
   };
-  export type Scholarship_ProviderIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
   };
 
-  export type $Scholarship_ProviderPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $Scholarship_ProviderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'Scholarship_Provider';
     objects: {
       Scholarship: Prisma.$ScholarshipPayload<ExtArgs>;
@@ -9431,20 +8408,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type Scholarship_ProviderGetPayload<
-    S extends boolean | null | undefined | Scholarship_ProviderDefaultArgs,
-  > = $Result.GetResult<Prisma.$Scholarship_ProviderPayload, S>;
+  type Scholarship_ProviderGetPayload<S extends boolean | null | undefined | Scholarship_ProviderDefaultArgs> = $Result.GetResult<Prisma.$Scholarship_ProviderPayload, S>;
 
-  type Scholarship_ProviderCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = Omit<Scholarship_ProviderFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  type Scholarship_ProviderCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<Scholarship_ProviderFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
     select?: Scholarship_ProviderCountAggregateInputType | true;
   };
 
-  export interface Scholarship_ProviderDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface Scholarship_ProviderDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['Scholarship_Provider'];
       meta: { name: 'Scholarship_Provider' };
@@ -9462,17 +8432,7 @@ export namespace Prisma {
      */
     findUnique<T extends Scholarship_ProviderFindUniqueArgs>(
       args: SelectSubset<T, Scholarship_ProviderFindUniqueArgs<ExtArgs>>,
-    ): Prisma__Scholarship_ProviderClient<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Scholarship_ProviderClient<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Scholarship_Provider that matches the filter or throw an error with `error.code='P2025'`
@@ -9488,17 +8448,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends Scholarship_ProviderFindUniqueOrThrowArgs>(
       args: SelectSubset<T, Scholarship_ProviderFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__Scholarship_ProviderClient<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Scholarship_ProviderClient<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Scholarship_Provider that matches the filter.
@@ -9515,17 +8465,7 @@ export namespace Prisma {
      */
     findFirst<T extends Scholarship_ProviderFindFirstArgs>(
       args?: SelectSubset<T, Scholarship_ProviderFindFirstArgs<ExtArgs>>,
-    ): Prisma__Scholarship_ProviderClient<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Scholarship_ProviderClient<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Scholarship_Provider that matches the filter or
@@ -9543,17 +8483,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends Scholarship_ProviderFindFirstOrThrowArgs>(
       args?: SelectSubset<T, Scholarship_ProviderFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__Scholarship_ProviderClient<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Scholarship_ProviderClient<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Scholarship_Providers that matches the filter.
@@ -9573,14 +8503,7 @@ export namespace Prisma {
      */
     findMany<T extends Scholarship_ProviderFindManyArgs>(
       args?: SelectSubset<T, Scholarship_ProviderFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'findMany',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Scholarship_Provider.
@@ -9596,17 +8519,7 @@ export namespace Prisma {
      */
     create<T extends Scholarship_ProviderCreateArgs>(
       args: SelectSubset<T, Scholarship_ProviderCreateArgs<ExtArgs>>,
-    ): Prisma__Scholarship_ProviderClient<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'create',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Scholarship_ProviderClient<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Scholarship_Providers.
@@ -9620,9 +8533,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends Scholarship_ProviderCreateManyArgs>(
-      args?: SelectSubset<T, Scholarship_ProviderCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends Scholarship_ProviderCreateManyArgs>(args?: SelectSubset<T, Scholarship_ProviderCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Scholarship_Providers and returns the data saved in the database.
@@ -9648,14 +8559,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends Scholarship_ProviderCreateManyAndReturnArgs>(
       args?: SelectSubset<T, Scholarship_ProviderCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Scholarship_Provider.
@@ -9671,17 +8575,7 @@ export namespace Prisma {
      */
     delete<T extends Scholarship_ProviderDeleteArgs>(
       args: SelectSubset<T, Scholarship_ProviderDeleteArgs<ExtArgs>>,
-    ): Prisma__Scholarship_ProviderClient<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'delete',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Scholarship_ProviderClient<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Scholarship_Provider.
@@ -9700,17 +8594,7 @@ export namespace Prisma {
      */
     update<T extends Scholarship_ProviderUpdateArgs>(
       args: SelectSubset<T, Scholarship_ProviderUpdateArgs<ExtArgs>>,
-    ): Prisma__Scholarship_ProviderClient<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'update',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Scholarship_ProviderClient<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Scholarship_Providers.
@@ -9724,9 +8608,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends Scholarship_ProviderDeleteManyArgs>(
-      args?: SelectSubset<T, Scholarship_ProviderDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends Scholarship_ProviderDeleteManyArgs>(args?: SelectSubset<T, Scholarship_ProviderDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Scholarship_Providers.
@@ -9745,9 +8627,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends Scholarship_ProviderUpdateManyArgs>(
-      args: SelectSubset<T, Scholarship_ProviderUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends Scholarship_ProviderUpdateManyArgs>(args: SelectSubset<T, Scholarship_ProviderUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Scholarship_Providers and returns the data updated in the database.
@@ -9779,14 +8659,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends Scholarship_ProviderUpdateManyAndReturnArgs>(
       args: SelectSubset<T, Scholarship_ProviderUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Scholarship_Provider.
@@ -9807,17 +8680,7 @@ export namespace Prisma {
      */
     upsert<T extends Scholarship_ProviderUpsertArgs>(
       args: SelectSubset<T, Scholarship_ProviderUpsertArgs<ExtArgs>>,
-    ): Prisma__Scholarship_ProviderClient<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'upsert',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Scholarship_ProviderClient<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Scholarship_Providers.
@@ -9834,13 +8697,7 @@ export namespace Prisma {
      **/
     count<T extends Scholarship_ProviderCountArgs>(
       args?: Subset<T, Scholarship_ProviderCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], Scholarship_ProviderCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], Scholarship_ProviderCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Scholarship_Provider.
@@ -9866,9 +8723,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends Scholarship_ProviderAggregateArgs>(
-      args: Subset<T, Scholarship_ProviderAggregateArgs>,
-    ): Prisma.PrismaPromise<GetScholarship_ProviderAggregateType<T>>;
+    aggregate<T extends Scholarship_ProviderAggregateArgs>(args: Subset<T, Scholarship_ProviderAggregateArgs>): Prisma.PrismaPromise<GetScholarship_ProviderAggregateType<T>>;
 
     /**
      * Group by Scholarship_Provider.
@@ -9891,9 +8746,7 @@ export namespace Prisma {
     groupBy<
       T extends Scholarship_ProviderGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: Scholarship_ProviderGroupByArgs['orderBy'] }
-        : { orderBy?: Scholarship_ProviderGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: Scholarship_ProviderGroupByArgs['orderBy'] } : { orderBy?: Scholarship_ProviderGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -9915,9 +8768,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -9925,23 +8776,17 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, Scholarship_ProviderGroupByArgs, OrderByArg> & InputErrors,
-    ): {} extends InputErrors
-      ? GetScholarship_ProviderGroupByPayload<T>
-      : Prisma.PrismaPromise<InputErrors>;
+    ): {} extends InputErrors ? GetScholarship_ProviderGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
     /**
      * Fields of the Scholarship_Provider model
      */
@@ -9954,27 +8799,11 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Scholarship_ProviderClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__Scholarship_ProviderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     Scholarship<T extends ScholarshipDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, ScholarshipDefaultArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      | $Result.GetResult<
-          Prisma.$ScholarshipPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9990,9 +8819,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -10015,9 +8842,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider findUnique
    */
-  export type Scholarship_ProviderFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10039,9 +8864,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider findUniqueOrThrow
    */
-  export type Scholarship_ProviderFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10063,9 +8886,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider findFirst
    */
-  export type Scholarship_ProviderFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10087,9 +8908,7 @@ export namespace Prisma {
      *
      * Determine the order of Scholarship_Providers to fetch.
      */
-    orderBy?:
-      | Scholarship_ProviderOrderByWithRelationInput
-      | Scholarship_ProviderOrderByWithRelationInput[];
+    orderBy?: Scholarship_ProviderOrderByWithRelationInput | Scholarship_ProviderOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -10119,9 +8938,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider findFirstOrThrow
    */
-  export type Scholarship_ProviderFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10143,9 +8960,7 @@ export namespace Prisma {
      *
      * Determine the order of Scholarship_Providers to fetch.
      */
-    orderBy?:
-      | Scholarship_ProviderOrderByWithRelationInput
-      | Scholarship_ProviderOrderByWithRelationInput[];
+    orderBy?: Scholarship_ProviderOrderByWithRelationInput | Scholarship_ProviderOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -10175,9 +8990,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider findMany
    */
-  export type Scholarship_ProviderFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10199,9 +9012,7 @@ export namespace Prisma {
      *
      * Determine the order of Scholarship_Providers to fetch.
      */
-    orderBy?:
-      | Scholarship_ProviderOrderByWithRelationInput
-      | Scholarship_ProviderOrderByWithRelationInput[];
+    orderBy?: Scholarship_ProviderOrderByWithRelationInput | Scholarship_ProviderOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -10226,9 +9037,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider create
    */
-  export type Scholarship_ProviderCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10250,9 +9059,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider createMany
    */
-  export type Scholarship_ProviderCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Scholarship_Providers.
      */
@@ -10263,9 +9070,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider createManyAndReturn
    */
-  export type Scholarship_ProviderCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10288,9 +9093,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider update
    */
-  export type Scholarship_ProviderUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10316,16 +9119,11 @@ export namespace Prisma {
   /**
    * Scholarship_Provider updateMany
    */
-  export type Scholarship_ProviderUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Scholarship_Providers.
      */
-    data: XOR<
-      Scholarship_ProviderUpdateManyMutationInput,
-      Scholarship_ProviderUncheckedUpdateManyInput
-    >;
+    data: XOR<Scholarship_ProviderUpdateManyMutationInput, Scholarship_ProviderUncheckedUpdateManyInput>;
     /**
      * Filter which Scholarship_Providers to update
      */
@@ -10339,9 +9137,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider updateManyAndReturn
    */
-  export type Scholarship_ProviderUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10353,10 +9149,7 @@ export namespace Prisma {
     /**
      * The data used to update Scholarship_Providers.
      */
-    data: XOR<
-      Scholarship_ProviderUpdateManyMutationInput,
-      Scholarship_ProviderUncheckedUpdateManyInput
-    >;
+    data: XOR<Scholarship_ProviderUpdateManyMutationInput, Scholarship_ProviderUncheckedUpdateManyInput>;
     /**
      * Filter which Scholarship_Providers to update
      */
@@ -10374,9 +9167,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider upsert
    */
-  export type Scholarship_ProviderUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10406,9 +9197,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider delete
    */
-  export type Scholarship_ProviderDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10430,9 +9219,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider deleteMany
    */
-  export type Scholarship_ProviderDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Scholarship_Providers to delete
      */
@@ -10446,9 +9233,7 @@ export namespace Prisma {
   /**
    * Scholarship_Provider without action
    */
-  export type Scholarship_ProviderDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship_ProviderDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -10663,9 +9448,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type ScholarshipAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Scholarship to aggregate.
      */
@@ -10734,9 +9517,7 @@ export namespace Prisma {
       : GetScalarType<T[P], AggregateScholarship[P]>;
   };
 
-  export type ScholarshipGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ScholarshipWhereInput;
     orderBy?: ScholarshipOrderByWithAggregationInput | ScholarshipOrderByWithAggregationInput[];
     by: ScholarshipScalarFieldEnum[] | ScholarshipScalarFieldEnum;
@@ -10792,9 +9573,7 @@ export namespace Prisma {
     >
   >;
 
-  export type ScholarshipSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ScholarshipSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       scholarshipId?: boolean;
       ISPSUId?: boolean;
@@ -10828,9 +9607,7 @@ export namespace Prisma {
     ExtArgs['result']['scholarship']
   >;
 
-  export type ScholarshipSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ScholarshipSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       scholarshipId?: boolean;
       ISPSUId?: boolean;
@@ -10859,9 +9636,7 @@ export namespace Prisma {
     ExtArgs['result']['scholarship']
   >;
 
-  export type ScholarshipSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ScholarshipSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       scholarshipId?: boolean;
       ISPSUId?: boolean;
@@ -10915,35 +9690,32 @@ export namespace Prisma {
     dateEnded?: boolean;
   };
 
-  export type ScholarshipOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetOmit<
-      | 'scholarshipId'
-      | 'ISPSUId'
-      | 'title'
-      | 'amount'
-      | 'description'
-      | 'type'
-      | 'cover'
-      | 'logo'
-      | 'supabasePath'
-      | 'form'
-      | 'requiredGWA'
-      | 'limit'
-      | 'pending'
-      | 'approved'
-      | 'declined'
-      | 'phase'
-      | 'interview'
-      | 'documents'
-      | 'deadline'
-      | 'dateCreated'
-      | 'ended'
-      | 'dateEnded',
-      ExtArgs['result']['scholarship']
-    >;
-  export type ScholarshipInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    | 'scholarshipId'
+    | 'ISPSUId'
+    | 'title'
+    | 'amount'
+    | 'description'
+    | 'type'
+    | 'cover'
+    | 'logo'
+    | 'supabasePath'
+    | 'form'
+    | 'requiredGWA'
+    | 'limit'
+    | 'pending'
+    | 'approved'
+    | 'declined'
+    | 'phase'
+    | 'interview'
+    | 'documents'
+    | 'deadline'
+    | 'dateCreated'
+    | 'ended'
+    | 'dateEnded',
+    ExtArgs['result']['scholarship']
+  >;
+  export type ScholarshipInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | Scholarship$ApplicationArgs<ExtArgs>;
     ISPSU_Head?: boolean | Scholarship$ISPSU_HeadArgs<ExtArgs>;
     Scholarship_Provider?: boolean | Scholarship$Scholarship_ProviderArgs<ExtArgs>;
@@ -10951,20 +9723,14 @@ export namespace Prisma {
     Student_Notifications?: boolean | Scholarship$Student_NotificationsArgs<ExtArgs>;
     _count?: boolean | ScholarshipCountOutputTypeDefaultArgs<ExtArgs>;
   };
-  export type ScholarshipIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ISPSU_Head?: boolean | Scholarship$ISPSU_HeadArgs<ExtArgs>;
   };
-  export type ScholarshipIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ISPSU_Head?: boolean | Scholarship$ISPSU_HeadArgs<ExtArgs>;
   };
 
-  export type $ScholarshipPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $ScholarshipPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'Scholarship';
     objects: {
       Application: Prisma.$ApplicationPayload<ExtArgs>[];
@@ -11003,18 +9769,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type ScholarshipGetPayload<S extends boolean | null | undefined | ScholarshipDefaultArgs> =
-    $Result.GetResult<Prisma.$ScholarshipPayload, S>;
+  type ScholarshipGetPayload<S extends boolean | null | undefined | ScholarshipDefaultArgs> = $Result.GetResult<Prisma.$ScholarshipPayload, S>;
 
-  type ScholarshipCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<ScholarshipFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: ScholarshipCountAggregateInputType | true;
-    };
+  type ScholarshipCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<ScholarshipFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ScholarshipCountAggregateInputType | true;
+  };
 
-  export interface ScholarshipDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface ScholarshipDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['Scholarship'];
       meta: { name: 'Scholarship' };
@@ -11032,17 +9793,7 @@ export namespace Prisma {
      */
     findUnique<T extends ScholarshipFindUniqueArgs>(
       args: SelectSubset<T, ScholarshipFindUniqueArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      $Result.GetResult<
-        Prisma.$ScholarshipPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Scholarship that matches the filter or throw an error with `error.code='P2025'`
@@ -11058,17 +9809,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends ScholarshipFindUniqueOrThrowArgs>(
       args: SelectSubset<T, ScholarshipFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      $Result.GetResult<
-        Prisma.$ScholarshipPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Scholarship that matches the filter.
@@ -11085,17 +9826,7 @@ export namespace Prisma {
      */
     findFirst<T extends ScholarshipFindFirstArgs>(
       args?: SelectSubset<T, ScholarshipFindFirstArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      $Result.GetResult<
-        Prisma.$ScholarshipPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Scholarship that matches the filter or
@@ -11113,17 +9844,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends ScholarshipFindFirstOrThrowArgs>(
       args?: SelectSubset<T, ScholarshipFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      $Result.GetResult<
-        Prisma.$ScholarshipPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Scholarships that matches the filter.
@@ -11143,9 +9864,7 @@ export namespace Prisma {
      */
     findMany<T extends ScholarshipFindManyArgs>(
       args?: SelectSubset<T, ScholarshipFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Scholarship.
@@ -11161,12 +9880,7 @@ export namespace Prisma {
      */
     create<T extends ScholarshipCreateArgs>(
       args: SelectSubset<T, ScholarshipCreateArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      $Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Scholarships.
@@ -11180,9 +9894,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends ScholarshipCreateManyArgs>(
-      args?: SelectSubset<T, ScholarshipCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends ScholarshipCreateManyArgs>(args?: SelectSubset<T, ScholarshipCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Scholarships and returns the data saved in the database.
@@ -11208,14 +9920,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends ScholarshipCreateManyAndReturnArgs>(
       args?: SelectSubset<T, ScholarshipCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$ScholarshipPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Scholarship.
@@ -11231,12 +9936,7 @@ export namespace Prisma {
      */
     delete<T extends ScholarshipDeleteArgs>(
       args: SelectSubset<T, ScholarshipDeleteArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      $Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Scholarship.
@@ -11255,12 +9955,7 @@ export namespace Prisma {
      */
     update<T extends ScholarshipUpdateArgs>(
       args: SelectSubset<T, ScholarshipUpdateArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      $Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Scholarships.
@@ -11274,9 +9969,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends ScholarshipDeleteManyArgs>(
-      args?: SelectSubset<T, ScholarshipDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends ScholarshipDeleteManyArgs>(args?: SelectSubset<T, ScholarshipDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Scholarships.
@@ -11295,9 +9988,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends ScholarshipUpdateManyArgs>(
-      args: SelectSubset<T, ScholarshipUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends ScholarshipUpdateManyArgs>(args: SelectSubset<T, ScholarshipUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Scholarships and returns the data updated in the database.
@@ -11329,14 +10020,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends ScholarshipUpdateManyAndReturnArgs>(
       args: SelectSubset<T, ScholarshipUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$ScholarshipPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Scholarship.
@@ -11357,12 +10041,7 @@ export namespace Prisma {
      */
     upsert<T extends ScholarshipUpsertArgs>(
       args: SelectSubset<T, ScholarshipUpsertArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      $Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Scholarships.
@@ -11379,13 +10058,7 @@ export namespace Prisma {
      **/
     count<T extends ScholarshipCountArgs>(
       args?: Subset<T, ScholarshipCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ScholarshipCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], ScholarshipCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Scholarship.
@@ -11411,9 +10084,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends ScholarshipAggregateArgs>(
-      args: Subset<T, ScholarshipAggregateArgs>,
-    ): Prisma.PrismaPromise<GetScholarshipAggregateType<T>>;
+    aggregate<T extends ScholarshipAggregateArgs>(args: Subset<T, ScholarshipAggregateArgs>): Prisma.PrismaPromise<GetScholarshipAggregateType<T>>;
 
     /**
      * Group by Scholarship.
@@ -11436,9 +10107,7 @@ export namespace Prisma {
     groupBy<
       T extends ScholarshipGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ScholarshipGroupByArgs['orderBy'] }
-        : { orderBy?: ScholarshipGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: ScholarshipGroupByArgs['orderBy'] } : { orderBy?: ScholarshipGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -11460,9 +10129,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -11470,17 +10137,13 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, ScholarshipGroupByArgs, OrderByArg> & InputErrors,
@@ -11497,61 +10160,23 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__ScholarshipClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__ScholarshipClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     Application<T extends Scholarship$ApplicationArgs<ExtArgs> = {}>(
       args?: Subset<T, Scholarship$ApplicationArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     ISPSU_Head<T extends Scholarship$ISPSU_HeadArgs<ExtArgs> = {}>(
       args?: Subset<T, Scholarship$ISPSU_HeadArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_HeadPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     Scholarship_Provider<T extends Scholarship$Scholarship_ProviderArgs<ExtArgs> = {}>(
       args?: Subset<T, Scholarship$Scholarship_ProviderArgs<ExtArgs>>,
-    ): Prisma__Scholarship_ProviderClient<
-      $Result.GetResult<
-        Prisma.$Scholarship_ProviderPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Scholarship_ProviderClient<$Result.GetResult<Prisma.$Scholarship_ProviderPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     Staff_Logs<T extends Scholarship$Staff_LogsArgs<ExtArgs> = {}>(
       args?: Subset<T, Scholarship$Staff_LogsArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     Student_Notifications<T extends Scholarship$Student_NotificationsArgs<ExtArgs> = {}>(
       args?: Subset<T, Scholarship$Student_NotificationsArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<
-          Prisma.$Student_NotificationPayload<ExtArgs>,
-          T,
-          'findMany',
-          GlobalOmitOptions
-        >
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11567,9 +10192,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -11611,9 +10234,7 @@ export namespace Prisma {
   /**
    * Scholarship findUnique
    */
-  export type ScholarshipFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11635,9 +10256,7 @@ export namespace Prisma {
   /**
    * Scholarship findUniqueOrThrow
    */
-  export type ScholarshipFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11659,9 +10278,7 @@ export namespace Prisma {
   /**
    * Scholarship findFirst
    */
-  export type ScholarshipFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11713,9 +10330,7 @@ export namespace Prisma {
   /**
    * Scholarship findFirstOrThrow
    */
-  export type ScholarshipFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11767,9 +10382,7 @@ export namespace Prisma {
   /**
    * Scholarship findMany
    */
-  export type ScholarshipFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11816,9 +10429,7 @@ export namespace Prisma {
   /**
    * Scholarship create
    */
-  export type ScholarshipCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11840,9 +10451,7 @@ export namespace Prisma {
   /**
    * Scholarship createMany
    */
-  export type ScholarshipCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Scholarships.
      */
@@ -11853,9 +10462,7 @@ export namespace Prisma {
   /**
    * Scholarship createManyAndReturn
    */
-  export type ScholarshipCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11878,9 +10485,7 @@ export namespace Prisma {
   /**
    * Scholarship update
    */
-  export type ScholarshipUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11906,9 +10511,7 @@ export namespace Prisma {
   /**
    * Scholarship updateMany
    */
-  export type ScholarshipUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Scholarships.
      */
@@ -11926,9 +10529,7 @@ export namespace Prisma {
   /**
    * Scholarship updateManyAndReturn
    */
-  export type ScholarshipUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11958,9 +10559,7 @@ export namespace Prisma {
   /**
    * Scholarship upsert
    */
-  export type ScholarshipUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -11990,9 +10589,7 @@ export namespace Prisma {
   /**
    * Scholarship delete
    */
-  export type ScholarshipDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -12014,9 +10611,7 @@ export namespace Prisma {
   /**
    * Scholarship deleteMany
    */
-  export type ScholarshipDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Scholarships to delete
      */
@@ -12030,9 +10625,7 @@ export namespace Prisma {
   /**
    * Scholarship.Application
    */
-  export type Scholarship$ApplicationArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship$ApplicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -12056,9 +10649,7 @@ export namespace Prisma {
   /**
    * Scholarship.ISPSU_Head
    */
-  export type Scholarship$ISPSU_HeadArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship$ISPSU_HeadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Head
      */
@@ -12077,9 +10668,7 @@ export namespace Prisma {
   /**
    * Scholarship.Scholarship_Provider
    */
-  export type Scholarship$Scholarship_ProviderArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship$Scholarship_ProviderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship_Provider
      */
@@ -12098,9 +10687,7 @@ export namespace Prisma {
   /**
    * Scholarship.Staff_Logs
    */
-  export type Scholarship$Staff_LogsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship$Staff_LogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -12124,9 +10711,7 @@ export namespace Prisma {
   /**
    * Scholarship.Student_Notifications
    */
-  export type Scholarship$Student_NotificationsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Scholarship$Student_NotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -12140,9 +10725,7 @@ export namespace Prisma {
      */
     include?: Student_NotificationInclude<ExtArgs> | null;
     where?: Student_NotificationWhereInput;
-    orderBy?:
-      | Student_NotificationOrderByWithRelationInput
-      | Student_NotificationOrderByWithRelationInput[];
+    orderBy?: Student_NotificationOrderByWithRelationInput | Student_NotificationOrderByWithRelationInput[];
     cursor?: Student_NotificationWhereUniqueInput;
     take?: number;
     skip?: number;
@@ -12152,9 +10735,7 @@ export namespace Prisma {
   /**
    * Scholarship without action
    */
-  export type ScholarshipDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ScholarshipDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Scholarship
      */
@@ -12259,9 +10840,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type ApplicationAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Application to aggregate.
      */
@@ -12330,9 +10909,7 @@ export namespace Prisma {
       : GetScalarType<T[P], AggregateApplication[P]>;
   };
 
-  export type ApplicationGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApplicationWhereInput;
     orderBy?: ApplicationOrderByWithAggregationInput | ApplicationOrderByWithAggregationInput[];
     by: ApplicationScalarFieldEnum[] | ApplicationScalarFieldEnum;
@@ -12373,9 +10950,7 @@ export namespace Prisma {
     >
   >;
 
-  export type ApplicationSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ApplicationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       applicationId?: boolean;
       scholarshipId?: boolean;
@@ -12395,9 +10970,7 @@ export namespace Prisma {
     ExtArgs['result']['application']
   >;
 
-  export type ApplicationSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ApplicationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       applicationId?: boolean;
       scholarshipId?: boolean;
@@ -12412,9 +10985,7 @@ export namespace Prisma {
     ExtArgs['result']['application']
   >;
 
-  export type ApplicationSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type ApplicationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       applicationId?: boolean;
       scholarshipId?: boolean;
@@ -12439,20 +11010,11 @@ export namespace Prisma {
     dateCreated?: boolean;
   };
 
-  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetOmit<
-      | 'applicationId'
-      | 'scholarshipId'
-      | 'ownerId'
-      | 'status'
-      | 'supabasePath'
-      | 'submittedDocuments'
-      | 'dateCreated',
-      ExtArgs['result']['application']
-    >;
-  export type ApplicationInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'applicationId' | 'scholarshipId' | 'ownerId' | 'status' | 'supabasePath' | 'submittedDocuments' | 'dateCreated',
+    ExtArgs['result']['application']
+  >;
+  export type ApplicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Student?: boolean | StudentDefaultArgs<ExtArgs>;
     Scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
     Application_Decision?: boolean | Application$Application_DecisionArgs<ExtArgs>;
@@ -12461,22 +11023,16 @@ export namespace Prisma {
     Student_Notifications?: boolean | Application$Student_NotificationsArgs<ExtArgs>;
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>;
   };
-  export type ApplicationIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Student?: boolean | StudentDefaultArgs<ExtArgs>;
     Scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
   };
-  export type ApplicationIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Student?: boolean | StudentDefaultArgs<ExtArgs>;
     Scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
   };
 
-  export type $ApplicationPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $ApplicationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'Application';
     objects: {
       Student: Prisma.$StudentPayload<ExtArgs>;
@@ -12501,18 +11057,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type ApplicationGetPayload<S extends boolean | null | undefined | ApplicationDefaultArgs> =
-    $Result.GetResult<Prisma.$ApplicationPayload, S>;
+  type ApplicationGetPayload<S extends boolean | null | undefined | ApplicationDefaultArgs> = $Result.GetResult<Prisma.$ApplicationPayload, S>;
 
-  type ApplicationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<ApplicationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: ApplicationCountAggregateInputType | true;
-    };
+  type ApplicationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<ApplicationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ApplicationCountAggregateInputType | true;
+  };
 
-  export interface ApplicationDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface ApplicationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['Application'];
       meta: { name: 'Application' };
@@ -12530,17 +11081,7 @@ export namespace Prisma {
      */
     findUnique<T extends ApplicationFindUniqueArgs>(
       args: SelectSubset<T, ApplicationFindUniqueArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      $Result.GetResult<
-        Prisma.$ApplicationPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Application that matches the filter or throw an error with `error.code='P2025'`
@@ -12556,17 +11097,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends ApplicationFindUniqueOrThrowArgs>(
       args: SelectSubset<T, ApplicationFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      $Result.GetResult<
-        Prisma.$ApplicationPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Application that matches the filter.
@@ -12583,17 +11114,7 @@ export namespace Prisma {
      */
     findFirst<T extends ApplicationFindFirstArgs>(
       args?: SelectSubset<T, ApplicationFindFirstArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      $Result.GetResult<
-        Prisma.$ApplicationPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Application that matches the filter or
@@ -12611,17 +11132,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends ApplicationFindFirstOrThrowArgs>(
       args?: SelectSubset<T, ApplicationFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      $Result.GetResult<
-        Prisma.$ApplicationPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Applications that matches the filter.
@@ -12641,9 +11152,7 @@ export namespace Prisma {
      */
     findMany<T extends ApplicationFindManyArgs>(
       args?: SelectSubset<T, ApplicationFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Application.
@@ -12659,12 +11168,7 @@ export namespace Prisma {
      */
     create<T extends ApplicationCreateArgs>(
       args: SelectSubset<T, ApplicationCreateArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Applications.
@@ -12678,9 +11182,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends ApplicationCreateManyArgs>(
-      args?: SelectSubset<T, ApplicationCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends ApplicationCreateManyArgs>(args?: SelectSubset<T, ApplicationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Applications and returns the data saved in the database.
@@ -12706,14 +11208,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends ApplicationCreateManyAndReturnArgs>(
       args?: SelectSubset<T, ApplicationCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$ApplicationPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Application.
@@ -12729,12 +11224,7 @@ export namespace Prisma {
      */
     delete<T extends ApplicationDeleteArgs>(
       args: SelectSubset<T, ApplicationDeleteArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Application.
@@ -12753,12 +11243,7 @@ export namespace Prisma {
      */
     update<T extends ApplicationUpdateArgs>(
       args: SelectSubset<T, ApplicationUpdateArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Applications.
@@ -12772,9 +11257,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends ApplicationDeleteManyArgs>(
-      args?: SelectSubset<T, ApplicationDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends ApplicationDeleteManyArgs>(args?: SelectSubset<T, ApplicationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Applications.
@@ -12793,9 +11276,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends ApplicationUpdateManyArgs>(
-      args: SelectSubset<T, ApplicationUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends ApplicationUpdateManyArgs>(args: SelectSubset<T, ApplicationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Applications and returns the data updated in the database.
@@ -12827,14 +11308,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends ApplicationUpdateManyAndReturnArgs>(
       args: SelectSubset<T, ApplicationUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$ApplicationPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Application.
@@ -12855,12 +11329,7 @@ export namespace Prisma {
      */
     upsert<T extends ApplicationUpsertArgs>(
       args: SelectSubset<T, ApplicationUpsertArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Applications.
@@ -12877,13 +11346,7 @@ export namespace Prisma {
      **/
     count<T extends ApplicationCountArgs>(
       args?: Subset<T, ApplicationCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ApplicationCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], ApplicationCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Application.
@@ -12909,9 +11372,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends ApplicationAggregateArgs>(
-      args: Subset<T, ApplicationAggregateArgs>,
-    ): Prisma.PrismaPromise<GetApplicationAggregateType<T>>;
+    aggregate<T extends ApplicationAggregateArgs>(args: Subset<T, ApplicationAggregateArgs>): Prisma.PrismaPromise<GetApplicationAggregateType<T>>;
 
     /**
      * Group by Application.
@@ -12934,9 +11395,7 @@ export namespace Prisma {
     groupBy<
       T extends ApplicationGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ApplicationGroupByArgs['orderBy'] }
-        : { orderBy?: ApplicationGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: ApplicationGroupByArgs['orderBy'] } : { orderBy?: ApplicationGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -12958,9 +11417,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -12968,17 +11425,13 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, ApplicationGroupByArgs, OrderByArg> & InputErrors,
@@ -12995,79 +11448,26 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__ApplicationClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__ApplicationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     Student<T extends StudentDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, StudentDefaultArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      | $Result.GetResult<
-          Prisma.$StudentPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     Scholarship<T extends ScholarshipDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, ScholarshipDefaultArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      | $Result.GetResult<
-          Prisma.$ScholarshipPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     Application_Decision<T extends Application$Application_DecisionArgs<ExtArgs> = {}>(
       args?: Subset<T, Application$Application_DecisionArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<
-          Prisma.$Application_DecisionPayload<ExtArgs>,
-          T,
-          'findMany',
-          GlobalOmitOptions
-        >
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     Interview_Decision<T extends Application$Interview_DecisionArgs<ExtArgs> = {}>(
       args?: Subset<T, Application$Interview_DecisionArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<
-          Prisma.$Interview_DecisionPayload<ExtArgs>,
-          T,
-          'findMany',
-          GlobalOmitOptions
-        >
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     Staff_Logs<T extends Application$Staff_LogsArgs<ExtArgs> = {}>(
       args?: Subset<T, Application$Staff_LogsArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     Student_Notifications<T extends Application$Student_NotificationsArgs<ExtArgs> = {}>(
       args?: Subset<T, Application$Student_NotificationsArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      | $Result.GetResult<
-          Prisma.$Student_NotificationPayload<ExtArgs>,
-          T,
-          'findMany',
-          GlobalOmitOptions
-        >
-      | Null
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13083,9 +11483,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -13112,9 +11510,7 @@ export namespace Prisma {
   /**
    * Application findUnique
    */
-  export type ApplicationFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13136,9 +11532,7 @@ export namespace Prisma {
   /**
    * Application findUniqueOrThrow
    */
-  export type ApplicationFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13160,9 +11554,7 @@ export namespace Prisma {
   /**
    * Application findFirst
    */
-  export type ApplicationFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13214,9 +11606,7 @@ export namespace Prisma {
   /**
    * Application findFirstOrThrow
    */
-  export type ApplicationFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13268,9 +11658,7 @@ export namespace Prisma {
   /**
    * Application findMany
    */
-  export type ApplicationFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13317,9 +11705,7 @@ export namespace Prisma {
   /**
    * Application create
    */
-  export type ApplicationCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13341,9 +11727,7 @@ export namespace Prisma {
   /**
    * Application createMany
    */
-  export type ApplicationCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Applications.
      */
@@ -13354,9 +11738,7 @@ export namespace Prisma {
   /**
    * Application createManyAndReturn
    */
-  export type ApplicationCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13379,9 +11761,7 @@ export namespace Prisma {
   /**
    * Application update
    */
-  export type ApplicationUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13407,9 +11787,7 @@ export namespace Prisma {
   /**
    * Application updateMany
    */
-  export type ApplicationUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Applications.
      */
@@ -13427,9 +11805,7 @@ export namespace Prisma {
   /**
    * Application updateManyAndReturn
    */
-  export type ApplicationUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13459,9 +11835,7 @@ export namespace Prisma {
   /**
    * Application upsert
    */
-  export type ApplicationUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13491,9 +11865,7 @@ export namespace Prisma {
   /**
    * Application delete
    */
-  export type ApplicationDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13515,9 +11887,7 @@ export namespace Prisma {
   /**
    * Application deleteMany
    */
-  export type ApplicationDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Applications to delete
      */
@@ -13531,9 +11901,7 @@ export namespace Prisma {
   /**
    * Application.Application_Decision
    */
-  export type Application$Application_DecisionArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application$Application_DecisionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -13547,9 +11915,7 @@ export namespace Prisma {
      */
     include?: Application_DecisionInclude<ExtArgs> | null;
     where?: Application_DecisionWhereInput;
-    orderBy?:
-      | Application_DecisionOrderByWithRelationInput
-      | Application_DecisionOrderByWithRelationInput[];
+    orderBy?: Application_DecisionOrderByWithRelationInput | Application_DecisionOrderByWithRelationInput[];
     cursor?: Application_DecisionWhereUniqueInput;
     take?: number;
     skip?: number;
@@ -13559,9 +11925,7 @@ export namespace Prisma {
   /**
    * Application.Interview_Decision
    */
-  export type Application$Interview_DecisionArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application$Interview_DecisionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -13575,9 +11939,7 @@ export namespace Prisma {
      */
     include?: Interview_DecisionInclude<ExtArgs> | null;
     where?: Interview_DecisionWhereInput;
-    orderBy?:
-      | Interview_DecisionOrderByWithRelationInput
-      | Interview_DecisionOrderByWithRelationInput[];
+    orderBy?: Interview_DecisionOrderByWithRelationInput | Interview_DecisionOrderByWithRelationInput[];
     cursor?: Interview_DecisionWhereUniqueInput;
     take?: number;
     skip?: number;
@@ -13587,9 +11949,7 @@ export namespace Prisma {
   /**
    * Application.Staff_Logs
    */
-  export type Application$Staff_LogsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application$Staff_LogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -13613,9 +11973,7 @@ export namespace Prisma {
   /**
    * Application.Student_Notifications
    */
-  export type Application$Student_NotificationsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application$Student_NotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -13629,9 +11987,7 @@ export namespace Prisma {
      */
     include?: Student_NotificationInclude<ExtArgs> | null;
     where?: Student_NotificationWhereInput;
-    orderBy?:
-      | Student_NotificationOrderByWithRelationInput
-      | Student_NotificationOrderByWithRelationInput[];
+    orderBy?: Student_NotificationOrderByWithRelationInput | Student_NotificationOrderByWithRelationInput[];
     cursor?: Student_NotificationWhereUniqueInput;
     take?: number;
     skip?: number;
@@ -13641,9 +11997,7 @@ export namespace Prisma {
   /**
    * Application without action
    */
-  export type ApplicationDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type ApplicationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -13756,9 +12110,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type Application_DecisionAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Application_Decision to aggregate.
      */
@@ -13768,9 +12120,7 @@ export namespace Prisma {
      *
      * Determine the order of Application_Decisions to fetch.
      */
-    orderBy?:
-      | Application_DecisionOrderByWithRelationInput
-      | Application_DecisionOrderByWithRelationInput[];
+    orderBy?: Application_DecisionOrderByWithRelationInput | Application_DecisionOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -13829,13 +12179,9 @@ export namespace Prisma {
       : GetScalarType<T[P], AggregateApplication_Decision[P]>;
   };
 
-  export type Application_DecisionGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Application_DecisionWhereInput;
-    orderBy?:
-      | Application_DecisionOrderByWithAggregationInput
-      | Application_DecisionOrderByWithAggregationInput[];
+    orderBy?: Application_DecisionOrderByWithAggregationInput | Application_DecisionOrderByWithAggregationInput[];
     by: Application_DecisionScalarFieldEnum[] | Application_DecisionScalarFieldEnum;
     having?: Application_DecisionScalarWhereWithAggregatesInput;
     take?: number;
@@ -13862,22 +12208,19 @@ export namespace Prisma {
     _max: Application_DecisionMaxAggregateOutputType | null;
   };
 
-  type GetApplication_DecisionGroupByPayload<T extends Application_DecisionGroupByArgs> =
-    Prisma.PrismaPromise<
-      Array<
-        PickEnumerable<Application_DecisionGroupByOutputType, T['by']> & {
-          [P in keyof T & keyof Application_DecisionGroupByOutputType]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], Application_DecisionGroupByOutputType[P]>
-            : GetScalarType<T[P], Application_DecisionGroupByOutputType[P]>;
-        }
-      >
-    >;
+  type GetApplication_DecisionGroupByPayload<T extends Application_DecisionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Application_DecisionGroupByOutputType, T['by']> & {
+        [P in keyof T & keyof Application_DecisionGroupByOutputType]: P extends '_count'
+          ? T[P] extends boolean
+            ? number
+            : GetScalarType<T[P], Application_DecisionGroupByOutputType[P]>
+          : GetScalarType<T[P], Application_DecisionGroupByOutputType[P]>;
+      }
+    >
+  >;
 
-  export type Application_DecisionSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Application_DecisionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       decisionId?: boolean;
       staffId?: boolean;
@@ -13892,9 +12235,7 @@ export namespace Prisma {
     ExtArgs['result']['application_Decision']
   >;
 
-  export type Application_DecisionSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Application_DecisionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       decisionId?: boolean;
       staffId?: boolean;
@@ -13909,9 +12250,7 @@ export namespace Prisma {
     ExtArgs['result']['application_Decision']
   >;
 
-  export type Application_DecisionSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Application_DecisionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       decisionId?: boolean;
       staffId?: boolean;
@@ -13936,40 +12275,24 @@ export namespace Prisma {
     scholarshipPhase?: boolean;
   };
 
-  export type Application_DecisionOmit<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetOmit<
-    | 'decisionId'
-    | 'staffId'
-    | 'status'
-    | 'message'
-    | 'dateCreated'
-    | 'applicationId'
-    | 'scholarshipPhase',
+  export type Application_DecisionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'decisionId' | 'staffId' | 'status' | 'message' | 'dateCreated' | 'applicationId' | 'scholarshipPhase',
     ExtArgs['result']['application_Decision']
   >;
-  export type Application_DecisionInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Application_Decision$ISPSU_StaffArgs<ExtArgs>;
   };
-  export type Application_DecisionIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Application_Decision$ISPSU_StaffArgs<ExtArgs>;
   };
-  export type Application_DecisionIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Application_Decision$ISPSU_StaffArgs<ExtArgs>;
   };
 
-  export type $Application_DecisionPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $Application_DecisionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'Application_Decision';
     objects: {
       Application: Prisma.$ApplicationPayload<ExtArgs>;
@@ -13990,20 +12313,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type Application_DecisionGetPayload<
-    S extends boolean | null | undefined | Application_DecisionDefaultArgs,
-  > = $Result.GetResult<Prisma.$Application_DecisionPayload, S>;
+  type Application_DecisionGetPayload<S extends boolean | null | undefined | Application_DecisionDefaultArgs> = $Result.GetResult<Prisma.$Application_DecisionPayload, S>;
 
-  type Application_DecisionCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = Omit<Application_DecisionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  type Application_DecisionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<Application_DecisionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
     select?: Application_DecisionCountAggregateInputType | true;
   };
 
-  export interface Application_DecisionDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface Application_DecisionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['Application_Decision'];
       meta: { name: 'Application_Decision' };
@@ -14021,17 +12337,7 @@ export namespace Prisma {
      */
     findUnique<T extends Application_DecisionFindUniqueArgs>(
       args: SelectSubset<T, Application_DecisionFindUniqueArgs<ExtArgs>>,
-    ): Prisma__Application_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Application_DecisionClient<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Application_Decision that matches the filter or throw an error with `error.code='P2025'`
@@ -14047,17 +12353,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends Application_DecisionFindUniqueOrThrowArgs>(
       args: SelectSubset<T, Application_DecisionFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__Application_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Application_DecisionClient<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Application_Decision that matches the filter.
@@ -14074,17 +12370,7 @@ export namespace Prisma {
      */
     findFirst<T extends Application_DecisionFindFirstArgs>(
       args?: SelectSubset<T, Application_DecisionFindFirstArgs<ExtArgs>>,
-    ): Prisma__Application_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Application_DecisionClient<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Application_Decision that matches the filter or
@@ -14102,17 +12388,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends Application_DecisionFindFirstOrThrowArgs>(
       args?: SelectSubset<T, Application_DecisionFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__Application_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Application_DecisionClient<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Application_Decisions that matches the filter.
@@ -14132,14 +12408,7 @@ export namespace Prisma {
      */
     findMany<T extends Application_DecisionFindManyArgs>(
       args?: SelectSubset<T, Application_DecisionFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'findMany',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Application_Decision.
@@ -14155,17 +12424,7 @@ export namespace Prisma {
      */
     create<T extends Application_DecisionCreateArgs>(
       args: SelectSubset<T, Application_DecisionCreateArgs<ExtArgs>>,
-    ): Prisma__Application_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'create',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Application_DecisionClient<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Application_Decisions.
@@ -14179,9 +12438,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends Application_DecisionCreateManyArgs>(
-      args?: SelectSubset<T, Application_DecisionCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends Application_DecisionCreateManyArgs>(args?: SelectSubset<T, Application_DecisionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Application_Decisions and returns the data saved in the database.
@@ -14207,14 +12464,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends Application_DecisionCreateManyAndReturnArgs>(
       args?: SelectSubset<T, Application_DecisionCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Application_Decision.
@@ -14230,17 +12480,7 @@ export namespace Prisma {
      */
     delete<T extends Application_DecisionDeleteArgs>(
       args: SelectSubset<T, Application_DecisionDeleteArgs<ExtArgs>>,
-    ): Prisma__Application_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'delete',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Application_DecisionClient<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Application_Decision.
@@ -14259,17 +12499,7 @@ export namespace Prisma {
      */
     update<T extends Application_DecisionUpdateArgs>(
       args: SelectSubset<T, Application_DecisionUpdateArgs<ExtArgs>>,
-    ): Prisma__Application_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'update',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Application_DecisionClient<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Application_Decisions.
@@ -14283,9 +12513,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends Application_DecisionDeleteManyArgs>(
-      args?: SelectSubset<T, Application_DecisionDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends Application_DecisionDeleteManyArgs>(args?: SelectSubset<T, Application_DecisionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Application_Decisions.
@@ -14304,9 +12532,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends Application_DecisionUpdateManyArgs>(
-      args: SelectSubset<T, Application_DecisionUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends Application_DecisionUpdateManyArgs>(args: SelectSubset<T, Application_DecisionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Application_Decisions and returns the data updated in the database.
@@ -14338,14 +12564,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends Application_DecisionUpdateManyAndReturnArgs>(
       args: SelectSubset<T, Application_DecisionUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Application_Decision.
@@ -14366,17 +12585,7 @@ export namespace Prisma {
      */
     upsert<T extends Application_DecisionUpsertArgs>(
       args: SelectSubset<T, Application_DecisionUpsertArgs<ExtArgs>>,
-    ): Prisma__Application_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Application_DecisionPayload<ExtArgs>,
-        T,
-        'upsert',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Application_DecisionClient<$Result.GetResult<Prisma.$Application_DecisionPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Application_Decisions.
@@ -14393,13 +12602,7 @@ export namespace Prisma {
      **/
     count<T extends Application_DecisionCountArgs>(
       args?: Subset<T, Application_DecisionCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], Application_DecisionCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], Application_DecisionCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Application_Decision.
@@ -14425,9 +12628,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends Application_DecisionAggregateArgs>(
-      args: Subset<T, Application_DecisionAggregateArgs>,
-    ): Prisma.PrismaPromise<GetApplication_DecisionAggregateType<T>>;
+    aggregate<T extends Application_DecisionAggregateArgs>(args: Subset<T, Application_DecisionAggregateArgs>): Prisma.PrismaPromise<GetApplication_DecisionAggregateType<T>>;
 
     /**
      * Group by Application_Decision.
@@ -14450,9 +12651,7 @@ export namespace Prisma {
     groupBy<
       T extends Application_DecisionGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: Application_DecisionGroupByArgs['orderBy'] }
-        : { orderBy?: Application_DecisionGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: Application_DecisionGroupByArgs['orderBy'] } : { orderBy?: Application_DecisionGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -14474,9 +12673,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -14484,23 +12681,17 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, Application_DecisionGroupByArgs, OrderByArg> & InputErrors,
-    ): {} extends InputErrors
-      ? GetApplication_DecisionGroupByPayload<T>
-      : Prisma.PrismaPromise<InputErrors>;
+    ): {} extends InputErrors ? GetApplication_DecisionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
     /**
      * Fields of the Application_Decision model
      */
@@ -14513,40 +12704,14 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Application_DecisionClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__Application_DecisionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     Application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      | $Result.GetResult<
-          Prisma.$ApplicationPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     ISPSU_Staff<T extends Application_Decision$ISPSU_StaffArgs<ExtArgs> = {}>(
       args?: Subset<T, Application_Decision$ISPSU_StaffArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14562,9 +12727,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -14591,9 +12754,7 @@ export namespace Prisma {
   /**
    * Application_Decision findUnique
    */
-  export type Application_DecisionFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14615,9 +12776,7 @@ export namespace Prisma {
   /**
    * Application_Decision findUniqueOrThrow
    */
-  export type Application_DecisionFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14639,9 +12798,7 @@ export namespace Prisma {
   /**
    * Application_Decision findFirst
    */
-  export type Application_DecisionFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14663,9 +12820,7 @@ export namespace Prisma {
      *
      * Determine the order of Application_Decisions to fetch.
      */
-    orderBy?:
-      | Application_DecisionOrderByWithRelationInput
-      | Application_DecisionOrderByWithRelationInput[];
+    orderBy?: Application_DecisionOrderByWithRelationInput | Application_DecisionOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -14695,9 +12850,7 @@ export namespace Prisma {
   /**
    * Application_Decision findFirstOrThrow
    */
-  export type Application_DecisionFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14719,9 +12872,7 @@ export namespace Prisma {
      *
      * Determine the order of Application_Decisions to fetch.
      */
-    orderBy?:
-      | Application_DecisionOrderByWithRelationInput
-      | Application_DecisionOrderByWithRelationInput[];
+    orderBy?: Application_DecisionOrderByWithRelationInput | Application_DecisionOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -14751,9 +12902,7 @@ export namespace Prisma {
   /**
    * Application_Decision findMany
    */
-  export type Application_DecisionFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14775,9 +12924,7 @@ export namespace Prisma {
      *
      * Determine the order of Application_Decisions to fetch.
      */
-    orderBy?:
-      | Application_DecisionOrderByWithRelationInput
-      | Application_DecisionOrderByWithRelationInput[];
+    orderBy?: Application_DecisionOrderByWithRelationInput | Application_DecisionOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -14802,9 +12949,7 @@ export namespace Prisma {
   /**
    * Application_Decision create
    */
-  export type Application_DecisionCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14826,9 +12971,7 @@ export namespace Prisma {
   /**
    * Application_Decision createMany
    */
-  export type Application_DecisionCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Application_Decisions.
      */
@@ -14839,9 +12982,7 @@ export namespace Prisma {
   /**
    * Application_Decision createManyAndReturn
    */
-  export type Application_DecisionCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14864,9 +13005,7 @@ export namespace Prisma {
   /**
    * Application_Decision update
    */
-  export type Application_DecisionUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14892,16 +13031,11 @@ export namespace Prisma {
   /**
    * Application_Decision updateMany
    */
-  export type Application_DecisionUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Application_Decisions.
      */
-    data: XOR<
-      Application_DecisionUpdateManyMutationInput,
-      Application_DecisionUncheckedUpdateManyInput
-    >;
+    data: XOR<Application_DecisionUpdateManyMutationInput, Application_DecisionUncheckedUpdateManyInput>;
     /**
      * Filter which Application_Decisions to update
      */
@@ -14915,9 +13049,7 @@ export namespace Prisma {
   /**
    * Application_Decision updateManyAndReturn
    */
-  export type Application_DecisionUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14929,10 +13061,7 @@ export namespace Prisma {
     /**
      * The data used to update Application_Decisions.
      */
-    data: XOR<
-      Application_DecisionUpdateManyMutationInput,
-      Application_DecisionUncheckedUpdateManyInput
-    >;
+    data: XOR<Application_DecisionUpdateManyMutationInput, Application_DecisionUncheckedUpdateManyInput>;
     /**
      * Filter which Application_Decisions to update
      */
@@ -14950,9 +13079,7 @@ export namespace Prisma {
   /**
    * Application_Decision upsert
    */
-  export type Application_DecisionUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -14982,9 +13109,7 @@ export namespace Prisma {
   /**
    * Application_Decision delete
    */
-  export type Application_DecisionDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -15006,9 +13131,7 @@ export namespace Prisma {
   /**
    * Application_Decision deleteMany
    */
-  export type Application_DecisionDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Application_Decisions to delete
      */
@@ -15022,9 +13145,7 @@ export namespace Prisma {
   /**
    * Application_Decision.ISPSU_Staff
    */
-  export type Application_Decision$ISPSU_StaffArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_Decision$ISPSU_StaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -15043,9 +13164,7 @@ export namespace Prisma {
   /**
    * Application_Decision without action
    */
-  export type Application_DecisionDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Application_DecisionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application_Decision
      */
@@ -15158,9 +13277,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type Interview_DecisionAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Interview_Decision to aggregate.
      */
@@ -15170,9 +13287,7 @@ export namespace Prisma {
      *
      * Determine the order of Interview_Decisions to fetch.
      */
-    orderBy?:
-      | Interview_DecisionOrderByWithRelationInput
-      | Interview_DecisionOrderByWithRelationInput[];
+    orderBy?: Interview_DecisionOrderByWithRelationInput | Interview_DecisionOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -15231,13 +13346,9 @@ export namespace Prisma {
       : GetScalarType<T[P], AggregateInterview_Decision[P]>;
   };
 
-  export type Interview_DecisionGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Interview_DecisionWhereInput;
-    orderBy?:
-      | Interview_DecisionOrderByWithAggregationInput
-      | Interview_DecisionOrderByWithAggregationInput[];
+    orderBy?: Interview_DecisionOrderByWithAggregationInput | Interview_DecisionOrderByWithAggregationInput[];
     by: Interview_DecisionScalarFieldEnum[] | Interview_DecisionScalarFieldEnum;
     having?: Interview_DecisionScalarWhereWithAggregatesInput;
     take?: number;
@@ -15264,22 +13375,19 @@ export namespace Prisma {
     _max: Interview_DecisionMaxAggregateOutputType | null;
   };
 
-  type GetInterview_DecisionGroupByPayload<T extends Interview_DecisionGroupByArgs> =
-    Prisma.PrismaPromise<
-      Array<
-        PickEnumerable<Interview_DecisionGroupByOutputType, T['by']> & {
-          [P in keyof T & keyof Interview_DecisionGroupByOutputType]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], Interview_DecisionGroupByOutputType[P]>
-            : GetScalarType<T[P], Interview_DecisionGroupByOutputType[P]>;
-        }
-      >
-    >;
+  type GetInterview_DecisionGroupByPayload<T extends Interview_DecisionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Interview_DecisionGroupByOutputType, T['by']> & {
+        [P in keyof T & keyof Interview_DecisionGroupByOutputType]: P extends '_count'
+          ? T[P] extends boolean
+            ? number
+            : GetScalarType<T[P], Interview_DecisionGroupByOutputType[P]>
+          : GetScalarType<T[P], Interview_DecisionGroupByOutputType[P]>;
+      }
+    >
+  >;
 
-  export type Interview_DecisionSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Interview_DecisionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       interviewId?: boolean;
       staffId?: boolean;
@@ -15294,9 +13402,7 @@ export namespace Prisma {
     ExtArgs['result']['interview_Decision']
   >;
 
-  export type Interview_DecisionSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Interview_DecisionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       interviewId?: boolean;
       staffId?: boolean;
@@ -15311,9 +13417,7 @@ export namespace Prisma {
     ExtArgs['result']['interview_Decision']
   >;
 
-  export type Interview_DecisionSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Interview_DecisionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       interviewId?: boolean;
       staffId?: boolean;
@@ -15338,40 +13442,24 @@ export namespace Prisma {
     scholarshipPhase?: boolean;
   };
 
-  export type Interview_DecisionOmit<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetOmit<
-    | 'interviewId'
-    | 'staffId'
-    | 'status'
-    | 'message'
-    | 'dateCreated'
-    | 'applicationId'
-    | 'scholarshipPhase',
+  export type Interview_DecisionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'interviewId' | 'staffId' | 'status' | 'message' | 'dateCreated' | 'applicationId' | 'scholarshipPhase',
     ExtArgs['result']['interview_Decision']
   >;
-  export type Interview_DecisionInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Interview_Decision$ISPSU_StaffArgs<ExtArgs>;
   };
-  export type Interview_DecisionIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Interview_Decision$ISPSU_StaffArgs<ExtArgs>;
   };
-  export type Interview_DecisionIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Interview_Decision$ISPSU_StaffArgs<ExtArgs>;
   };
 
-  export type $Interview_DecisionPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $Interview_DecisionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'Interview_Decision';
     objects: {
       Application: Prisma.$ApplicationPayload<ExtArgs>;
@@ -15392,20 +13480,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type Interview_DecisionGetPayload<
-    S extends boolean | null | undefined | Interview_DecisionDefaultArgs,
-  > = $Result.GetResult<Prisma.$Interview_DecisionPayload, S>;
+  type Interview_DecisionGetPayload<S extends boolean | null | undefined | Interview_DecisionDefaultArgs> = $Result.GetResult<Prisma.$Interview_DecisionPayload, S>;
 
-  type Interview_DecisionCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = Omit<Interview_DecisionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  type Interview_DecisionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<Interview_DecisionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
     select?: Interview_DecisionCountAggregateInputType | true;
   };
 
-  export interface Interview_DecisionDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface Interview_DecisionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['Interview_Decision'];
       meta: { name: 'Interview_Decision' };
@@ -15423,17 +13504,7 @@ export namespace Prisma {
      */
     findUnique<T extends Interview_DecisionFindUniqueArgs>(
       args: SelectSubset<T, Interview_DecisionFindUniqueArgs<ExtArgs>>,
-    ): Prisma__Interview_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Interview_DecisionPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Interview_DecisionClient<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Interview_Decision that matches the filter or throw an error with `error.code='P2025'`
@@ -15449,17 +13520,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends Interview_DecisionFindUniqueOrThrowArgs>(
       args: SelectSubset<T, Interview_DecisionFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__Interview_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Interview_DecisionPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Interview_DecisionClient<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Interview_Decision that matches the filter.
@@ -15476,17 +13537,7 @@ export namespace Prisma {
      */
     findFirst<T extends Interview_DecisionFindFirstArgs>(
       args?: SelectSubset<T, Interview_DecisionFindFirstArgs<ExtArgs>>,
-    ): Prisma__Interview_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Interview_DecisionPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Interview_DecisionClient<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Interview_Decision that matches the filter or
@@ -15504,17 +13555,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends Interview_DecisionFindFirstOrThrowArgs>(
       args?: SelectSubset<T, Interview_DecisionFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__Interview_DecisionClient<
-      $Result.GetResult<
-        Prisma.$Interview_DecisionPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Interview_DecisionClient<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Interview_Decisions that matches the filter.
@@ -15534,14 +13575,7 @@ export namespace Prisma {
      */
     findMany<T extends Interview_DecisionFindManyArgs>(
       args?: SelectSubset<T, Interview_DecisionFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Interview_DecisionPayload<ExtArgs>,
-        T,
-        'findMany',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Interview_Decision.
@@ -15557,12 +13591,7 @@ export namespace Prisma {
      */
     create<T extends Interview_DecisionCreateArgs>(
       args: SelectSubset<T, Interview_DecisionCreateArgs<ExtArgs>>,
-    ): Prisma__Interview_DecisionClient<
-      $Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Interview_DecisionClient<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Interview_Decisions.
@@ -15576,9 +13605,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends Interview_DecisionCreateManyArgs>(
-      args?: SelectSubset<T, Interview_DecisionCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends Interview_DecisionCreateManyArgs>(args?: SelectSubset<T, Interview_DecisionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Interview_Decisions and returns the data saved in the database.
@@ -15604,14 +13631,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends Interview_DecisionCreateManyAndReturnArgs>(
       args?: SelectSubset<T, Interview_DecisionCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Interview_DecisionPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Interview_Decision.
@@ -15627,12 +13647,7 @@ export namespace Prisma {
      */
     delete<T extends Interview_DecisionDeleteArgs>(
       args: SelectSubset<T, Interview_DecisionDeleteArgs<ExtArgs>>,
-    ): Prisma__Interview_DecisionClient<
-      $Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Interview_DecisionClient<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Interview_Decision.
@@ -15651,12 +13666,7 @@ export namespace Prisma {
      */
     update<T extends Interview_DecisionUpdateArgs>(
       args: SelectSubset<T, Interview_DecisionUpdateArgs<ExtArgs>>,
-    ): Prisma__Interview_DecisionClient<
-      $Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Interview_DecisionClient<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Interview_Decisions.
@@ -15670,9 +13680,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends Interview_DecisionDeleteManyArgs>(
-      args?: SelectSubset<T, Interview_DecisionDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends Interview_DecisionDeleteManyArgs>(args?: SelectSubset<T, Interview_DecisionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Interview_Decisions.
@@ -15691,9 +13699,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends Interview_DecisionUpdateManyArgs>(
-      args: SelectSubset<T, Interview_DecisionUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends Interview_DecisionUpdateManyArgs>(args: SelectSubset<T, Interview_DecisionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Interview_Decisions and returns the data updated in the database.
@@ -15725,14 +13731,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends Interview_DecisionUpdateManyAndReturnArgs>(
       args: SelectSubset<T, Interview_DecisionUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Interview_DecisionPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Interview_Decision.
@@ -15753,12 +13752,7 @@ export namespace Prisma {
      */
     upsert<T extends Interview_DecisionUpsertArgs>(
       args: SelectSubset<T, Interview_DecisionUpsertArgs<ExtArgs>>,
-    ): Prisma__Interview_DecisionClient<
-      $Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Interview_DecisionClient<$Result.GetResult<Prisma.$Interview_DecisionPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Interview_Decisions.
@@ -15775,13 +13769,7 @@ export namespace Prisma {
      **/
     count<T extends Interview_DecisionCountArgs>(
       args?: Subset<T, Interview_DecisionCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], Interview_DecisionCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], Interview_DecisionCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Interview_Decision.
@@ -15807,9 +13795,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends Interview_DecisionAggregateArgs>(
-      args: Subset<T, Interview_DecisionAggregateArgs>,
-    ): Prisma.PrismaPromise<GetInterview_DecisionAggregateType<T>>;
+    aggregate<T extends Interview_DecisionAggregateArgs>(args: Subset<T, Interview_DecisionAggregateArgs>): Prisma.PrismaPromise<GetInterview_DecisionAggregateType<T>>;
 
     /**
      * Group by Interview_Decision.
@@ -15832,9 +13818,7 @@ export namespace Prisma {
     groupBy<
       T extends Interview_DecisionGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: Interview_DecisionGroupByArgs['orderBy'] }
-        : { orderBy?: Interview_DecisionGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: Interview_DecisionGroupByArgs['orderBy'] } : { orderBy?: Interview_DecisionGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -15856,9 +13840,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -15866,23 +13848,17 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, Interview_DecisionGroupByArgs, OrderByArg> & InputErrors,
-    ): {} extends InputErrors
-      ? GetInterview_DecisionGroupByPayload<T>
-      : Prisma.PrismaPromise<InputErrors>;
+    ): {} extends InputErrors ? GetInterview_DecisionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
     /**
      * Fields of the Interview_Decision model
      */
@@ -15895,40 +13871,14 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Interview_DecisionClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__Interview_DecisionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     Application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      | $Result.GetResult<
-          Prisma.$ApplicationPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     ISPSU_Staff<T extends Interview_Decision$ISPSU_StaffArgs<ExtArgs> = {}>(
       args?: Subset<T, Interview_Decision$ISPSU_StaffArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15944,9 +13894,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -15973,9 +13921,7 @@ export namespace Prisma {
   /**
    * Interview_Decision findUnique
    */
-  export type Interview_DecisionFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -15997,9 +13943,7 @@ export namespace Prisma {
   /**
    * Interview_Decision findUniqueOrThrow
    */
-  export type Interview_DecisionFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16021,9 +13965,7 @@ export namespace Prisma {
   /**
    * Interview_Decision findFirst
    */
-  export type Interview_DecisionFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16045,9 +13987,7 @@ export namespace Prisma {
      *
      * Determine the order of Interview_Decisions to fetch.
      */
-    orderBy?:
-      | Interview_DecisionOrderByWithRelationInput
-      | Interview_DecisionOrderByWithRelationInput[];
+    orderBy?: Interview_DecisionOrderByWithRelationInput | Interview_DecisionOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -16077,9 +14017,7 @@ export namespace Prisma {
   /**
    * Interview_Decision findFirstOrThrow
    */
-  export type Interview_DecisionFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16101,9 +14039,7 @@ export namespace Prisma {
      *
      * Determine the order of Interview_Decisions to fetch.
      */
-    orderBy?:
-      | Interview_DecisionOrderByWithRelationInput
-      | Interview_DecisionOrderByWithRelationInput[];
+    orderBy?: Interview_DecisionOrderByWithRelationInput | Interview_DecisionOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -16133,9 +14069,7 @@ export namespace Prisma {
   /**
    * Interview_Decision findMany
    */
-  export type Interview_DecisionFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16157,9 +14091,7 @@ export namespace Prisma {
      *
      * Determine the order of Interview_Decisions to fetch.
      */
-    orderBy?:
-      | Interview_DecisionOrderByWithRelationInput
-      | Interview_DecisionOrderByWithRelationInput[];
+    orderBy?: Interview_DecisionOrderByWithRelationInput | Interview_DecisionOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -16184,9 +14116,7 @@ export namespace Prisma {
   /**
    * Interview_Decision create
    */
-  export type Interview_DecisionCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16208,9 +14138,7 @@ export namespace Prisma {
   /**
    * Interview_Decision createMany
    */
-  export type Interview_DecisionCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Interview_Decisions.
      */
@@ -16221,9 +14149,7 @@ export namespace Prisma {
   /**
    * Interview_Decision createManyAndReturn
    */
-  export type Interview_DecisionCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16246,9 +14172,7 @@ export namespace Prisma {
   /**
    * Interview_Decision update
    */
-  export type Interview_DecisionUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16274,16 +14198,11 @@ export namespace Prisma {
   /**
    * Interview_Decision updateMany
    */
-  export type Interview_DecisionUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Interview_Decisions.
      */
-    data: XOR<
-      Interview_DecisionUpdateManyMutationInput,
-      Interview_DecisionUncheckedUpdateManyInput
-    >;
+    data: XOR<Interview_DecisionUpdateManyMutationInput, Interview_DecisionUncheckedUpdateManyInput>;
     /**
      * Filter which Interview_Decisions to update
      */
@@ -16297,9 +14216,7 @@ export namespace Prisma {
   /**
    * Interview_Decision updateManyAndReturn
    */
-  export type Interview_DecisionUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16311,10 +14228,7 @@ export namespace Prisma {
     /**
      * The data used to update Interview_Decisions.
      */
-    data: XOR<
-      Interview_DecisionUpdateManyMutationInput,
-      Interview_DecisionUncheckedUpdateManyInput
-    >;
+    data: XOR<Interview_DecisionUpdateManyMutationInput, Interview_DecisionUncheckedUpdateManyInput>;
     /**
      * Filter which Interview_Decisions to update
      */
@@ -16332,9 +14246,7 @@ export namespace Prisma {
   /**
    * Interview_Decision upsert
    */
-  export type Interview_DecisionUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16364,9 +14276,7 @@ export namespace Prisma {
   /**
    * Interview_Decision delete
    */
-  export type Interview_DecisionDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16388,9 +14298,7 @@ export namespace Prisma {
   /**
    * Interview_Decision deleteMany
    */
-  export type Interview_DecisionDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Interview_Decisions to delete
      */
@@ -16404,9 +14312,7 @@ export namespace Prisma {
   /**
    * Interview_Decision.ISPSU_Staff
    */
-  export type Interview_Decision$ISPSU_StaffArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_Decision$ISPSU_StaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -16425,9 +14331,7 @@ export namespace Prisma {
   /**
    * Interview_Decision without action
    */
-  export type Interview_DecisionDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Interview_DecisionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Interview_Decision
      */
@@ -16544,9 +14448,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type Staff_LogsAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Staff_Logs to aggregate.
      */
@@ -16608,16 +14510,10 @@ export namespace Prisma {
   };
 
   export type GetStaff_LogsAggregateType<T extends Staff_LogsAggregateArgs> = {
-    [P in keyof T & keyof AggregateStaff_Logs]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateStaff_Logs[P]>
-      : GetScalarType<T[P], AggregateStaff_Logs[P]>;
+    [P in keyof T & keyof AggregateStaff_Logs]: P extends '_count' | 'count' ? (T[P] extends true ? number : GetScalarType<T[P], AggregateStaff_Logs[P]>) : GetScalarType<T[P], AggregateStaff_Logs[P]>;
   };
 
-  export type Staff_LogsGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Staff_LogsWhereInput;
     orderBy?: Staff_LogsOrderByWithAggregationInput | Staff_LogsOrderByWithAggregationInput[];
     by: Staff_LogsScalarFieldEnum[] | Staff_LogsScalarFieldEnum;
@@ -16658,26 +14554,7 @@ export namespace Prisma {
     >
   >;
 
-  export type Staff_LogsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetSelect<
-      {
-        logsId?: boolean;
-        staffId?: boolean;
-        action?: boolean;
-        dateCreated?: boolean;
-        applicationId?: boolean;
-        scholarshipId?: boolean;
-        description?: boolean;
-        application?: boolean | ApplicationDefaultArgs<ExtArgs>;
-        scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
-        ISPSU_Staff?: boolean | Staff_Logs$ISPSU_StaffArgs<ExtArgs>;
-      },
-      ExtArgs['result']['staff_Logs']
-    >;
-
-  export type Staff_LogsSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Staff_LogsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       logsId?: boolean;
       staffId?: boolean;
@@ -16693,9 +14570,23 @@ export namespace Prisma {
     ExtArgs['result']['staff_Logs']
   >;
 
-  export type Staff_LogsSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Staff_LogsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
+    {
+      logsId?: boolean;
+      staffId?: boolean;
+      action?: boolean;
+      dateCreated?: boolean;
+      applicationId?: boolean;
+      scholarshipId?: boolean;
+      description?: boolean;
+      application?: boolean | ApplicationDefaultArgs<ExtArgs>;
+      scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
+      ISPSU_Staff?: boolean | Staff_Logs$ISPSU_StaffArgs<ExtArgs>;
+    },
+    ExtArgs['result']['staff_Logs']
+  >;
+
+  export type Staff_LogsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       logsId?: boolean;
       staffId?: boolean;
@@ -16721,42 +14612,27 @@ export namespace Prisma {
     description?: boolean;
   };
 
-  export type Staff_LogsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetOmit<
-      | 'logsId'
-      | 'staffId'
-      | 'action'
-      | 'dateCreated'
-      | 'applicationId'
-      | 'scholarshipId'
-      | 'description',
-      ExtArgs['result']['staff_Logs']
-    >;
-  export type Staff_LogsInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'logsId' | 'staffId' | 'action' | 'dateCreated' | 'applicationId' | 'scholarshipId' | 'description',
+    ExtArgs['result']['staff_Logs']
+  >;
+  export type Staff_LogsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Staff_Logs$ISPSU_StaffArgs<ExtArgs>;
   };
-  export type Staff_LogsIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Staff_Logs$ISPSU_StaffArgs<ExtArgs>;
   };
-  export type Staff_LogsIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
     ISPSU_Staff?: boolean | Staff_Logs$ISPSU_StaffArgs<ExtArgs>;
   };
 
-  export type $Staff_LogsPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $Staff_LogsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'Staff_Logs';
     objects: {
       application: Prisma.$ApplicationPayload<ExtArgs>;
@@ -16778,18 +14654,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type Staff_LogsGetPayload<S extends boolean | null | undefined | Staff_LogsDefaultArgs> =
-    $Result.GetResult<Prisma.$Staff_LogsPayload, S>;
+  type Staff_LogsGetPayload<S extends boolean | null | undefined | Staff_LogsDefaultArgs> = $Result.GetResult<Prisma.$Staff_LogsPayload, S>;
 
-  type Staff_LogsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<Staff_LogsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: Staff_LogsCountAggregateInputType | true;
-    };
+  type Staff_LogsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<Staff_LogsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: Staff_LogsCountAggregateInputType | true;
+  };
 
-  export interface Staff_LogsDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface Staff_LogsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['Staff_Logs'];
       meta: { name: 'Staff_Logs' };
@@ -16807,17 +14678,7 @@ export namespace Prisma {
      */
     findUnique<T extends Staff_LogsFindUniqueArgs>(
       args: SelectSubset<T, Staff_LogsFindUniqueArgs<ExtArgs>>,
-    ): Prisma__Staff_LogsClient<
-      $Result.GetResult<
-        Prisma.$Staff_LogsPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Staff_LogsClient<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Staff_Logs that matches the filter or throw an error with `error.code='P2025'`
@@ -16833,17 +14694,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends Staff_LogsFindUniqueOrThrowArgs>(
       args: SelectSubset<T, Staff_LogsFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__Staff_LogsClient<
-      $Result.GetResult<
-        Prisma.$Staff_LogsPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Staff_LogsClient<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Staff_Logs that matches the filter.
@@ -16860,17 +14711,7 @@ export namespace Prisma {
      */
     findFirst<T extends Staff_LogsFindFirstArgs>(
       args?: SelectSubset<T, Staff_LogsFindFirstArgs<ExtArgs>>,
-    ): Prisma__Staff_LogsClient<
-      $Result.GetResult<
-        Prisma.$Staff_LogsPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Staff_LogsClient<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Staff_Logs that matches the filter or
@@ -16888,17 +14729,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends Staff_LogsFindFirstOrThrowArgs>(
       args?: SelectSubset<T, Staff_LogsFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__Staff_LogsClient<
-      $Result.GetResult<
-        Prisma.$Staff_LogsPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Staff_LogsClient<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Staff_Logs that matches the filter.
@@ -16918,9 +14749,7 @@ export namespace Prisma {
      */
     findMany<T extends Staff_LogsFindManyArgs>(
       args?: SelectSubset<T, Staff_LogsFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Staff_Logs.
@@ -16936,12 +14765,7 @@ export namespace Prisma {
      */
     create<T extends Staff_LogsCreateArgs>(
       args: SelectSubset<T, Staff_LogsCreateArgs<ExtArgs>>,
-    ): Prisma__Staff_LogsClient<
-      $Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Staff_LogsClient<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Staff_Logs.
@@ -16955,9 +14779,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends Staff_LogsCreateManyArgs>(
-      args?: SelectSubset<T, Staff_LogsCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends Staff_LogsCreateManyArgs>(args?: SelectSubset<T, Staff_LogsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Staff_Logs and returns the data saved in the database.
@@ -16983,14 +14805,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends Staff_LogsCreateManyAndReturnArgs>(
       args?: SelectSubset<T, Staff_LogsCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Staff_LogsPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Staff_Logs.
@@ -17006,12 +14821,7 @@ export namespace Prisma {
      */
     delete<T extends Staff_LogsDeleteArgs>(
       args: SelectSubset<T, Staff_LogsDeleteArgs<ExtArgs>>,
-    ): Prisma__Staff_LogsClient<
-      $Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Staff_LogsClient<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Staff_Logs.
@@ -17030,12 +14840,7 @@ export namespace Prisma {
      */
     update<T extends Staff_LogsUpdateArgs>(
       args: SelectSubset<T, Staff_LogsUpdateArgs<ExtArgs>>,
-    ): Prisma__Staff_LogsClient<
-      $Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Staff_LogsClient<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Staff_Logs.
@@ -17049,9 +14854,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends Staff_LogsDeleteManyArgs>(
-      args?: SelectSubset<T, Staff_LogsDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends Staff_LogsDeleteManyArgs>(args?: SelectSubset<T, Staff_LogsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Staff_Logs.
@@ -17070,9 +14873,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends Staff_LogsUpdateManyArgs>(
-      args: SelectSubset<T, Staff_LogsUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends Staff_LogsUpdateManyArgs>(args: SelectSubset<T, Staff_LogsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Staff_Logs and returns the data updated in the database.
@@ -17104,14 +14905,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends Staff_LogsUpdateManyAndReturnArgs>(
       args: SelectSubset<T, Staff_LogsUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Staff_LogsPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Staff_Logs.
@@ -17132,12 +14926,7 @@ export namespace Prisma {
      */
     upsert<T extends Staff_LogsUpsertArgs>(
       args: SelectSubset<T, Staff_LogsUpsertArgs<ExtArgs>>,
-    ): Prisma__Staff_LogsClient<
-      $Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Staff_LogsClient<$Result.GetResult<Prisma.$Staff_LogsPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Staff_Logs.
@@ -17154,13 +14943,7 @@ export namespace Prisma {
      **/
     count<T extends Staff_LogsCountArgs>(
       args?: Subset<T, Staff_LogsCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], Staff_LogsCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], Staff_LogsCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Staff_Logs.
@@ -17186,9 +14969,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends Staff_LogsAggregateArgs>(
-      args: Subset<T, Staff_LogsAggregateArgs>,
-    ): Prisma.PrismaPromise<GetStaff_LogsAggregateType<T>>;
+    aggregate<T extends Staff_LogsAggregateArgs>(args: Subset<T, Staff_LogsAggregateArgs>): Prisma.PrismaPromise<GetStaff_LogsAggregateType<T>>;
 
     /**
      * Group by Staff_Logs.
@@ -17211,9 +14992,7 @@ export namespace Prisma {
     groupBy<
       T extends Staff_LogsGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: Staff_LogsGroupByArgs['orderBy'] }
-        : { orderBy?: Staff_LogsGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: Staff_LogsGroupByArgs['orderBy'] } : { orderBy?: Staff_LogsGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -17235,9 +15014,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -17245,17 +15022,13 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, Staff_LogsGroupByArgs, OrderByArg> & InputErrors,
@@ -17272,54 +15045,17 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Staff_LogsClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__Staff_LogsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      | $Result.GetResult<
-          Prisma.$ApplicationPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     scholarship<T extends ScholarshipDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, ScholarshipDefaultArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      | $Result.GetResult<
-          Prisma.$ScholarshipPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     ISPSU_Staff<T extends Staff_Logs$ISPSU_StaffArgs<ExtArgs> = {}>(
       args?: Subset<T, Staff_Logs$ISPSU_StaffArgs<ExtArgs>>,
-    ): Prisma__ISPSU_StaffClient<
-      $Result.GetResult<
-        Prisma.$ISPSU_StaffPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_StaffClient<$Result.GetResult<Prisma.$ISPSU_StaffPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17335,9 +15071,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -17364,9 +15098,7 @@ export namespace Prisma {
   /**
    * Staff_Logs findUnique
    */
-  export type Staff_LogsFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17388,9 +15120,7 @@ export namespace Prisma {
   /**
    * Staff_Logs findUniqueOrThrow
    */
-  export type Staff_LogsFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17412,9 +15142,7 @@ export namespace Prisma {
   /**
    * Staff_Logs findFirst
    */
-  export type Staff_LogsFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17466,9 +15194,7 @@ export namespace Prisma {
   /**
    * Staff_Logs findFirstOrThrow
    */
-  export type Staff_LogsFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17520,9 +15246,7 @@ export namespace Prisma {
   /**
    * Staff_Logs findMany
    */
-  export type Staff_LogsFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17569,9 +15293,7 @@ export namespace Prisma {
   /**
    * Staff_Logs create
    */
-  export type Staff_LogsCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17593,9 +15315,7 @@ export namespace Prisma {
   /**
    * Staff_Logs createMany
    */
-  export type Staff_LogsCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Staff_Logs.
      */
@@ -17606,9 +15326,7 @@ export namespace Prisma {
   /**
    * Staff_Logs createManyAndReturn
    */
-  export type Staff_LogsCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17631,9 +15349,7 @@ export namespace Prisma {
   /**
    * Staff_Logs update
    */
-  export type Staff_LogsUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17659,9 +15375,7 @@ export namespace Prisma {
   /**
    * Staff_Logs updateMany
    */
-  export type Staff_LogsUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Staff_Logs.
      */
@@ -17679,9 +15393,7 @@ export namespace Prisma {
   /**
    * Staff_Logs updateManyAndReturn
    */
-  export type Staff_LogsUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17711,9 +15423,7 @@ export namespace Prisma {
   /**
    * Staff_Logs upsert
    */
-  export type Staff_LogsUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17743,9 +15453,7 @@ export namespace Prisma {
   /**
    * Staff_Logs delete
    */
-  export type Staff_LogsDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17767,9 +15475,7 @@ export namespace Prisma {
   /**
    * Staff_Logs deleteMany
    */
-  export type Staff_LogsDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Staff_Logs to delete
      */
@@ -17783,9 +15489,7 @@ export namespace Prisma {
   /**
    * Staff_Logs.ISPSU_Staff
    */
-  export type Staff_Logs$ISPSU_StaffArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_Logs$ISPSU_StaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ISPSU_Staff
      */
@@ -17804,9 +15508,7 @@ export namespace Prisma {
   /**
    * Staff_Logs without action
    */
-  export type Staff_LogsDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Staff_LogsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff_Logs
      */
@@ -17935,9 +15637,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type Student_NotificationAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Student_Notification to aggregate.
      */
@@ -17947,9 +15647,7 @@ export namespace Prisma {
      *
      * Determine the order of Student_Notifications to fetch.
      */
-    orderBy?:
-      | Student_NotificationOrderByWithRelationInput
-      | Student_NotificationOrderByWithRelationInput[];
+    orderBy?: Student_NotificationOrderByWithRelationInput | Student_NotificationOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -18008,13 +15706,9 @@ export namespace Prisma {
       : GetScalarType<T[P], AggregateStudent_Notification[P]>;
   };
 
-  export type Student_NotificationGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: Student_NotificationWhereInput;
-    orderBy?:
-      | Student_NotificationOrderByWithAggregationInput
-      | Student_NotificationOrderByWithAggregationInput[];
+    orderBy?: Student_NotificationOrderByWithAggregationInput | Student_NotificationOrderByWithAggregationInput[];
     by: Student_NotificationScalarFieldEnum[] | Student_NotificationScalarFieldEnum;
     having?: Student_NotificationScalarWhereWithAggregatesInput;
     take?: number;
@@ -18043,22 +15737,19 @@ export namespace Prisma {
     _max: Student_NotificationMaxAggregateOutputType | null;
   };
 
-  type GetStudent_NotificationGroupByPayload<T extends Student_NotificationGroupByArgs> =
-    Prisma.PrismaPromise<
-      Array<
-        PickEnumerable<Student_NotificationGroupByOutputType, T['by']> & {
-          [P in keyof T & keyof Student_NotificationGroupByOutputType]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], Student_NotificationGroupByOutputType[P]>
-            : GetScalarType<T[P], Student_NotificationGroupByOutputType[P]>;
-        }
-      >
-    >;
+  type GetStudent_NotificationGroupByPayload<T extends Student_NotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Student_NotificationGroupByOutputType, T['by']> & {
+        [P in keyof T & keyof Student_NotificationGroupByOutputType]: P extends '_count'
+          ? T[P] extends boolean
+            ? number
+            : GetScalarType<T[P], Student_NotificationGroupByOutputType[P]>
+          : GetScalarType<T[P], Student_NotificationGroupByOutputType[P]>;
+      }
+    >
+  >;
 
-  export type Student_NotificationSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Student_NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       notificationId?: boolean;
       ownerId?: boolean;
@@ -18076,9 +15767,7 @@ export namespace Prisma {
     ExtArgs['result']['student_Notification']
   >;
 
-  export type Student_NotificationSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Student_NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       notificationId?: boolean;
       ownerId?: boolean;
@@ -18096,9 +15785,7 @@ export namespace Prisma {
     ExtArgs['result']['student_Notification']
   >;
 
-  export type Student_NotificationSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type Student_NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       notificationId?: boolean;
       ownerId?: boolean;
@@ -18128,45 +15815,27 @@ export namespace Prisma {
     status?: boolean;
   };
 
-  export type Student_NotificationOmit<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetOmit<
-    | 'notificationId'
-    | 'ownerId'
-    | 'title'
-    | 'description'
-    | 'dateCreated'
-    | 'read'
-    | 'applicationId'
-    | 'scholarshipId'
-    | 'status',
+  export type Student_NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'notificationId' | 'ownerId' | 'title' | 'description' | 'dateCreated' | 'read' | 'applicationId' | 'scholarshipId' | 'status',
     ExtArgs['result']['student_Notification']
   >;
-  export type Student_NotificationInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     Student?: boolean | StudentDefaultArgs<ExtArgs>;
     scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
   };
-  export type Student_NotificationIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     Student?: boolean | StudentDefaultArgs<ExtArgs>;
     scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
   };
-  export type Student_NotificationIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | ApplicationDefaultArgs<ExtArgs>;
     Student?: boolean | StudentDefaultArgs<ExtArgs>;
     scholarship?: boolean | ScholarshipDefaultArgs<ExtArgs>;
   };
 
-  export type $Student_NotificationPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $Student_NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'Student_Notification';
     objects: {
       application: Prisma.$ApplicationPayload<ExtArgs>;
@@ -18190,20 +15859,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type Student_NotificationGetPayload<
-    S extends boolean | null | undefined | Student_NotificationDefaultArgs,
-  > = $Result.GetResult<Prisma.$Student_NotificationPayload, S>;
+  type Student_NotificationGetPayload<S extends boolean | null | undefined | Student_NotificationDefaultArgs> = $Result.GetResult<Prisma.$Student_NotificationPayload, S>;
 
-  type Student_NotificationCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = Omit<Student_NotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  type Student_NotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<Student_NotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
     select?: Student_NotificationCountAggregateInputType | true;
   };
 
-  export interface Student_NotificationDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface Student_NotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['Student_Notification'];
       meta: { name: 'Student_Notification' };
@@ -18221,17 +15883,7 @@ export namespace Prisma {
      */
     findUnique<T extends Student_NotificationFindUniqueArgs>(
       args: SelectSubset<T, Student_NotificationFindUniqueArgs<ExtArgs>>,
-    ): Prisma__Student_NotificationClient<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Student_NotificationClient<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Student_Notification that matches the filter or throw an error with `error.code='P2025'`
@@ -18247,17 +15899,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends Student_NotificationFindUniqueOrThrowArgs>(
       args: SelectSubset<T, Student_NotificationFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__Student_NotificationClient<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Student_NotificationClient<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Student_Notification that matches the filter.
@@ -18274,17 +15916,7 @@ export namespace Prisma {
      */
     findFirst<T extends Student_NotificationFindFirstArgs>(
       args?: SelectSubset<T, Student_NotificationFindFirstArgs<ExtArgs>>,
-    ): Prisma__Student_NotificationClient<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Student_NotificationClient<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Student_Notification that matches the filter or
@@ -18302,17 +15934,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends Student_NotificationFindFirstOrThrowArgs>(
       args?: SelectSubset<T, Student_NotificationFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__Student_NotificationClient<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Student_NotificationClient<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Student_Notifications that matches the filter.
@@ -18332,14 +15954,7 @@ export namespace Prisma {
      */
     findMany<T extends Student_NotificationFindManyArgs>(
       args?: SelectSubset<T, Student_NotificationFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'findMany',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Student_Notification.
@@ -18355,17 +15970,7 @@ export namespace Prisma {
      */
     create<T extends Student_NotificationCreateArgs>(
       args: SelectSubset<T, Student_NotificationCreateArgs<ExtArgs>>,
-    ): Prisma__Student_NotificationClient<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'create',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Student_NotificationClient<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Student_Notifications.
@@ -18379,9 +15984,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends Student_NotificationCreateManyArgs>(
-      args?: SelectSubset<T, Student_NotificationCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends Student_NotificationCreateManyArgs>(args?: SelectSubset<T, Student_NotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Student_Notifications and returns the data saved in the database.
@@ -18407,14 +16010,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends Student_NotificationCreateManyAndReturnArgs>(
       args?: SelectSubset<T, Student_NotificationCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Student_Notification.
@@ -18430,17 +16026,7 @@ export namespace Prisma {
      */
     delete<T extends Student_NotificationDeleteArgs>(
       args: SelectSubset<T, Student_NotificationDeleteArgs<ExtArgs>>,
-    ): Prisma__Student_NotificationClient<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'delete',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Student_NotificationClient<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Student_Notification.
@@ -18459,17 +16045,7 @@ export namespace Prisma {
      */
     update<T extends Student_NotificationUpdateArgs>(
       args: SelectSubset<T, Student_NotificationUpdateArgs<ExtArgs>>,
-    ): Prisma__Student_NotificationClient<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'update',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Student_NotificationClient<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Student_Notifications.
@@ -18483,9 +16059,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends Student_NotificationDeleteManyArgs>(
-      args?: SelectSubset<T, Student_NotificationDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends Student_NotificationDeleteManyArgs>(args?: SelectSubset<T, Student_NotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Student_Notifications.
@@ -18504,9 +16078,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends Student_NotificationUpdateManyArgs>(
-      args: SelectSubset<T, Student_NotificationUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends Student_NotificationUpdateManyArgs>(args: SelectSubset<T, Student_NotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Student_Notifications and returns the data updated in the database.
@@ -18538,14 +16110,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends Student_NotificationUpdateManyAndReturnArgs>(
       args: SelectSubset<T, Student_NotificationUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Student_Notification.
@@ -18566,17 +16131,7 @@ export namespace Prisma {
      */
     upsert<T extends Student_NotificationUpsertArgs>(
       args: SelectSubset<T, Student_NotificationUpsertArgs<ExtArgs>>,
-    ): Prisma__Student_NotificationClient<
-      $Result.GetResult<
-        Prisma.$Student_NotificationPayload<ExtArgs>,
-        T,
-        'upsert',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__Student_NotificationClient<$Result.GetResult<Prisma.$Student_NotificationPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Student_Notifications.
@@ -18593,13 +16148,7 @@ export namespace Prisma {
      **/
     count<T extends Student_NotificationCountArgs>(
       args?: Subset<T, Student_NotificationCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], Student_NotificationCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], Student_NotificationCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Student_Notification.
@@ -18625,9 +16174,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends Student_NotificationAggregateArgs>(
-      args: Subset<T, Student_NotificationAggregateArgs>,
-    ): Prisma.PrismaPromise<GetStudent_NotificationAggregateType<T>>;
+    aggregate<T extends Student_NotificationAggregateArgs>(args: Subset<T, Student_NotificationAggregateArgs>): Prisma.PrismaPromise<GetStudent_NotificationAggregateType<T>>;
 
     /**
      * Group by Student_Notification.
@@ -18650,9 +16197,7 @@ export namespace Prisma {
     groupBy<
       T extends Student_NotificationGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: Student_NotificationGroupByArgs['orderBy'] }
-        : { orderBy?: Student_NotificationGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: Student_NotificationGroupByArgs['orderBy'] } : { orderBy?: Student_NotificationGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -18674,9 +16219,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -18684,23 +16227,17 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, Student_NotificationGroupByArgs, OrderByArg> & InputErrors,
-    ): {} extends InputErrors
-      ? GetStudent_NotificationGroupByPayload<T>
-      : Prisma.PrismaPromise<InputErrors>;
+    ): {} extends InputErrors ? GetStudent_NotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
     /**
      * Fields of the Student_Notification model
      */
@@ -18713,55 +16250,17 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__Student_NotificationClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__Student_NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>,
-    ): Prisma__ApplicationClient<
-      | $Result.GetResult<
-          Prisma.$ApplicationPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     Student<T extends StudentDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, StudentDefaultArgs<ExtArgs>>,
-    ): Prisma__StudentClient<
-      | $Result.GetResult<
-          Prisma.$StudentPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     scholarship<T extends ScholarshipDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, ScholarshipDefaultArgs<ExtArgs>>,
-    ): Prisma__ScholarshipClient<
-      | $Result.GetResult<
-          Prisma.$ScholarshipPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ScholarshipClient<$Result.GetResult<Prisma.$ScholarshipPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -18777,9 +16276,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -18808,9 +16305,7 @@ export namespace Prisma {
   /**
    * Student_Notification findUnique
    */
-  export type Student_NotificationFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -18832,9 +16327,7 @@ export namespace Prisma {
   /**
    * Student_Notification findUniqueOrThrow
    */
-  export type Student_NotificationFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -18856,9 +16349,7 @@ export namespace Prisma {
   /**
    * Student_Notification findFirst
    */
-  export type Student_NotificationFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -18880,9 +16371,7 @@ export namespace Prisma {
      *
      * Determine the order of Student_Notifications to fetch.
      */
-    orderBy?:
-      | Student_NotificationOrderByWithRelationInput
-      | Student_NotificationOrderByWithRelationInput[];
+    orderBy?: Student_NotificationOrderByWithRelationInput | Student_NotificationOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -18912,9 +16401,7 @@ export namespace Prisma {
   /**
    * Student_Notification findFirstOrThrow
    */
-  export type Student_NotificationFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -18936,9 +16423,7 @@ export namespace Prisma {
      *
      * Determine the order of Student_Notifications to fetch.
      */
-    orderBy?:
-      | Student_NotificationOrderByWithRelationInput
-      | Student_NotificationOrderByWithRelationInput[];
+    orderBy?: Student_NotificationOrderByWithRelationInput | Student_NotificationOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -18968,9 +16453,7 @@ export namespace Prisma {
   /**
    * Student_Notification findMany
    */
-  export type Student_NotificationFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -18992,9 +16475,7 @@ export namespace Prisma {
      *
      * Determine the order of Student_Notifications to fetch.
      */
-    orderBy?:
-      | Student_NotificationOrderByWithRelationInput
-      | Student_NotificationOrderByWithRelationInput[];
+    orderBy?: Student_NotificationOrderByWithRelationInput | Student_NotificationOrderByWithRelationInput[];
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      *
@@ -19019,9 +16500,7 @@ export namespace Prisma {
   /**
    * Student_Notification create
    */
-  export type Student_NotificationCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -19043,9 +16522,7 @@ export namespace Prisma {
   /**
    * Student_Notification createMany
    */
-  export type Student_NotificationCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Student_Notifications.
      */
@@ -19056,9 +16533,7 @@ export namespace Prisma {
   /**
    * Student_Notification createManyAndReturn
    */
-  export type Student_NotificationCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -19081,9 +16556,7 @@ export namespace Prisma {
   /**
    * Student_Notification update
    */
-  export type Student_NotificationUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -19109,16 +16582,11 @@ export namespace Prisma {
   /**
    * Student_Notification updateMany
    */
-  export type Student_NotificationUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Student_Notifications.
      */
-    data: XOR<
-      Student_NotificationUpdateManyMutationInput,
-      Student_NotificationUncheckedUpdateManyInput
-    >;
+    data: XOR<Student_NotificationUpdateManyMutationInput, Student_NotificationUncheckedUpdateManyInput>;
     /**
      * Filter which Student_Notifications to update
      */
@@ -19132,9 +16600,7 @@ export namespace Prisma {
   /**
    * Student_Notification updateManyAndReturn
    */
-  export type Student_NotificationUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -19146,10 +16612,7 @@ export namespace Prisma {
     /**
      * The data used to update Student_Notifications.
      */
-    data: XOR<
-      Student_NotificationUpdateManyMutationInput,
-      Student_NotificationUncheckedUpdateManyInput
-    >;
+    data: XOR<Student_NotificationUpdateManyMutationInput, Student_NotificationUncheckedUpdateManyInput>;
     /**
      * Filter which Student_Notifications to update
      */
@@ -19167,9 +16630,7 @@ export namespace Prisma {
   /**
    * Student_Notification upsert
    */
-  export type Student_NotificationUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -19199,9 +16660,7 @@ export namespace Prisma {
   /**
    * Student_Notification delete
    */
-  export type Student_NotificationDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -19223,9 +16682,7 @@ export namespace Prisma {
   /**
    * Student_Notification deleteMany
    */
-  export type Student_NotificationDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Student_Notifications to delete
      */
@@ -19239,9 +16696,7 @@ export namespace Prisma {
   /**
    * Student_Notification without action
    */
-  export type Student_NotificationDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type Student_NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Student_Notification
      */
@@ -19340,9 +16795,7 @@ export namespace Prisma {
     _all?: true;
   };
 
-  export type AnnouncementAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Announcement to aggregate.
      */
@@ -19411,9 +16864,7 @@ export namespace Prisma {
       : GetScalarType<T[P], AggregateAnnouncement[P]>;
   };
 
-  export type AnnouncementGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AnnouncementWhereInput;
     orderBy?: AnnouncementOrderByWithAggregationInput | AnnouncementOrderByWithAggregationInput[];
     by: AnnouncementScalarFieldEnum[] | AnnouncementScalarFieldEnum;
@@ -19453,9 +16904,7 @@ export namespace Prisma {
     >
   >;
 
-  export type AnnouncementSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type AnnouncementSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       announcementId?: boolean;
       headId?: boolean;
@@ -19468,9 +16917,7 @@ export namespace Prisma {
     ExtArgs['result']['announcement']
   >;
 
-  export type AnnouncementSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type AnnouncementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       announcementId?: boolean;
       headId?: boolean;
@@ -19483,9 +16930,7 @@ export namespace Prisma {
     ExtArgs['result']['announcement']
   >;
 
-  export type AnnouncementSelectUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = $Extensions.GetSelect<
+  export type AnnouncementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<
     {
       announcementId?: boolean;
       headId?: boolean;
@@ -19507,30 +16952,21 @@ export namespace Prisma {
     dateCreated?: boolean;
   };
 
-  export type AnnouncementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    $Extensions.GetOmit<
-      'announcementId' | 'headId' | 'title' | 'description' | 'tags' | 'dateCreated',
-      ExtArgs['result']['announcement']
-    >;
-  export type AnnouncementInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<
+    'announcementId' | 'headId' | 'title' | 'description' | 'tags' | 'dateCreated',
+    ExtArgs['result']['announcement']
+  >;
+  export type AnnouncementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ISPSU_Head?: boolean | ISPSU_HeadDefaultArgs<ExtArgs>;
   };
-  export type AnnouncementIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ISPSU_Head?: boolean | ISPSU_HeadDefaultArgs<ExtArgs>;
   };
-  export type AnnouncementIncludeUpdateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ISPSU_Head?: boolean | ISPSU_HeadDefaultArgs<ExtArgs>;
   };
 
-  export type $AnnouncementPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type $AnnouncementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: 'Announcement';
     objects: {
       ISPSU_Head: Prisma.$ISPSU_HeadPayload<ExtArgs>;
@@ -19549,18 +16985,13 @@ export namespace Prisma {
     composites: {};
   };
 
-  type AnnouncementGetPayload<S extends boolean | null | undefined | AnnouncementDefaultArgs> =
-    $Result.GetResult<Prisma.$AnnouncementPayload, S>;
+  type AnnouncementGetPayload<S extends boolean | null | undefined | AnnouncementDefaultArgs> = $Result.GetResult<Prisma.$AnnouncementPayload, S>;
 
-  type AnnouncementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<AnnouncementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: AnnouncementCountAggregateInputType | true;
-    };
+  type AnnouncementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = Omit<AnnouncementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: AnnouncementCountAggregateInputType | true;
+  };
 
-  export interface AnnouncementDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > {
+  export interface AnnouncementDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>['model']['Announcement'];
       meta: { name: 'Announcement' };
@@ -19578,17 +17009,7 @@ export namespace Prisma {
      */
     findUnique<T extends AnnouncementFindUniqueArgs>(
       args: SelectSubset<T, AnnouncementFindUniqueArgs<ExtArgs>>,
-    ): Prisma__AnnouncementClient<
-      $Result.GetResult<
-        Prisma.$AnnouncementPayload<ExtArgs>,
-        T,
-        'findUnique',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AnnouncementClient<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'findUnique', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find one Announcement that matches the filter or throw an error with `error.code='P2025'`
@@ -19604,17 +17025,7 @@ export namespace Prisma {
      */
     findUniqueOrThrow<T extends AnnouncementFindUniqueOrThrowArgs>(
       args: SelectSubset<T, AnnouncementFindUniqueOrThrowArgs<ExtArgs>>,
-    ): Prisma__AnnouncementClient<
-      $Result.GetResult<
-        Prisma.$AnnouncementPayload<ExtArgs>,
-        T,
-        'findUniqueOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AnnouncementClient<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Announcement that matches the filter.
@@ -19631,17 +17042,7 @@ export namespace Prisma {
      */
     findFirst<T extends AnnouncementFindFirstArgs>(
       args?: SelectSubset<T, AnnouncementFindFirstArgs<ExtArgs>>,
-    ): Prisma__AnnouncementClient<
-      $Result.GetResult<
-        Prisma.$AnnouncementPayload<ExtArgs>,
-        T,
-        'findFirst',
-        GlobalOmitOptions
-      > | null,
-      null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AnnouncementClient<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'findFirst', GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find the first Announcement that matches the filter or
@@ -19659,17 +17060,7 @@ export namespace Prisma {
      */
     findFirstOrThrow<T extends AnnouncementFindFirstOrThrowArgs>(
       args?: SelectSubset<T, AnnouncementFindFirstOrThrowArgs<ExtArgs>>,
-    ): Prisma__AnnouncementClient<
-      $Result.GetResult<
-        Prisma.$AnnouncementPayload<ExtArgs>,
-        T,
-        'findFirstOrThrow',
-        GlobalOmitOptions
-      >,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AnnouncementClient<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'findFirstOrThrow', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Find zero or more Announcements that matches the filter.
@@ -19689,9 +17080,7 @@ export namespace Prisma {
      */
     findMany<T extends AnnouncementFindManyArgs>(
       args?: SelectSubset<T, AnnouncementFindManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>>;
 
     /**
      * Create a Announcement.
@@ -19707,12 +17096,7 @@ export namespace Prisma {
      */
     create<T extends AnnouncementCreateArgs>(
       args: SelectSubset<T, AnnouncementCreateArgs<ExtArgs>>,
-    ): Prisma__AnnouncementClient<
-      $Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'create', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AnnouncementClient<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'create', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Create many Announcements.
@@ -19726,9 +17110,7 @@ export namespace Prisma {
      * })
      *
      */
-    createMany<T extends AnnouncementCreateManyArgs>(
-      args?: SelectSubset<T, AnnouncementCreateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    createMany<T extends AnnouncementCreateManyArgs>(args?: SelectSubset<T, AnnouncementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Create many Announcements and returns the data saved in the database.
@@ -19754,14 +17136,7 @@ export namespace Prisma {
      */
     createManyAndReturn<T extends AnnouncementCreateManyAndReturnArgs>(
       args?: SelectSubset<T, AnnouncementCreateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$AnnouncementPayload<ExtArgs>,
-        T,
-        'createManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'createManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Delete a Announcement.
@@ -19777,12 +17152,7 @@ export namespace Prisma {
      */
     delete<T extends AnnouncementDeleteArgs>(
       args: SelectSubset<T, AnnouncementDeleteArgs<ExtArgs>>,
-    ): Prisma__AnnouncementClient<
-      $Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AnnouncementClient<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'delete', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Update one Announcement.
@@ -19801,12 +17171,7 @@ export namespace Prisma {
      */
     update<T extends AnnouncementUpdateArgs>(
       args: SelectSubset<T, AnnouncementUpdateArgs<ExtArgs>>,
-    ): Prisma__AnnouncementClient<
-      $Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'update', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AnnouncementClient<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'update', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Delete zero or more Announcements.
@@ -19820,9 +17185,7 @@ export namespace Prisma {
      * })
      *
      */
-    deleteMany<T extends AnnouncementDeleteManyArgs>(
-      args?: SelectSubset<T, AnnouncementDeleteManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    deleteMany<T extends AnnouncementDeleteManyArgs>(args?: SelectSubset<T, AnnouncementDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Announcements.
@@ -19841,9 +17204,7 @@ export namespace Prisma {
      * })
      *
      */
-    updateMany<T extends AnnouncementUpdateManyArgs>(
-      args: SelectSubset<T, AnnouncementUpdateManyArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<BatchPayload>;
+    updateMany<T extends AnnouncementUpdateManyArgs>(args: SelectSubset<T, AnnouncementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>;
 
     /**
      * Update zero or more Announcements and returns the data updated in the database.
@@ -19875,14 +17236,7 @@ export namespace Prisma {
      */
     updateManyAndReturn<T extends AnnouncementUpdateManyAndReturnArgs>(
       args: SelectSubset<T, AnnouncementUpdateManyAndReturnArgs<ExtArgs>>,
-    ): Prisma.PrismaPromise<
-      $Result.GetResult<
-        Prisma.$AnnouncementPayload<ExtArgs>,
-        T,
-        'updateManyAndReturn',
-        GlobalOmitOptions
-      >
-    >;
+    ): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'updateManyAndReturn', GlobalOmitOptions>>;
 
     /**
      * Create or update one Announcement.
@@ -19903,12 +17257,7 @@ export namespace Prisma {
      */
     upsert<T extends AnnouncementUpsertArgs>(
       args: SelectSubset<T, AnnouncementUpsertArgs<ExtArgs>>,
-    ): Prisma__AnnouncementClient<
-      $Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>,
-      never,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__AnnouncementClient<$Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, 'upsert', GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
 
     /**
      * Count the number of Announcements.
@@ -19925,13 +17274,7 @@ export namespace Prisma {
      **/
     count<T extends AnnouncementCountArgs>(
       args?: Subset<T, AnnouncementCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], AnnouncementCountAggregateOutputType>
-        : number
-    >;
+    ): Prisma.PrismaPromise<T extends $Utils.Record<'select', any> ? (T['select'] extends true ? number : GetScalarType<T['select'], AnnouncementCountAggregateOutputType>) : number>;
 
     /**
      * Allows you to perform aggregations operations on a Announcement.
@@ -19957,9 +17300,7 @@ export namespace Prisma {
      *   take: 10,
      * })
      **/
-    aggregate<T extends AnnouncementAggregateArgs>(
-      args: Subset<T, AnnouncementAggregateArgs>,
-    ): Prisma.PrismaPromise<GetAnnouncementAggregateType<T>>;
+    aggregate<T extends AnnouncementAggregateArgs>(args: Subset<T, AnnouncementAggregateArgs>): Prisma.PrismaPromise<GetAnnouncementAggregateType<T>>;
 
     /**
      * Group by Announcement.
@@ -19982,9 +17323,7 @@ export namespace Prisma {
     groupBy<
       T extends AnnouncementGroupByArgs,
       HasSelectOrTake extends Or<Extends<'skip', Keys<T>>, Extends<'take', Keys<T>>>,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: AnnouncementGroupByArgs['orderBy'] }
-        : { orderBy?: AnnouncementGroupByArgs['orderBy'] },
+      OrderByArg extends True extends HasSelectOrTake ? { orderBy: AnnouncementGroupByArgs['orderBy'] } : { orderBy?: AnnouncementGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -20006,9 +17345,7 @@ export namespace Prisma {
               ? ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields]
               : 'Error: If you provide "take", you also need to provide "orderBy"'
             : 'skip' extends Keys<T>
@@ -20016,23 +17353,17 @@ export namespace Prisma {
                 ? ByValid extends True
                   ? {}
                   : {
-                      [P in OrderFields]: P extends ByFields
-                        ? never
-                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                     }[OrderFields]
                 : 'Error: If you provide "skip", you also need to provide "orderBy"'
               : ByValid extends True
                 ? {}
                 : {
-                    [P in OrderFields]: P extends ByFields
-                      ? never
-                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
                   }[OrderFields],
     >(
       args: SubsetIntersection<T, AnnouncementGroupByArgs, OrderByArg> & InputErrors,
-    ): {} extends InputErrors
-      ? GetAnnouncementGroupByPayload<T>
-      : Prisma.PrismaPromise<InputErrors>;
+    ): {} extends InputErrors ? GetAnnouncementGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
     /**
      * Fields of the Announcement model
      */
@@ -20045,27 +17376,11 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__AnnouncementClient<
-    T,
-    Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    GlobalOmitOptions = {},
-  > extends Prisma.PrismaPromise<T> {
+  export interface Prisma__AnnouncementClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     ISPSU_Head<T extends ISPSU_HeadDefaultArgs<ExtArgs> = {}>(
       args?: Subset<T, ISPSU_HeadDefaultArgs<ExtArgs>>,
-    ): Prisma__ISPSU_HeadClient<
-      | $Result.GetResult<
-          Prisma.$ISPSU_HeadPayload<ExtArgs>,
-          T,
-          'findUniqueOrThrow',
-          GlobalOmitOptions
-        >
-      | Null,
-      Null,
-      ExtArgs,
-      GlobalOmitOptions
-    >;
+    ): Prisma__ISPSU_HeadClient<$Result.GetResult<Prisma.$ISPSU_HeadPayload<ExtArgs>, T, 'findUniqueOrThrow', GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20081,9 +17396,7 @@ export namespace Prisma {
      * @param onrejected The callback to execute when the Promise is rejected.
      * @returns A Promise for the completion of the callback.
      */
-    catch<TResult = never>(
-      onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): $Utils.JsPromise<T | TResult>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
      * resolved value cannot be modified from the callback.
@@ -20109,9 +17422,7 @@ export namespace Prisma {
   /**
    * Announcement findUnique
    */
-  export type AnnouncementFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20133,9 +17444,7 @@ export namespace Prisma {
   /**
    * Announcement findUniqueOrThrow
    */
-  export type AnnouncementFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20157,9 +17466,7 @@ export namespace Prisma {
   /**
    * Announcement findFirst
    */
-  export type AnnouncementFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20211,9 +17518,7 @@ export namespace Prisma {
   /**
    * Announcement findFirstOrThrow
    */
-  export type AnnouncementFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20265,9 +17570,7 @@ export namespace Prisma {
   /**
    * Announcement findMany
    */
-  export type AnnouncementFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20314,9 +17617,7 @@ export namespace Prisma {
   /**
    * Announcement create
    */
-  export type AnnouncementCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20338,9 +17639,7 @@ export namespace Prisma {
   /**
    * Announcement createMany
    */
-  export type AnnouncementCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to create many Announcements.
      */
@@ -20351,9 +17650,7 @@ export namespace Prisma {
   /**
    * Announcement createManyAndReturn
    */
-  export type AnnouncementCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20376,9 +17673,7 @@ export namespace Prisma {
   /**
    * Announcement update
    */
-  export type AnnouncementUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20404,9 +17699,7 @@ export namespace Prisma {
   /**
    * Announcement updateMany
    */
-  export type AnnouncementUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * The data used to update Announcements.
      */
@@ -20424,9 +17717,7 @@ export namespace Prisma {
   /**
    * Announcement updateManyAndReturn
    */
-  export type AnnouncementUpdateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20456,9 +17747,7 @@ export namespace Prisma {
   /**
    * Announcement upsert
    */
-  export type AnnouncementUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20488,9 +17777,7 @@ export namespace Prisma {
   /**
    * Announcement delete
    */
-  export type AnnouncementDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20512,9 +17799,7 @@ export namespace Prisma {
   /**
    * Announcement deleteMany
    */
-  export type AnnouncementDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Filter which Announcements to delete
      */
@@ -20528,9 +17813,7 @@ export namespace Prisma {
   /**
    * Announcement without action
    */
-  export type AnnouncementDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-  > = {
+  export type AnnouncementDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Announcement
      */
@@ -20556,8 +17839,7 @@ export namespace Prisma {
     Serializable: 'Serializable';
   };
 
-  export type TransactionIsolationLevel =
-    (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel];
+  export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel];
 
   export const AccountScalarFieldEnum: {
     accountId: 'accountId';
@@ -20569,8 +17851,7 @@ export namespace Prisma {
     webTours: 'webTours';
   };
 
-  export type AccountScalarFieldEnum =
-    (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum];
+  export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum];
 
   export const ISPSU_HeadScalarFieldEnum: {
     headId: 'headId';
@@ -20583,8 +17864,7 @@ export namespace Prisma {
     profileImg: 'profileImg';
   };
 
-  export type ISPSU_HeadScalarFieldEnum =
-    (typeof ISPSU_HeadScalarFieldEnum)[keyof typeof ISPSU_HeadScalarFieldEnum];
+  export type ISPSU_HeadScalarFieldEnum = (typeof ISPSU_HeadScalarFieldEnum)[keyof typeof ISPSU_HeadScalarFieldEnum];
 
   export const ISPSU_StaffScalarFieldEnum: {
     staffId: 'staffId';
@@ -20596,8 +17876,7 @@ export namespace Prisma {
     validated: 'validated';
   };
 
-  export type ISPSU_StaffScalarFieldEnum =
-    (typeof ISPSU_StaffScalarFieldEnum)[keyof typeof ISPSU_StaffScalarFieldEnum];
+  export type ISPSU_StaffScalarFieldEnum = (typeof ISPSU_StaffScalarFieldEnum)[keyof typeof ISPSU_StaffScalarFieldEnum];
 
   export const StudentScalarFieldEnum: {
     studentId: 'studentId';
@@ -20624,8 +17903,7 @@ export namespace Prisma {
     studentType: 'studentType';
   };
 
-  export type StudentScalarFieldEnum =
-    (typeof StudentScalarFieldEnum)[keyof typeof StudentScalarFieldEnum];
+  export type StudentScalarFieldEnum = (typeof StudentScalarFieldEnum)[keyof typeof StudentScalarFieldEnum];
 
   export const Auth_CodeScalarFieldEnum: {
     codeId: 'codeId';
@@ -20636,8 +17914,7 @@ export namespace Prisma {
     dateCreated: 'dateCreated';
   };
 
-  export type Auth_CodeScalarFieldEnum =
-    (typeof Auth_CodeScalarFieldEnum)[keyof typeof Auth_CodeScalarFieldEnum];
+  export type Auth_CodeScalarFieldEnum = (typeof Auth_CodeScalarFieldEnum)[keyof typeof Auth_CodeScalarFieldEnum];
 
   export const Scholarship_ProviderScalarFieldEnum: {
     SPId: 'SPId';
@@ -20645,8 +17922,7 @@ export namespace Prisma {
     dateCreated: 'dateCreated';
   };
 
-  export type Scholarship_ProviderScalarFieldEnum =
-    (typeof Scholarship_ProviderScalarFieldEnum)[keyof typeof Scholarship_ProviderScalarFieldEnum];
+  export type Scholarship_ProviderScalarFieldEnum = (typeof Scholarship_ProviderScalarFieldEnum)[keyof typeof Scholarship_ProviderScalarFieldEnum];
 
   export const ScholarshipScalarFieldEnum: {
     scholarshipId: 'scholarshipId';
@@ -20673,8 +17949,7 @@ export namespace Prisma {
     dateEnded: 'dateEnded';
   };
 
-  export type ScholarshipScalarFieldEnum =
-    (typeof ScholarshipScalarFieldEnum)[keyof typeof ScholarshipScalarFieldEnum];
+  export type ScholarshipScalarFieldEnum = (typeof ScholarshipScalarFieldEnum)[keyof typeof ScholarshipScalarFieldEnum];
 
   export const ApplicationScalarFieldEnum: {
     applicationId: 'applicationId';
@@ -20686,8 +17961,7 @@ export namespace Prisma {
     dateCreated: 'dateCreated';
   };
 
-  export type ApplicationScalarFieldEnum =
-    (typeof ApplicationScalarFieldEnum)[keyof typeof ApplicationScalarFieldEnum];
+  export type ApplicationScalarFieldEnum = (typeof ApplicationScalarFieldEnum)[keyof typeof ApplicationScalarFieldEnum];
 
   export const Application_DecisionScalarFieldEnum: {
     decisionId: 'decisionId';
@@ -20699,8 +17973,7 @@ export namespace Prisma {
     scholarshipPhase: 'scholarshipPhase';
   };
 
-  export type Application_DecisionScalarFieldEnum =
-    (typeof Application_DecisionScalarFieldEnum)[keyof typeof Application_DecisionScalarFieldEnum];
+  export type Application_DecisionScalarFieldEnum = (typeof Application_DecisionScalarFieldEnum)[keyof typeof Application_DecisionScalarFieldEnum];
 
   export const Interview_DecisionScalarFieldEnum: {
     interviewId: 'interviewId';
@@ -20712,8 +17985,7 @@ export namespace Prisma {
     scholarshipPhase: 'scholarshipPhase';
   };
 
-  export type Interview_DecisionScalarFieldEnum =
-    (typeof Interview_DecisionScalarFieldEnum)[keyof typeof Interview_DecisionScalarFieldEnum];
+  export type Interview_DecisionScalarFieldEnum = (typeof Interview_DecisionScalarFieldEnum)[keyof typeof Interview_DecisionScalarFieldEnum];
 
   export const Staff_LogsScalarFieldEnum: {
     logsId: 'logsId';
@@ -20725,8 +17997,7 @@ export namespace Prisma {
     description: 'description';
   };
 
-  export type Staff_LogsScalarFieldEnum =
-    (typeof Staff_LogsScalarFieldEnum)[keyof typeof Staff_LogsScalarFieldEnum];
+  export type Staff_LogsScalarFieldEnum = (typeof Staff_LogsScalarFieldEnum)[keyof typeof Staff_LogsScalarFieldEnum];
 
   export const Student_NotificationScalarFieldEnum: {
     notificationId: 'notificationId';
@@ -20740,8 +18011,7 @@ export namespace Prisma {
     status: 'status';
   };
 
-  export type Student_NotificationScalarFieldEnum =
-    (typeof Student_NotificationScalarFieldEnum)[keyof typeof Student_NotificationScalarFieldEnum];
+  export type Student_NotificationScalarFieldEnum = (typeof Student_NotificationScalarFieldEnum)[keyof typeof Student_NotificationScalarFieldEnum];
 
   export const AnnouncementScalarFieldEnum: {
     announcementId: 'announcementId';
@@ -20752,8 +18022,7 @@ export namespace Prisma {
     dateCreated: 'dateCreated';
   };
 
-  export type AnnouncementScalarFieldEnum =
-    (typeof AnnouncementScalarFieldEnum)[keyof typeof AnnouncementScalarFieldEnum];
+  export type AnnouncementScalarFieldEnum = (typeof AnnouncementScalarFieldEnum)[keyof typeof AnnouncementScalarFieldEnum];
 
   export const SortOrder: {
     asc: 'asc';
@@ -20773,8 +18042,7 @@ export namespace Prisma {
     JsonNull: typeof JsonNull;
   };
 
-  export type NullableJsonNullValueInput =
-    (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
 
   export const QueryMode: {
     default: 'default';
@@ -20830,10 +18098,7 @@ export namespace Prisma {
   /**
    * Reference to a field of type 'DateTime[]'
    */
-  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<
-    $PrismaModel,
-    'DateTime[]'
-  >;
+  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>;
 
   /**
    * Reference to a field of type 'Json'
@@ -20843,10 +18108,7 @@ export namespace Prisma {
   /**
    * Reference to a field of type 'QueryMode'
    */
-  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<
-    $PrismaModel,
-    'QueryMode'
-  >;
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>;
 
   /**
    * Reference to a field of type 'Boolean'
@@ -21358,13 +18620,9 @@ export namespace Prisma {
   };
 
   export type Scholarship_ProviderScalarWhereWithAggregatesInput = {
-    AND?:
-      | Scholarship_ProviderScalarWhereWithAggregatesInput
-      | Scholarship_ProviderScalarWhereWithAggregatesInput[];
+    AND?: Scholarship_ProviderScalarWhereWithAggregatesInput | Scholarship_ProviderScalarWhereWithAggregatesInput[];
     OR?: Scholarship_ProviderScalarWhereWithAggregatesInput[];
-    NOT?:
-      | Scholarship_ProviderScalarWhereWithAggregatesInput
-      | Scholarship_ProviderScalarWhereWithAggregatesInput[];
+    NOT?: Scholarship_ProviderScalarWhereWithAggregatesInput | Scholarship_ProviderScalarWhereWithAggregatesInput[];
     SPId?: IntWithAggregatesFilter<'Scholarship_Provider'> | number;
     name?: StringWithAggregatesFilter<'Scholarship_Provider'> | string;
     dateCreated?: DateTimeWithAggregatesFilter<'Scholarship_Provider'> | Date | string;
@@ -21398,10 +18656,7 @@ export namespace Prisma {
     dateEnded?: DateTimeNullableFilter<'Scholarship'> | Date | string | null;
     Application?: ApplicationListRelationFilter;
     ISPSU_Head?: XOR<ISPSU_HeadNullableScalarRelationFilter, ISPSU_HeadWhereInput> | null;
-    Scholarship_Provider?: XOR<
-      Scholarship_ProviderNullableScalarRelationFilter,
-      Scholarship_ProviderWhereInput
-    > | null;
+    Scholarship_Provider?: XOR<Scholarship_ProviderNullableScalarRelationFilter, Scholarship_ProviderWhereInput> | null;
     Staff_Logs?: Staff_LogsListRelationFilter;
     Student_Notifications?: Student_NotificationListRelationFilter;
   };
@@ -21465,10 +18720,7 @@ export namespace Prisma {
       dateEnded?: DateTimeNullableFilter<'Scholarship'> | Date | string | null;
       Application?: ApplicationListRelationFilter;
       ISPSU_Head?: XOR<ISPSU_HeadNullableScalarRelationFilter, ISPSU_HeadWhereInput> | null;
-      Scholarship_Provider?: XOR<
-        Scholarship_ProviderNullableScalarRelationFilter,
-        Scholarship_ProviderWhereInput
-      > | null;
+      Scholarship_Provider?: XOR<Scholarship_ProviderNullableScalarRelationFilter, Scholarship_ProviderWhereInput> | null;
       Staff_Logs?: Staff_LogsListRelationFilter;
       Student_Notifications?: Student_NotificationListRelationFilter;
     },
@@ -21679,13 +18931,9 @@ export namespace Prisma {
   };
 
   export type Application_DecisionScalarWhereWithAggregatesInput = {
-    AND?:
-      | Application_DecisionScalarWhereWithAggregatesInput
-      | Application_DecisionScalarWhereWithAggregatesInput[];
+    AND?: Application_DecisionScalarWhereWithAggregatesInput | Application_DecisionScalarWhereWithAggregatesInput[];
     OR?: Application_DecisionScalarWhereWithAggregatesInput[];
-    NOT?:
-      | Application_DecisionScalarWhereWithAggregatesInput
-      | Application_DecisionScalarWhereWithAggregatesInput[];
+    NOT?: Application_DecisionScalarWhereWithAggregatesInput | Application_DecisionScalarWhereWithAggregatesInput[];
     decisionId?: IntWithAggregatesFilter<'Application_Decision'> | number;
     staffId?: IntNullableWithAggregatesFilter<'Application_Decision'> | number | null;
     status?: StringWithAggregatesFilter<'Application_Decision'> | string;
@@ -21756,13 +19004,9 @@ export namespace Prisma {
   };
 
   export type Interview_DecisionScalarWhereWithAggregatesInput = {
-    AND?:
-      | Interview_DecisionScalarWhereWithAggregatesInput
-      | Interview_DecisionScalarWhereWithAggregatesInput[];
+    AND?: Interview_DecisionScalarWhereWithAggregatesInput | Interview_DecisionScalarWhereWithAggregatesInput[];
     OR?: Interview_DecisionScalarWhereWithAggregatesInput[];
-    NOT?:
-      | Interview_DecisionScalarWhereWithAggregatesInput
-      | Interview_DecisionScalarWhereWithAggregatesInput[];
+    NOT?: Interview_DecisionScalarWhereWithAggregatesInput | Interview_DecisionScalarWhereWithAggregatesInput[];
     interviewId?: IntWithAggregatesFilter<'Interview_Decision'> | number;
     staffId?: IntNullableWithAggregatesFilter<'Interview_Decision'> | number | null;
     status?: StringWithAggregatesFilter<'Interview_Decision'> | string;
@@ -21920,13 +19164,9 @@ export namespace Prisma {
   };
 
   export type Student_NotificationScalarWhereWithAggregatesInput = {
-    AND?:
-      | Student_NotificationScalarWhereWithAggregatesInput
-      | Student_NotificationScalarWhereWithAggregatesInput[];
+    AND?: Student_NotificationScalarWhereWithAggregatesInput | Student_NotificationScalarWhereWithAggregatesInput[];
     OR?: Student_NotificationScalarWhereWithAggregatesInput[];
-    NOT?:
-      | Student_NotificationScalarWhereWithAggregatesInput
-      | Student_NotificationScalarWhereWithAggregatesInput[];
+    NOT?: Student_NotificationScalarWhereWithAggregatesInput | Student_NotificationScalarWhereWithAggregatesInput[];
     notificationId?: IntWithAggregatesFilter<'Student_Notification'> | number;
     ownerId?: IntWithAggregatesFilter<'Student_Notification'> | number;
     title?: StringWithAggregatesFilter<'Student_Notification'> | string;
@@ -23181,13 +20421,7 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string;
   };
   export type JsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<
-          Required<JsonFilterBase<$PrismaModel>>,
-          Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>
-        >,
-        Required<JsonFilterBase<$PrismaModel>>
-      >
+    | PatchUndefined<Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>, Required<JsonFilterBase<$PrismaModel>>>
     | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>;
 
   export type JsonFilterBase<$PrismaModel = never> = {
@@ -23330,10 +20564,7 @@ export namespace Prisma {
   };
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
-        Either<
-          Required<JsonWithAggregatesFilterBase<$PrismaModel>>,
-          Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>
-        >,
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
         Required<JsonWithAggregatesFilterBase<$PrismaModel>>
       >
     | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>;
@@ -23358,13 +20589,7 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>;
   };
   export type JsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<
-          Required<JsonNullableFilterBase<$PrismaModel>>,
-          Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>
-        >,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
+    | PatchUndefined<Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>, Required<JsonNullableFilterBase<$PrismaModel>>>
     | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>;
 
   export type JsonNullableFilterBase<$PrismaModel = never> = {
@@ -23449,10 +20674,7 @@ export namespace Prisma {
   };
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
-        Either<
-          Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>,
-          Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>
-        >,
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
         Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
       >
     | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>;
@@ -24171,10 +21393,7 @@ export namespace Prisma {
   };
 
   export type ISPSU_StaffCreateNestedOneWithoutAccountInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutAccountInput,
-      ISPSU_StaffUncheckedCreateWithoutAccountInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutAccountInput, ISPSU_StaffUncheckedCreateWithoutAccountInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutAccountInput;
     connect?: ISPSU_StaffWhereUniqueInput;
   };
@@ -24192,10 +21411,7 @@ export namespace Prisma {
   };
 
   export type ISPSU_StaffUncheckedCreateNestedOneWithoutAccountInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutAccountInput,
-      ISPSU_StaffUncheckedCreateWithoutAccountInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutAccountInput, ISPSU_StaffUncheckedCreateWithoutAccountInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutAccountInput;
     connect?: ISPSU_StaffWhereUniqueInput;
   };
@@ -24225,26 +21441,17 @@ export namespace Prisma {
     disconnect?: ISPSU_HeadWhereInput | boolean;
     delete?: ISPSU_HeadWhereInput | boolean;
     connect?: ISPSU_HeadWhereUniqueInput;
-    update?: XOR<
-      XOR<ISPSU_HeadUpdateToOneWithWhereWithoutAccountInput, ISPSU_HeadUpdateWithoutAccountInput>,
-      ISPSU_HeadUncheckedUpdateWithoutAccountInput
-    >;
+    update?: XOR<XOR<ISPSU_HeadUpdateToOneWithWhereWithoutAccountInput, ISPSU_HeadUpdateWithoutAccountInput>, ISPSU_HeadUncheckedUpdateWithoutAccountInput>;
   };
 
   export type ISPSU_StaffUpdateOneWithoutAccountNestedInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutAccountInput,
-      ISPSU_StaffUncheckedCreateWithoutAccountInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutAccountInput, ISPSU_StaffUncheckedCreateWithoutAccountInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutAccountInput;
     upsert?: ISPSU_StaffUpsertWithoutAccountInput;
     disconnect?: ISPSU_StaffWhereInput | boolean;
     delete?: ISPSU_StaffWhereInput | boolean;
     connect?: ISPSU_StaffWhereUniqueInput;
-    update?: XOR<
-      XOR<ISPSU_StaffUpdateToOneWithWhereWithoutAccountInput, ISPSU_StaffUpdateWithoutAccountInput>,
-      ISPSU_StaffUncheckedUpdateWithoutAccountInput
-    >;
+    update?: XOR<XOR<ISPSU_StaffUpdateToOneWithWhereWithoutAccountInput, ISPSU_StaffUpdateWithoutAccountInput>, ISPSU_StaffUncheckedUpdateWithoutAccountInput>;
   };
 
   export type StudentUpdateOneWithoutAccountNestedInput = {
@@ -24254,10 +21461,7 @@ export namespace Prisma {
     disconnect?: StudentWhereInput | boolean;
     delete?: StudentWhereInput | boolean;
     connect?: StudentWhereUniqueInput;
-    update?: XOR<
-      XOR<StudentUpdateToOneWithWhereWithoutAccountInput, StudentUpdateWithoutAccountInput>,
-      StudentUncheckedUpdateWithoutAccountInput
-    >;
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutAccountInput, StudentUpdateWithoutAccountInput>, StudentUncheckedUpdateWithoutAccountInput>;
   };
 
   export type IntFieldUpdateOperationsInput = {
@@ -24275,26 +21479,17 @@ export namespace Prisma {
     disconnect?: ISPSU_HeadWhereInput | boolean;
     delete?: ISPSU_HeadWhereInput | boolean;
     connect?: ISPSU_HeadWhereUniqueInput;
-    update?: XOR<
-      XOR<ISPSU_HeadUpdateToOneWithWhereWithoutAccountInput, ISPSU_HeadUpdateWithoutAccountInput>,
-      ISPSU_HeadUncheckedUpdateWithoutAccountInput
-    >;
+    update?: XOR<XOR<ISPSU_HeadUpdateToOneWithWhereWithoutAccountInput, ISPSU_HeadUpdateWithoutAccountInput>, ISPSU_HeadUncheckedUpdateWithoutAccountInput>;
   };
 
   export type ISPSU_StaffUncheckedUpdateOneWithoutAccountNestedInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutAccountInput,
-      ISPSU_StaffUncheckedCreateWithoutAccountInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutAccountInput, ISPSU_StaffUncheckedCreateWithoutAccountInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutAccountInput;
     upsert?: ISPSU_StaffUpsertWithoutAccountInput;
     disconnect?: ISPSU_StaffWhereInput | boolean;
     delete?: ISPSU_StaffWhereInput | boolean;
     connect?: ISPSU_StaffWhereUniqueInput;
-    update?: XOR<
-      XOR<ISPSU_StaffUpdateToOneWithWhereWithoutAccountInput, ISPSU_StaffUpdateWithoutAccountInput>,
-      ISPSU_StaffUncheckedUpdateWithoutAccountInput
-    >;
+    update?: XOR<XOR<ISPSU_StaffUpdateToOneWithWhereWithoutAccountInput, ISPSU_StaffUpdateWithoutAccountInput>, ISPSU_StaffUncheckedUpdateWithoutAccountInput>;
   };
 
   export type StudentUncheckedUpdateOneWithoutAccountNestedInput = {
@@ -24304,23 +21499,15 @@ export namespace Prisma {
     disconnect?: StudentWhereInput | boolean;
     delete?: StudentWhereInput | boolean;
     connect?: StudentWhereUniqueInput;
-    update?: XOR<
-      XOR<StudentUpdateToOneWithWhereWithoutAccountInput, StudentUpdateWithoutAccountInput>,
-      StudentUncheckedUpdateWithoutAccountInput
-    >;
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutAccountInput, StudentUpdateWithoutAccountInput>, StudentUncheckedUpdateWithoutAccountInput>;
   };
 
   export type AnnouncementCreateNestedManyWithoutISPSU_HeadInput = {
     create?:
-      | XOR<
-          AnnouncementCreateWithoutISPSU_HeadInput,
-          AnnouncementUncheckedCreateWithoutISPSU_HeadInput
-        >
+      | XOR<AnnouncementCreateWithoutISPSU_HeadInput, AnnouncementUncheckedCreateWithoutISPSU_HeadInput>
       | AnnouncementCreateWithoutISPSU_HeadInput[]
       | AnnouncementUncheckedCreateWithoutISPSU_HeadInput[];
-    connectOrCreate?:
-      | AnnouncementCreateOrConnectWithoutISPSU_HeadInput
-      | AnnouncementCreateOrConnectWithoutISPSU_HeadInput[];
+    connectOrCreate?: AnnouncementCreateOrConnectWithoutISPSU_HeadInput | AnnouncementCreateOrConnectWithoutISPSU_HeadInput[];
     createMany?: AnnouncementCreateManyISPSU_HeadInputEnvelope;
     connect?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
   };
@@ -24333,74 +21520,48 @@ export namespace Prisma {
 
   export type ScholarshipCreateNestedManyWithoutISPSU_HeadInput = {
     create?:
-      | XOR<
-          ScholarshipCreateWithoutISPSU_HeadInput,
-          ScholarshipUncheckedCreateWithoutISPSU_HeadInput
-        >
+      | XOR<ScholarshipCreateWithoutISPSU_HeadInput, ScholarshipUncheckedCreateWithoutISPSU_HeadInput>
       | ScholarshipCreateWithoutISPSU_HeadInput[]
       | ScholarshipUncheckedCreateWithoutISPSU_HeadInput[];
-    connectOrCreate?:
-      | ScholarshipCreateOrConnectWithoutISPSU_HeadInput
-      | ScholarshipCreateOrConnectWithoutISPSU_HeadInput[];
+    connectOrCreate?: ScholarshipCreateOrConnectWithoutISPSU_HeadInput | ScholarshipCreateOrConnectWithoutISPSU_HeadInput[];
     createMany?: ScholarshipCreateManyISPSU_HeadInputEnvelope;
     connect?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
   };
 
   export type AnnouncementUncheckedCreateNestedManyWithoutISPSU_HeadInput = {
     create?:
-      | XOR<
-          AnnouncementCreateWithoutISPSU_HeadInput,
-          AnnouncementUncheckedCreateWithoutISPSU_HeadInput
-        >
+      | XOR<AnnouncementCreateWithoutISPSU_HeadInput, AnnouncementUncheckedCreateWithoutISPSU_HeadInput>
       | AnnouncementCreateWithoutISPSU_HeadInput[]
       | AnnouncementUncheckedCreateWithoutISPSU_HeadInput[];
-    connectOrCreate?:
-      | AnnouncementCreateOrConnectWithoutISPSU_HeadInput
-      | AnnouncementCreateOrConnectWithoutISPSU_HeadInput[];
+    connectOrCreate?: AnnouncementCreateOrConnectWithoutISPSU_HeadInput | AnnouncementCreateOrConnectWithoutISPSU_HeadInput[];
     createMany?: AnnouncementCreateManyISPSU_HeadInputEnvelope;
     connect?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
   };
 
   export type ScholarshipUncheckedCreateNestedManyWithoutISPSU_HeadInput = {
     create?:
-      | XOR<
-          ScholarshipCreateWithoutISPSU_HeadInput,
-          ScholarshipUncheckedCreateWithoutISPSU_HeadInput
-        >
+      | XOR<ScholarshipCreateWithoutISPSU_HeadInput, ScholarshipUncheckedCreateWithoutISPSU_HeadInput>
       | ScholarshipCreateWithoutISPSU_HeadInput[]
       | ScholarshipUncheckedCreateWithoutISPSU_HeadInput[];
-    connectOrCreate?:
-      | ScholarshipCreateOrConnectWithoutISPSU_HeadInput
-      | ScholarshipCreateOrConnectWithoutISPSU_HeadInput[];
+    connectOrCreate?: ScholarshipCreateOrConnectWithoutISPSU_HeadInput | ScholarshipCreateOrConnectWithoutISPSU_HeadInput[];
     createMany?: ScholarshipCreateManyISPSU_HeadInputEnvelope;
     connect?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
   };
 
   export type AnnouncementUpdateManyWithoutISPSU_HeadNestedInput = {
     create?:
-      | XOR<
-          AnnouncementCreateWithoutISPSU_HeadInput,
-          AnnouncementUncheckedCreateWithoutISPSU_HeadInput
-        >
+      | XOR<AnnouncementCreateWithoutISPSU_HeadInput, AnnouncementUncheckedCreateWithoutISPSU_HeadInput>
       | AnnouncementCreateWithoutISPSU_HeadInput[]
       | AnnouncementUncheckedCreateWithoutISPSU_HeadInput[];
-    connectOrCreate?:
-      | AnnouncementCreateOrConnectWithoutISPSU_HeadInput
-      | AnnouncementCreateOrConnectWithoutISPSU_HeadInput[];
-    upsert?:
-      | AnnouncementUpsertWithWhereUniqueWithoutISPSU_HeadInput
-      | AnnouncementUpsertWithWhereUniqueWithoutISPSU_HeadInput[];
+    connectOrCreate?: AnnouncementCreateOrConnectWithoutISPSU_HeadInput | AnnouncementCreateOrConnectWithoutISPSU_HeadInput[];
+    upsert?: AnnouncementUpsertWithWhereUniqueWithoutISPSU_HeadInput | AnnouncementUpsertWithWhereUniqueWithoutISPSU_HeadInput[];
     createMany?: AnnouncementCreateManyISPSU_HeadInputEnvelope;
     set?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
     disconnect?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
     delete?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
     connect?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
-    update?:
-      | AnnouncementUpdateWithWhereUniqueWithoutISPSU_HeadInput
-      | AnnouncementUpdateWithWhereUniqueWithoutISPSU_HeadInput[];
-    updateMany?:
-      | AnnouncementUpdateManyWithWhereWithoutISPSU_HeadInput
-      | AnnouncementUpdateManyWithWhereWithoutISPSU_HeadInput[];
+    update?: AnnouncementUpdateWithWhereUniqueWithoutISPSU_HeadInput | AnnouncementUpdateWithWhereUniqueWithoutISPSU_HeadInput[];
+    updateMany?: AnnouncementUpdateManyWithWhereWithoutISPSU_HeadInput | AnnouncementUpdateManyWithWhereWithoutISPSU_HeadInput[];
     deleteMany?: AnnouncementScalarWhereInput | AnnouncementScalarWhereInput[];
   };
 
@@ -24409,191 +21570,122 @@ export namespace Prisma {
     connectOrCreate?: AccountCreateOrConnectWithoutISPSU_HeadInput;
     upsert?: AccountUpsertWithoutISPSU_HeadInput;
     connect?: AccountWhereUniqueInput;
-    update?: XOR<
-      XOR<AccountUpdateToOneWithWhereWithoutISPSU_HeadInput, AccountUpdateWithoutISPSU_HeadInput>,
-      AccountUncheckedUpdateWithoutISPSU_HeadInput
-    >;
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutISPSU_HeadInput, AccountUpdateWithoutISPSU_HeadInput>, AccountUncheckedUpdateWithoutISPSU_HeadInput>;
   };
 
   export type ScholarshipUpdateManyWithoutISPSU_HeadNestedInput = {
     create?:
-      | XOR<
-          ScholarshipCreateWithoutISPSU_HeadInput,
-          ScholarshipUncheckedCreateWithoutISPSU_HeadInput
-        >
+      | XOR<ScholarshipCreateWithoutISPSU_HeadInput, ScholarshipUncheckedCreateWithoutISPSU_HeadInput>
       | ScholarshipCreateWithoutISPSU_HeadInput[]
       | ScholarshipUncheckedCreateWithoutISPSU_HeadInput[];
-    connectOrCreate?:
-      | ScholarshipCreateOrConnectWithoutISPSU_HeadInput
-      | ScholarshipCreateOrConnectWithoutISPSU_HeadInput[];
-    upsert?:
-      | ScholarshipUpsertWithWhereUniqueWithoutISPSU_HeadInput
-      | ScholarshipUpsertWithWhereUniqueWithoutISPSU_HeadInput[];
+    connectOrCreate?: ScholarshipCreateOrConnectWithoutISPSU_HeadInput | ScholarshipCreateOrConnectWithoutISPSU_HeadInput[];
+    upsert?: ScholarshipUpsertWithWhereUniqueWithoutISPSU_HeadInput | ScholarshipUpsertWithWhereUniqueWithoutISPSU_HeadInput[];
     createMany?: ScholarshipCreateManyISPSU_HeadInputEnvelope;
     set?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
     disconnect?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
     delete?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
     connect?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
-    update?:
-      | ScholarshipUpdateWithWhereUniqueWithoutISPSU_HeadInput
-      | ScholarshipUpdateWithWhereUniqueWithoutISPSU_HeadInput[];
-    updateMany?:
-      | ScholarshipUpdateManyWithWhereWithoutISPSU_HeadInput
-      | ScholarshipUpdateManyWithWhereWithoutISPSU_HeadInput[];
+    update?: ScholarshipUpdateWithWhereUniqueWithoutISPSU_HeadInput | ScholarshipUpdateWithWhereUniqueWithoutISPSU_HeadInput[];
+    updateMany?: ScholarshipUpdateManyWithWhereWithoutISPSU_HeadInput | ScholarshipUpdateManyWithWhereWithoutISPSU_HeadInput[];
     deleteMany?: ScholarshipScalarWhereInput | ScholarshipScalarWhereInput[];
   };
 
   export type AnnouncementUncheckedUpdateManyWithoutISPSU_HeadNestedInput = {
     create?:
-      | XOR<
-          AnnouncementCreateWithoutISPSU_HeadInput,
-          AnnouncementUncheckedCreateWithoutISPSU_HeadInput
-        >
+      | XOR<AnnouncementCreateWithoutISPSU_HeadInput, AnnouncementUncheckedCreateWithoutISPSU_HeadInput>
       | AnnouncementCreateWithoutISPSU_HeadInput[]
       | AnnouncementUncheckedCreateWithoutISPSU_HeadInput[];
-    connectOrCreate?:
-      | AnnouncementCreateOrConnectWithoutISPSU_HeadInput
-      | AnnouncementCreateOrConnectWithoutISPSU_HeadInput[];
-    upsert?:
-      | AnnouncementUpsertWithWhereUniqueWithoutISPSU_HeadInput
-      | AnnouncementUpsertWithWhereUniqueWithoutISPSU_HeadInput[];
+    connectOrCreate?: AnnouncementCreateOrConnectWithoutISPSU_HeadInput | AnnouncementCreateOrConnectWithoutISPSU_HeadInput[];
+    upsert?: AnnouncementUpsertWithWhereUniqueWithoutISPSU_HeadInput | AnnouncementUpsertWithWhereUniqueWithoutISPSU_HeadInput[];
     createMany?: AnnouncementCreateManyISPSU_HeadInputEnvelope;
     set?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
     disconnect?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
     delete?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
     connect?: AnnouncementWhereUniqueInput | AnnouncementWhereUniqueInput[];
-    update?:
-      | AnnouncementUpdateWithWhereUniqueWithoutISPSU_HeadInput
-      | AnnouncementUpdateWithWhereUniqueWithoutISPSU_HeadInput[];
-    updateMany?:
-      | AnnouncementUpdateManyWithWhereWithoutISPSU_HeadInput
-      | AnnouncementUpdateManyWithWhereWithoutISPSU_HeadInput[];
+    update?: AnnouncementUpdateWithWhereUniqueWithoutISPSU_HeadInput | AnnouncementUpdateWithWhereUniqueWithoutISPSU_HeadInput[];
+    updateMany?: AnnouncementUpdateManyWithWhereWithoutISPSU_HeadInput | AnnouncementUpdateManyWithWhereWithoutISPSU_HeadInput[];
     deleteMany?: AnnouncementScalarWhereInput | AnnouncementScalarWhereInput[];
   };
 
   export type ScholarshipUncheckedUpdateManyWithoutISPSU_HeadNestedInput = {
     create?:
-      | XOR<
-          ScholarshipCreateWithoutISPSU_HeadInput,
-          ScholarshipUncheckedCreateWithoutISPSU_HeadInput
-        >
+      | XOR<ScholarshipCreateWithoutISPSU_HeadInput, ScholarshipUncheckedCreateWithoutISPSU_HeadInput>
       | ScholarshipCreateWithoutISPSU_HeadInput[]
       | ScholarshipUncheckedCreateWithoutISPSU_HeadInput[];
-    connectOrCreate?:
-      | ScholarshipCreateOrConnectWithoutISPSU_HeadInput
-      | ScholarshipCreateOrConnectWithoutISPSU_HeadInput[];
-    upsert?:
-      | ScholarshipUpsertWithWhereUniqueWithoutISPSU_HeadInput
-      | ScholarshipUpsertWithWhereUniqueWithoutISPSU_HeadInput[];
+    connectOrCreate?: ScholarshipCreateOrConnectWithoutISPSU_HeadInput | ScholarshipCreateOrConnectWithoutISPSU_HeadInput[];
+    upsert?: ScholarshipUpsertWithWhereUniqueWithoutISPSU_HeadInput | ScholarshipUpsertWithWhereUniqueWithoutISPSU_HeadInput[];
     createMany?: ScholarshipCreateManyISPSU_HeadInputEnvelope;
     set?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
     disconnect?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
     delete?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
     connect?: ScholarshipWhereUniqueInput | ScholarshipWhereUniqueInput[];
-    update?:
-      | ScholarshipUpdateWithWhereUniqueWithoutISPSU_HeadInput
-      | ScholarshipUpdateWithWhereUniqueWithoutISPSU_HeadInput[];
-    updateMany?:
-      | ScholarshipUpdateManyWithWhereWithoutISPSU_HeadInput
-      | ScholarshipUpdateManyWithWhereWithoutISPSU_HeadInput[];
+    update?: ScholarshipUpdateWithWhereUniqueWithoutISPSU_HeadInput | ScholarshipUpdateWithWhereUniqueWithoutISPSU_HeadInput[];
+    updateMany?: ScholarshipUpdateManyWithWhereWithoutISPSU_HeadInput | ScholarshipUpdateManyWithWhereWithoutISPSU_HeadInput[];
     deleteMany?: ScholarshipScalarWhereInput | ScholarshipScalarWhereInput[];
   };
 
   export type Application_DecisionCreateNestedManyWithoutISPSU_StaffInput = {
     create?:
-      | XOR<
-          Application_DecisionCreateWithoutISPSU_StaffInput,
-          Application_DecisionUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Application_DecisionCreateWithoutISPSU_StaffInput, Application_DecisionUncheckedCreateWithoutISPSU_StaffInput>
       | Application_DecisionCreateWithoutISPSU_StaffInput[]
       | Application_DecisionUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput
-      | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
+    connectOrCreate?: Application_DecisionCreateOrConnectWithoutISPSU_StaffInput | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
     createMany?: Application_DecisionCreateManyISPSU_StaffInputEnvelope;
     connect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
   };
 
   export type AccountCreateNestedOneWithoutISPSU_StaffInput = {
-    create?: XOR<
-      AccountCreateWithoutISPSU_StaffInput,
-      AccountUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    create?: XOR<AccountCreateWithoutISPSU_StaffInput, AccountUncheckedCreateWithoutISPSU_StaffInput>;
     connectOrCreate?: AccountCreateOrConnectWithoutISPSU_StaffInput;
     connect?: AccountWhereUniqueInput;
   };
 
   export type Interview_DecisionCreateNestedManyWithoutISPSU_StaffInput = {
     create?:
-      | XOR<
-          Interview_DecisionCreateWithoutISPSU_StaffInput,
-          Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Interview_DecisionCreateWithoutISPSU_StaffInput, Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput>
       | Interview_DecisionCreateWithoutISPSU_StaffInput[]
       | Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput
-      | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
+    connectOrCreate?: Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
     createMany?: Interview_DecisionCreateManyISPSU_StaffInputEnvelope;
     connect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
   };
 
   export type Staff_LogsCreateNestedManyWithoutISPSU_StaffInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutISPSU_StaffInput,
-          Staff_LogsUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Staff_LogsCreateWithoutISPSU_StaffInput, Staff_LogsUncheckedCreateWithoutISPSU_StaffInput>
       | Staff_LogsCreateWithoutISPSU_StaffInput[]
       | Staff_LogsUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput
-      | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutISPSU_StaffInput | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput[];
     createMany?: Staff_LogsCreateManyISPSU_StaffInputEnvelope;
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
   };
 
   export type Application_DecisionUncheckedCreateNestedManyWithoutISPSU_StaffInput = {
     create?:
-      | XOR<
-          Application_DecisionCreateWithoutISPSU_StaffInput,
-          Application_DecisionUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Application_DecisionCreateWithoutISPSU_StaffInput, Application_DecisionUncheckedCreateWithoutISPSU_StaffInput>
       | Application_DecisionCreateWithoutISPSU_StaffInput[]
       | Application_DecisionUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput
-      | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
+    connectOrCreate?: Application_DecisionCreateOrConnectWithoutISPSU_StaffInput | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
     createMany?: Application_DecisionCreateManyISPSU_StaffInputEnvelope;
     connect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
   };
 
   export type Interview_DecisionUncheckedCreateNestedManyWithoutISPSU_StaffInput = {
     create?:
-      | XOR<
-          Interview_DecisionCreateWithoutISPSU_StaffInput,
-          Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Interview_DecisionCreateWithoutISPSU_StaffInput, Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput>
       | Interview_DecisionCreateWithoutISPSU_StaffInput[]
       | Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput
-      | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
+    connectOrCreate?: Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
     createMany?: Interview_DecisionCreateManyISPSU_StaffInputEnvelope;
     connect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
   };
 
   export type Staff_LogsUncheckedCreateNestedManyWithoutISPSU_StaffInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutISPSU_StaffInput,
-          Staff_LogsUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Staff_LogsCreateWithoutISPSU_StaffInput, Staff_LogsUncheckedCreateWithoutISPSU_StaffInput>
       | Staff_LogsCreateWithoutISPSU_StaffInput[]
       | Staff_LogsUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput
-      | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutISPSU_StaffInput | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput[];
     createMany?: Staff_LogsCreateManyISPSU_StaffInputEnvelope;
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
   };
@@ -24604,194 +21696,117 @@ export namespace Prisma {
 
   export type Application_DecisionUpdateManyWithoutISPSU_StaffNestedInput = {
     create?:
-      | XOR<
-          Application_DecisionCreateWithoutISPSU_StaffInput,
-          Application_DecisionUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Application_DecisionCreateWithoutISPSU_StaffInput, Application_DecisionUncheckedCreateWithoutISPSU_StaffInput>
       | Application_DecisionCreateWithoutISPSU_StaffInput[]
       | Application_DecisionUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput
-      | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
-    upsert?:
-      | Application_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput
-      | Application_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
+    connectOrCreate?: Application_DecisionCreateOrConnectWithoutISPSU_StaffInput | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
+    upsert?: Application_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput | Application_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
     createMany?: Application_DecisionCreateManyISPSU_StaffInputEnvelope;
     set?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     disconnect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     delete?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     connect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
-    update?:
-      | Application_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput
-      | Application_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
-    updateMany?:
-      | Application_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput
-      | Application_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput[];
+    update?: Application_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput | Application_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
+    updateMany?: Application_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput | Application_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput[];
     deleteMany?: Application_DecisionScalarWhereInput | Application_DecisionScalarWhereInput[];
   };
 
   export type AccountUpdateOneRequiredWithoutISPSU_StaffNestedInput = {
-    create?: XOR<
-      AccountCreateWithoutISPSU_StaffInput,
-      AccountUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    create?: XOR<AccountCreateWithoutISPSU_StaffInput, AccountUncheckedCreateWithoutISPSU_StaffInput>;
     connectOrCreate?: AccountCreateOrConnectWithoutISPSU_StaffInput;
     upsert?: AccountUpsertWithoutISPSU_StaffInput;
     connect?: AccountWhereUniqueInput;
-    update?: XOR<
-      XOR<AccountUpdateToOneWithWhereWithoutISPSU_StaffInput, AccountUpdateWithoutISPSU_StaffInput>,
-      AccountUncheckedUpdateWithoutISPSU_StaffInput
-    >;
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutISPSU_StaffInput, AccountUpdateWithoutISPSU_StaffInput>, AccountUncheckedUpdateWithoutISPSU_StaffInput>;
   };
 
   export type Interview_DecisionUpdateManyWithoutISPSU_StaffNestedInput = {
     create?:
-      | XOR<
-          Interview_DecisionCreateWithoutISPSU_StaffInput,
-          Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Interview_DecisionCreateWithoutISPSU_StaffInput, Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput>
       | Interview_DecisionCreateWithoutISPSU_StaffInput[]
       | Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput
-      | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
-    upsert?:
-      | Interview_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput
-      | Interview_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
+    connectOrCreate?: Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
+    upsert?: Interview_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput | Interview_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
     createMany?: Interview_DecisionCreateManyISPSU_StaffInputEnvelope;
     set?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     disconnect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     delete?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     connect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
-    update?:
-      | Interview_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput
-      | Interview_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
-    updateMany?:
-      | Interview_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput
-      | Interview_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput[];
+    update?: Interview_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput | Interview_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
+    updateMany?: Interview_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput | Interview_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput[];
     deleteMany?: Interview_DecisionScalarWhereInput | Interview_DecisionScalarWhereInput[];
   };
 
   export type Staff_LogsUpdateManyWithoutISPSU_StaffNestedInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutISPSU_StaffInput,
-          Staff_LogsUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Staff_LogsCreateWithoutISPSU_StaffInput, Staff_LogsUncheckedCreateWithoutISPSU_StaffInput>
       | Staff_LogsCreateWithoutISPSU_StaffInput[]
       | Staff_LogsUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput
-      | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput[];
-    upsert?:
-      | Staff_LogsUpsertWithWhereUniqueWithoutISPSU_StaffInput
-      | Staff_LogsUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutISPSU_StaffInput | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput[];
+    upsert?: Staff_LogsUpsertWithWhereUniqueWithoutISPSU_StaffInput | Staff_LogsUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
     createMany?: Staff_LogsCreateManyISPSU_StaffInputEnvelope;
     set?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     disconnect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     delete?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
-    update?:
-      | Staff_LogsUpdateWithWhereUniqueWithoutISPSU_StaffInput
-      | Staff_LogsUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
-    updateMany?:
-      | Staff_LogsUpdateManyWithWhereWithoutISPSU_StaffInput
-      | Staff_LogsUpdateManyWithWhereWithoutISPSU_StaffInput[];
+    update?: Staff_LogsUpdateWithWhereUniqueWithoutISPSU_StaffInput | Staff_LogsUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
+    updateMany?: Staff_LogsUpdateManyWithWhereWithoutISPSU_StaffInput | Staff_LogsUpdateManyWithWhereWithoutISPSU_StaffInput[];
     deleteMany?: Staff_LogsScalarWhereInput | Staff_LogsScalarWhereInput[];
   };
 
   export type Application_DecisionUncheckedUpdateManyWithoutISPSU_StaffNestedInput = {
     create?:
-      | XOR<
-          Application_DecisionCreateWithoutISPSU_StaffInput,
-          Application_DecisionUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Application_DecisionCreateWithoutISPSU_StaffInput, Application_DecisionUncheckedCreateWithoutISPSU_StaffInput>
       | Application_DecisionCreateWithoutISPSU_StaffInput[]
       | Application_DecisionUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput
-      | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
-    upsert?:
-      | Application_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput
-      | Application_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
+    connectOrCreate?: Application_DecisionCreateOrConnectWithoutISPSU_StaffInput | Application_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
+    upsert?: Application_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput | Application_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
     createMany?: Application_DecisionCreateManyISPSU_StaffInputEnvelope;
     set?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     disconnect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     delete?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     connect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
-    update?:
-      | Application_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput
-      | Application_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
-    updateMany?:
-      | Application_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput
-      | Application_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput[];
+    update?: Application_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput | Application_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
+    updateMany?: Application_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput | Application_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput[];
     deleteMany?: Application_DecisionScalarWhereInput | Application_DecisionScalarWhereInput[];
   };
 
   export type Interview_DecisionUncheckedUpdateManyWithoutISPSU_StaffNestedInput = {
     create?:
-      | XOR<
-          Interview_DecisionCreateWithoutISPSU_StaffInput,
-          Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Interview_DecisionCreateWithoutISPSU_StaffInput, Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput>
       | Interview_DecisionCreateWithoutISPSU_StaffInput[]
       | Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput
-      | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
-    upsert?:
-      | Interview_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput
-      | Interview_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
+    connectOrCreate?: Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput | Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput[];
+    upsert?: Interview_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput | Interview_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
     createMany?: Interview_DecisionCreateManyISPSU_StaffInputEnvelope;
     set?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     disconnect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     delete?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     connect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
-    update?:
-      | Interview_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput
-      | Interview_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
-    updateMany?:
-      | Interview_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput
-      | Interview_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput[];
+    update?: Interview_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput | Interview_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
+    updateMany?: Interview_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput | Interview_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput[];
     deleteMany?: Interview_DecisionScalarWhereInput | Interview_DecisionScalarWhereInput[];
   };
 
   export type Staff_LogsUncheckedUpdateManyWithoutISPSU_StaffNestedInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutISPSU_StaffInput,
-          Staff_LogsUncheckedCreateWithoutISPSU_StaffInput
-        >
+      | XOR<Staff_LogsCreateWithoutISPSU_StaffInput, Staff_LogsUncheckedCreateWithoutISPSU_StaffInput>
       | Staff_LogsCreateWithoutISPSU_StaffInput[]
       | Staff_LogsUncheckedCreateWithoutISPSU_StaffInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput
-      | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput[];
-    upsert?:
-      | Staff_LogsUpsertWithWhereUniqueWithoutISPSU_StaffInput
-      | Staff_LogsUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutISPSU_StaffInput | Staff_LogsCreateOrConnectWithoutISPSU_StaffInput[];
+    upsert?: Staff_LogsUpsertWithWhereUniqueWithoutISPSU_StaffInput | Staff_LogsUpsertWithWhereUniqueWithoutISPSU_StaffInput[];
     createMany?: Staff_LogsCreateManyISPSU_StaffInputEnvelope;
     set?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     disconnect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     delete?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
-    update?:
-      | Staff_LogsUpdateWithWhereUniqueWithoutISPSU_StaffInput
-      | Staff_LogsUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
-    updateMany?:
-      | Staff_LogsUpdateManyWithWhereWithoutISPSU_StaffInput
-      | Staff_LogsUpdateManyWithWhereWithoutISPSU_StaffInput[];
+    update?: Staff_LogsUpdateWithWhereUniqueWithoutISPSU_StaffInput | Staff_LogsUpdateWithWhereUniqueWithoutISPSU_StaffInput[];
+    updateMany?: Staff_LogsUpdateManyWithWhereWithoutISPSU_StaffInput | Staff_LogsUpdateManyWithWhereWithoutISPSU_StaffInput[];
     deleteMany?: Staff_LogsScalarWhereInput | Staff_LogsScalarWhereInput[];
   };
 
   export type ApplicationCreateNestedManyWithoutStudentInput = {
-    create?:
-      | XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput>
-      | ApplicationCreateWithoutStudentInput[]
-      | ApplicationUncheckedCreateWithoutStudentInput[];
-    connectOrCreate?:
-      | ApplicationCreateOrConnectWithoutStudentInput
-      | ApplicationCreateOrConnectWithoutStudentInput[];
+    create?: XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput> | ApplicationCreateWithoutStudentInput[] | ApplicationUncheckedCreateWithoutStudentInput[];
+    connectOrCreate?: ApplicationCreateOrConnectWithoutStudentInput | ApplicationCreateOrConnectWithoutStudentInput[];
     createMany?: ApplicationCreateManyStudentInputEnvelope;
     connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
   };
@@ -24804,68 +21819,42 @@ export namespace Prisma {
 
   export type Student_NotificationCreateNestedManyWithoutStudentInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutStudentInput,
-          Student_NotificationUncheckedCreateWithoutStudentInput
-        >
+      | XOR<Student_NotificationCreateWithoutStudentInput, Student_NotificationUncheckedCreateWithoutStudentInput>
       | Student_NotificationCreateWithoutStudentInput[]
       | Student_NotificationUncheckedCreateWithoutStudentInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutStudentInput
-      | Student_NotificationCreateOrConnectWithoutStudentInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutStudentInput | Student_NotificationCreateOrConnectWithoutStudentInput[];
     createMany?: Student_NotificationCreateManyStudentInputEnvelope;
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
   };
 
   export type ApplicationUncheckedCreateNestedManyWithoutStudentInput = {
-    create?:
-      | XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput>
-      | ApplicationCreateWithoutStudentInput[]
-      | ApplicationUncheckedCreateWithoutStudentInput[];
-    connectOrCreate?:
-      | ApplicationCreateOrConnectWithoutStudentInput
-      | ApplicationCreateOrConnectWithoutStudentInput[];
+    create?: XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput> | ApplicationCreateWithoutStudentInput[] | ApplicationUncheckedCreateWithoutStudentInput[];
+    connectOrCreate?: ApplicationCreateOrConnectWithoutStudentInput | ApplicationCreateOrConnectWithoutStudentInput[];
     createMany?: ApplicationCreateManyStudentInputEnvelope;
     connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
   };
 
   export type Student_NotificationUncheckedCreateNestedManyWithoutStudentInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutStudentInput,
-          Student_NotificationUncheckedCreateWithoutStudentInput
-        >
+      | XOR<Student_NotificationCreateWithoutStudentInput, Student_NotificationUncheckedCreateWithoutStudentInput>
       | Student_NotificationCreateWithoutStudentInput[]
       | Student_NotificationUncheckedCreateWithoutStudentInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutStudentInput
-      | Student_NotificationCreateOrConnectWithoutStudentInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutStudentInput | Student_NotificationCreateOrConnectWithoutStudentInput[];
     createMany?: Student_NotificationCreateManyStudentInputEnvelope;
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
   };
 
   export type ApplicationUpdateManyWithoutStudentNestedInput = {
-    create?:
-      | XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput>
-      | ApplicationCreateWithoutStudentInput[]
-      | ApplicationUncheckedCreateWithoutStudentInput[];
-    connectOrCreate?:
-      | ApplicationCreateOrConnectWithoutStudentInput
-      | ApplicationCreateOrConnectWithoutStudentInput[];
-    upsert?:
-      | ApplicationUpsertWithWhereUniqueWithoutStudentInput
-      | ApplicationUpsertWithWhereUniqueWithoutStudentInput[];
+    create?: XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput> | ApplicationCreateWithoutStudentInput[] | ApplicationUncheckedCreateWithoutStudentInput[];
+    connectOrCreate?: ApplicationCreateOrConnectWithoutStudentInput | ApplicationCreateOrConnectWithoutStudentInput[];
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutStudentInput | ApplicationUpsertWithWhereUniqueWithoutStudentInput[];
     createMany?: ApplicationCreateManyStudentInputEnvelope;
     set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
-    update?:
-      | ApplicationUpdateWithWhereUniqueWithoutStudentInput
-      | ApplicationUpdateWithWhereUniqueWithoutStudentInput[];
-    updateMany?:
-      | ApplicationUpdateManyWithWhereWithoutStudentInput
-      | ApplicationUpdateManyWithWhereWithoutStudentInput[];
+    update?: ApplicationUpdateWithWhereUniqueWithoutStudentInput | ApplicationUpdateWithWhereUniqueWithoutStudentInput[];
+    updateMany?: ApplicationUpdateManyWithWhereWithoutStudentInput | ApplicationUpdateManyWithWhereWithoutStudentInput[];
     deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[];
   };
 
@@ -24874,232 +21863,145 @@ export namespace Prisma {
     connectOrCreate?: AccountCreateOrConnectWithoutStudentInput;
     upsert?: AccountUpsertWithoutStudentInput;
     connect?: AccountWhereUniqueInput;
-    update?: XOR<
-      XOR<AccountUpdateToOneWithWhereWithoutStudentInput, AccountUpdateWithoutStudentInput>,
-      AccountUncheckedUpdateWithoutStudentInput
-    >;
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutStudentInput, AccountUpdateWithoutStudentInput>, AccountUncheckedUpdateWithoutStudentInput>;
   };
 
   export type Student_NotificationUpdateManyWithoutStudentNestedInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutStudentInput,
-          Student_NotificationUncheckedCreateWithoutStudentInput
-        >
+      | XOR<Student_NotificationCreateWithoutStudentInput, Student_NotificationUncheckedCreateWithoutStudentInput>
       | Student_NotificationCreateWithoutStudentInput[]
       | Student_NotificationUncheckedCreateWithoutStudentInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutStudentInput
-      | Student_NotificationCreateOrConnectWithoutStudentInput[];
-    upsert?:
-      | Student_NotificationUpsertWithWhereUniqueWithoutStudentInput
-      | Student_NotificationUpsertWithWhereUniqueWithoutStudentInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutStudentInput | Student_NotificationCreateOrConnectWithoutStudentInput[];
+    upsert?: Student_NotificationUpsertWithWhereUniqueWithoutStudentInput | Student_NotificationUpsertWithWhereUniqueWithoutStudentInput[];
     createMany?: Student_NotificationCreateManyStudentInputEnvelope;
     set?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     disconnect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     delete?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
-    update?:
-      | Student_NotificationUpdateWithWhereUniqueWithoutStudentInput
-      | Student_NotificationUpdateWithWhereUniqueWithoutStudentInput[];
-    updateMany?:
-      | Student_NotificationUpdateManyWithWhereWithoutStudentInput
-      | Student_NotificationUpdateManyWithWhereWithoutStudentInput[];
+    update?: Student_NotificationUpdateWithWhereUniqueWithoutStudentInput | Student_NotificationUpdateWithWhereUniqueWithoutStudentInput[];
+    updateMany?: Student_NotificationUpdateManyWithWhereWithoutStudentInput | Student_NotificationUpdateManyWithWhereWithoutStudentInput[];
     deleteMany?: Student_NotificationScalarWhereInput | Student_NotificationScalarWhereInput[];
   };
 
   export type ApplicationUncheckedUpdateManyWithoutStudentNestedInput = {
-    create?:
-      | XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput>
-      | ApplicationCreateWithoutStudentInput[]
-      | ApplicationUncheckedCreateWithoutStudentInput[];
-    connectOrCreate?:
-      | ApplicationCreateOrConnectWithoutStudentInput
-      | ApplicationCreateOrConnectWithoutStudentInput[];
-    upsert?:
-      | ApplicationUpsertWithWhereUniqueWithoutStudentInput
-      | ApplicationUpsertWithWhereUniqueWithoutStudentInput[];
+    create?: XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput> | ApplicationCreateWithoutStudentInput[] | ApplicationUncheckedCreateWithoutStudentInput[];
+    connectOrCreate?: ApplicationCreateOrConnectWithoutStudentInput | ApplicationCreateOrConnectWithoutStudentInput[];
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutStudentInput | ApplicationUpsertWithWhereUniqueWithoutStudentInput[];
     createMany?: ApplicationCreateManyStudentInputEnvelope;
     set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
-    update?:
-      | ApplicationUpdateWithWhereUniqueWithoutStudentInput
-      | ApplicationUpdateWithWhereUniqueWithoutStudentInput[];
-    updateMany?:
-      | ApplicationUpdateManyWithWhereWithoutStudentInput
-      | ApplicationUpdateManyWithWhereWithoutStudentInput[];
+    update?: ApplicationUpdateWithWhereUniqueWithoutStudentInput | ApplicationUpdateWithWhereUniqueWithoutStudentInput[];
+    updateMany?: ApplicationUpdateManyWithWhereWithoutStudentInput | ApplicationUpdateManyWithWhereWithoutStudentInput[];
     deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[];
   };
 
   export type Student_NotificationUncheckedUpdateManyWithoutStudentNestedInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutStudentInput,
-          Student_NotificationUncheckedCreateWithoutStudentInput
-        >
+      | XOR<Student_NotificationCreateWithoutStudentInput, Student_NotificationUncheckedCreateWithoutStudentInput>
       | Student_NotificationCreateWithoutStudentInput[]
       | Student_NotificationUncheckedCreateWithoutStudentInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutStudentInput
-      | Student_NotificationCreateOrConnectWithoutStudentInput[];
-    upsert?:
-      | Student_NotificationUpsertWithWhereUniqueWithoutStudentInput
-      | Student_NotificationUpsertWithWhereUniqueWithoutStudentInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutStudentInput | Student_NotificationCreateOrConnectWithoutStudentInput[];
+    upsert?: Student_NotificationUpsertWithWhereUniqueWithoutStudentInput | Student_NotificationUpsertWithWhereUniqueWithoutStudentInput[];
     createMany?: Student_NotificationCreateManyStudentInputEnvelope;
     set?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     disconnect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     delete?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
-    update?:
-      | Student_NotificationUpdateWithWhereUniqueWithoutStudentInput
-      | Student_NotificationUpdateWithWhereUniqueWithoutStudentInput[];
-    updateMany?:
-      | Student_NotificationUpdateManyWithWhereWithoutStudentInput
-      | Student_NotificationUpdateManyWithWhereWithoutStudentInput[];
+    update?: Student_NotificationUpdateWithWhereUniqueWithoutStudentInput | Student_NotificationUpdateWithWhereUniqueWithoutStudentInput[];
+    updateMany?: Student_NotificationUpdateManyWithWhereWithoutStudentInput | Student_NotificationUpdateManyWithWhereWithoutStudentInput[];
     deleteMany?: Student_NotificationScalarWhereInput | Student_NotificationScalarWhereInput[];
   };
 
   export type ScholarshipCreateNestedOneWithoutScholarship_ProviderInput = {
-    create?: XOR<
-      ScholarshipCreateWithoutScholarship_ProviderInput,
-      ScholarshipUncheckedCreateWithoutScholarship_ProviderInput
-    >;
+    create?: XOR<ScholarshipCreateWithoutScholarship_ProviderInput, ScholarshipUncheckedCreateWithoutScholarship_ProviderInput>;
     connectOrCreate?: ScholarshipCreateOrConnectWithoutScholarship_ProviderInput;
     connect?: ScholarshipWhereUniqueInput;
   };
 
   export type ScholarshipUpdateOneRequiredWithoutScholarship_ProviderNestedInput = {
-    create?: XOR<
-      ScholarshipCreateWithoutScholarship_ProviderInput,
-      ScholarshipUncheckedCreateWithoutScholarship_ProviderInput
-    >;
+    create?: XOR<ScholarshipCreateWithoutScholarship_ProviderInput, ScholarshipUncheckedCreateWithoutScholarship_ProviderInput>;
     connectOrCreate?: ScholarshipCreateOrConnectWithoutScholarship_ProviderInput;
     upsert?: ScholarshipUpsertWithoutScholarship_ProviderInput;
     connect?: ScholarshipWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ScholarshipUpdateToOneWithWhereWithoutScholarship_ProviderInput,
-        ScholarshipUpdateWithoutScholarship_ProviderInput
-      >,
-      ScholarshipUncheckedUpdateWithoutScholarship_ProviderInput
-    >;
+    update?: XOR<XOR<ScholarshipUpdateToOneWithWhereWithoutScholarship_ProviderInput, ScholarshipUpdateWithoutScholarship_ProviderInput>, ScholarshipUncheckedUpdateWithoutScholarship_ProviderInput>;
   };
 
   export type ApplicationCreateNestedManyWithoutScholarshipInput = {
     create?:
-      | XOR<
-          ApplicationCreateWithoutScholarshipInput,
-          ApplicationUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<ApplicationCreateWithoutScholarshipInput, ApplicationUncheckedCreateWithoutScholarshipInput>
       | ApplicationCreateWithoutScholarshipInput[]
       | ApplicationUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | ApplicationCreateOrConnectWithoutScholarshipInput
-      | ApplicationCreateOrConnectWithoutScholarshipInput[];
+    connectOrCreate?: ApplicationCreateOrConnectWithoutScholarshipInput | ApplicationCreateOrConnectWithoutScholarshipInput[];
     createMany?: ApplicationCreateManyScholarshipInputEnvelope;
     connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
   };
 
   export type ISPSU_HeadCreateNestedOneWithoutScholarshipInput = {
-    create?: XOR<
-      ISPSU_HeadCreateWithoutScholarshipInput,
-      ISPSU_HeadUncheckedCreateWithoutScholarshipInput
-    >;
+    create?: XOR<ISPSU_HeadCreateWithoutScholarshipInput, ISPSU_HeadUncheckedCreateWithoutScholarshipInput>;
     connectOrCreate?: ISPSU_HeadCreateOrConnectWithoutScholarshipInput;
     connect?: ISPSU_HeadWhereUniqueInput;
   };
 
   export type Scholarship_ProviderCreateNestedOneWithoutScholarshipInput = {
-    create?: XOR<
-      Scholarship_ProviderCreateWithoutScholarshipInput,
-      Scholarship_ProviderUncheckedCreateWithoutScholarshipInput
-    >;
+    create?: XOR<Scholarship_ProviderCreateWithoutScholarshipInput, Scholarship_ProviderUncheckedCreateWithoutScholarshipInput>;
     connectOrCreate?: Scholarship_ProviderCreateOrConnectWithoutScholarshipInput;
     connect?: Scholarship_ProviderWhereUniqueInput;
   };
 
   export type Staff_LogsCreateNestedManyWithoutScholarshipInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutScholarshipInput,
-          Staff_LogsUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<Staff_LogsCreateWithoutScholarshipInput, Staff_LogsUncheckedCreateWithoutScholarshipInput>
       | Staff_LogsCreateWithoutScholarshipInput[]
       | Staff_LogsUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutScholarshipInput
-      | Staff_LogsCreateOrConnectWithoutScholarshipInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutScholarshipInput | Staff_LogsCreateOrConnectWithoutScholarshipInput[];
     createMany?: Staff_LogsCreateManyScholarshipInputEnvelope;
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
   };
 
   export type Student_NotificationCreateNestedManyWithoutScholarshipInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutScholarshipInput,
-          Student_NotificationUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<Student_NotificationCreateWithoutScholarshipInput, Student_NotificationUncheckedCreateWithoutScholarshipInput>
       | Student_NotificationCreateWithoutScholarshipInput[]
       | Student_NotificationUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutScholarshipInput
-      | Student_NotificationCreateOrConnectWithoutScholarshipInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutScholarshipInput | Student_NotificationCreateOrConnectWithoutScholarshipInput[];
     createMany?: Student_NotificationCreateManyScholarshipInputEnvelope;
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
   };
 
   export type ApplicationUncheckedCreateNestedManyWithoutScholarshipInput = {
     create?:
-      | XOR<
-          ApplicationCreateWithoutScholarshipInput,
-          ApplicationUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<ApplicationCreateWithoutScholarshipInput, ApplicationUncheckedCreateWithoutScholarshipInput>
       | ApplicationCreateWithoutScholarshipInput[]
       | ApplicationUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | ApplicationCreateOrConnectWithoutScholarshipInput
-      | ApplicationCreateOrConnectWithoutScholarshipInput[];
+    connectOrCreate?: ApplicationCreateOrConnectWithoutScholarshipInput | ApplicationCreateOrConnectWithoutScholarshipInput[];
     createMany?: ApplicationCreateManyScholarshipInputEnvelope;
     connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
   };
 
   export type Scholarship_ProviderUncheckedCreateNestedOneWithoutScholarshipInput = {
-    create?: XOR<
-      Scholarship_ProviderCreateWithoutScholarshipInput,
-      Scholarship_ProviderUncheckedCreateWithoutScholarshipInput
-    >;
+    create?: XOR<Scholarship_ProviderCreateWithoutScholarshipInput, Scholarship_ProviderUncheckedCreateWithoutScholarshipInput>;
     connectOrCreate?: Scholarship_ProviderCreateOrConnectWithoutScholarshipInput;
     connect?: Scholarship_ProviderWhereUniqueInput;
   };
 
   export type Staff_LogsUncheckedCreateNestedManyWithoutScholarshipInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutScholarshipInput,
-          Staff_LogsUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<Staff_LogsCreateWithoutScholarshipInput, Staff_LogsUncheckedCreateWithoutScholarshipInput>
       | Staff_LogsCreateWithoutScholarshipInput[]
       | Staff_LogsUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutScholarshipInput
-      | Staff_LogsCreateOrConnectWithoutScholarshipInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutScholarshipInput | Staff_LogsCreateOrConnectWithoutScholarshipInput[];
     createMany?: Staff_LogsCreateManyScholarshipInputEnvelope;
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
   };
 
   export type Student_NotificationUncheckedCreateNestedManyWithoutScholarshipInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutScholarshipInput,
-          Student_NotificationUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<Student_NotificationCreateWithoutScholarshipInput, Student_NotificationUncheckedCreateWithoutScholarshipInput>
       | Student_NotificationCreateWithoutScholarshipInput[]
       | Student_NotificationUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutScholarshipInput
-      | Student_NotificationCreateOrConnectWithoutScholarshipInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutScholarshipInput | Student_NotificationCreateOrConnectWithoutScholarshipInput[];
     createMany?: Student_NotificationCreateManyScholarshipInputEnvelope;
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
   };
@@ -25126,912 +22028,544 @@ export namespace Prisma {
 
   export type ApplicationUpdateManyWithoutScholarshipNestedInput = {
     create?:
-      | XOR<
-          ApplicationCreateWithoutScholarshipInput,
-          ApplicationUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<ApplicationCreateWithoutScholarshipInput, ApplicationUncheckedCreateWithoutScholarshipInput>
       | ApplicationCreateWithoutScholarshipInput[]
       | ApplicationUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | ApplicationCreateOrConnectWithoutScholarshipInput
-      | ApplicationCreateOrConnectWithoutScholarshipInput[];
-    upsert?:
-      | ApplicationUpsertWithWhereUniqueWithoutScholarshipInput
-      | ApplicationUpsertWithWhereUniqueWithoutScholarshipInput[];
+    connectOrCreate?: ApplicationCreateOrConnectWithoutScholarshipInput | ApplicationCreateOrConnectWithoutScholarshipInput[];
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutScholarshipInput | ApplicationUpsertWithWhereUniqueWithoutScholarshipInput[];
     createMany?: ApplicationCreateManyScholarshipInputEnvelope;
     set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
-    update?:
-      | ApplicationUpdateWithWhereUniqueWithoutScholarshipInput
-      | ApplicationUpdateWithWhereUniqueWithoutScholarshipInput[];
-    updateMany?:
-      | ApplicationUpdateManyWithWhereWithoutScholarshipInput
-      | ApplicationUpdateManyWithWhereWithoutScholarshipInput[];
+    update?: ApplicationUpdateWithWhereUniqueWithoutScholarshipInput | ApplicationUpdateWithWhereUniqueWithoutScholarshipInput[];
+    updateMany?: ApplicationUpdateManyWithWhereWithoutScholarshipInput | ApplicationUpdateManyWithWhereWithoutScholarshipInput[];
     deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[];
   };
 
   export type ISPSU_HeadUpdateOneWithoutScholarshipNestedInput = {
-    create?: XOR<
-      ISPSU_HeadCreateWithoutScholarshipInput,
-      ISPSU_HeadUncheckedCreateWithoutScholarshipInput
-    >;
+    create?: XOR<ISPSU_HeadCreateWithoutScholarshipInput, ISPSU_HeadUncheckedCreateWithoutScholarshipInput>;
     connectOrCreate?: ISPSU_HeadCreateOrConnectWithoutScholarshipInput;
     upsert?: ISPSU_HeadUpsertWithoutScholarshipInput;
     disconnect?: ISPSU_HeadWhereInput | boolean;
     delete?: ISPSU_HeadWhereInput | boolean;
     connect?: ISPSU_HeadWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ISPSU_HeadUpdateToOneWithWhereWithoutScholarshipInput,
-        ISPSU_HeadUpdateWithoutScholarshipInput
-      >,
-      ISPSU_HeadUncheckedUpdateWithoutScholarshipInput
-    >;
+    update?: XOR<XOR<ISPSU_HeadUpdateToOneWithWhereWithoutScholarshipInput, ISPSU_HeadUpdateWithoutScholarshipInput>, ISPSU_HeadUncheckedUpdateWithoutScholarshipInput>;
   };
 
   export type Scholarship_ProviderUpdateOneWithoutScholarshipNestedInput = {
-    create?: XOR<
-      Scholarship_ProviderCreateWithoutScholarshipInput,
-      Scholarship_ProviderUncheckedCreateWithoutScholarshipInput
-    >;
+    create?: XOR<Scholarship_ProviderCreateWithoutScholarshipInput, Scholarship_ProviderUncheckedCreateWithoutScholarshipInput>;
     connectOrCreate?: Scholarship_ProviderCreateOrConnectWithoutScholarshipInput;
     upsert?: Scholarship_ProviderUpsertWithoutScholarshipInput;
     disconnect?: Scholarship_ProviderWhereInput | boolean;
     delete?: Scholarship_ProviderWhereInput | boolean;
     connect?: Scholarship_ProviderWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        Scholarship_ProviderUpdateToOneWithWhereWithoutScholarshipInput,
-        Scholarship_ProviderUpdateWithoutScholarshipInput
-      >,
-      Scholarship_ProviderUncheckedUpdateWithoutScholarshipInput
-    >;
+    update?: XOR<XOR<Scholarship_ProviderUpdateToOneWithWhereWithoutScholarshipInput, Scholarship_ProviderUpdateWithoutScholarshipInput>, Scholarship_ProviderUncheckedUpdateWithoutScholarshipInput>;
   };
 
   export type Staff_LogsUpdateManyWithoutScholarshipNestedInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutScholarshipInput,
-          Staff_LogsUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<Staff_LogsCreateWithoutScholarshipInput, Staff_LogsUncheckedCreateWithoutScholarshipInput>
       | Staff_LogsCreateWithoutScholarshipInput[]
       | Staff_LogsUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutScholarshipInput
-      | Staff_LogsCreateOrConnectWithoutScholarshipInput[];
-    upsert?:
-      | Staff_LogsUpsertWithWhereUniqueWithoutScholarshipInput
-      | Staff_LogsUpsertWithWhereUniqueWithoutScholarshipInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutScholarshipInput | Staff_LogsCreateOrConnectWithoutScholarshipInput[];
+    upsert?: Staff_LogsUpsertWithWhereUniqueWithoutScholarshipInput | Staff_LogsUpsertWithWhereUniqueWithoutScholarshipInput[];
     createMany?: Staff_LogsCreateManyScholarshipInputEnvelope;
     set?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     disconnect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     delete?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
-    update?:
-      | Staff_LogsUpdateWithWhereUniqueWithoutScholarshipInput
-      | Staff_LogsUpdateWithWhereUniqueWithoutScholarshipInput[];
-    updateMany?:
-      | Staff_LogsUpdateManyWithWhereWithoutScholarshipInput
-      | Staff_LogsUpdateManyWithWhereWithoutScholarshipInput[];
+    update?: Staff_LogsUpdateWithWhereUniqueWithoutScholarshipInput | Staff_LogsUpdateWithWhereUniqueWithoutScholarshipInput[];
+    updateMany?: Staff_LogsUpdateManyWithWhereWithoutScholarshipInput | Staff_LogsUpdateManyWithWhereWithoutScholarshipInput[];
     deleteMany?: Staff_LogsScalarWhereInput | Staff_LogsScalarWhereInput[];
   };
 
   export type Student_NotificationUpdateManyWithoutScholarshipNestedInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutScholarshipInput,
-          Student_NotificationUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<Student_NotificationCreateWithoutScholarshipInput, Student_NotificationUncheckedCreateWithoutScholarshipInput>
       | Student_NotificationCreateWithoutScholarshipInput[]
       | Student_NotificationUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutScholarshipInput
-      | Student_NotificationCreateOrConnectWithoutScholarshipInput[];
-    upsert?:
-      | Student_NotificationUpsertWithWhereUniqueWithoutScholarshipInput
-      | Student_NotificationUpsertWithWhereUniqueWithoutScholarshipInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutScholarshipInput | Student_NotificationCreateOrConnectWithoutScholarshipInput[];
+    upsert?: Student_NotificationUpsertWithWhereUniqueWithoutScholarshipInput | Student_NotificationUpsertWithWhereUniqueWithoutScholarshipInput[];
     createMany?: Student_NotificationCreateManyScholarshipInputEnvelope;
     set?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     disconnect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     delete?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
-    update?:
-      | Student_NotificationUpdateWithWhereUniqueWithoutScholarshipInput
-      | Student_NotificationUpdateWithWhereUniqueWithoutScholarshipInput[];
-    updateMany?:
-      | Student_NotificationUpdateManyWithWhereWithoutScholarshipInput
-      | Student_NotificationUpdateManyWithWhereWithoutScholarshipInput[];
+    update?: Student_NotificationUpdateWithWhereUniqueWithoutScholarshipInput | Student_NotificationUpdateWithWhereUniqueWithoutScholarshipInput[];
+    updateMany?: Student_NotificationUpdateManyWithWhereWithoutScholarshipInput | Student_NotificationUpdateManyWithWhereWithoutScholarshipInput[];
     deleteMany?: Student_NotificationScalarWhereInput | Student_NotificationScalarWhereInput[];
   };
 
   export type ApplicationUncheckedUpdateManyWithoutScholarshipNestedInput = {
     create?:
-      | XOR<
-          ApplicationCreateWithoutScholarshipInput,
-          ApplicationUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<ApplicationCreateWithoutScholarshipInput, ApplicationUncheckedCreateWithoutScholarshipInput>
       | ApplicationCreateWithoutScholarshipInput[]
       | ApplicationUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | ApplicationCreateOrConnectWithoutScholarshipInput
-      | ApplicationCreateOrConnectWithoutScholarshipInput[];
-    upsert?:
-      | ApplicationUpsertWithWhereUniqueWithoutScholarshipInput
-      | ApplicationUpsertWithWhereUniqueWithoutScholarshipInput[];
+    connectOrCreate?: ApplicationCreateOrConnectWithoutScholarshipInput | ApplicationCreateOrConnectWithoutScholarshipInput[];
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutScholarshipInput | ApplicationUpsertWithWhereUniqueWithoutScholarshipInput[];
     createMany?: ApplicationCreateManyScholarshipInputEnvelope;
     set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
     connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[];
-    update?:
-      | ApplicationUpdateWithWhereUniqueWithoutScholarshipInput
-      | ApplicationUpdateWithWhereUniqueWithoutScholarshipInput[];
-    updateMany?:
-      | ApplicationUpdateManyWithWhereWithoutScholarshipInput
-      | ApplicationUpdateManyWithWhereWithoutScholarshipInput[];
+    update?: ApplicationUpdateWithWhereUniqueWithoutScholarshipInput | ApplicationUpdateWithWhereUniqueWithoutScholarshipInput[];
+    updateMany?: ApplicationUpdateManyWithWhereWithoutScholarshipInput | ApplicationUpdateManyWithWhereWithoutScholarshipInput[];
     deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[];
   };
 
   export type Scholarship_ProviderUncheckedUpdateOneWithoutScholarshipNestedInput = {
-    create?: XOR<
-      Scholarship_ProviderCreateWithoutScholarshipInput,
-      Scholarship_ProviderUncheckedCreateWithoutScholarshipInput
-    >;
+    create?: XOR<Scholarship_ProviderCreateWithoutScholarshipInput, Scholarship_ProviderUncheckedCreateWithoutScholarshipInput>;
     connectOrCreate?: Scholarship_ProviderCreateOrConnectWithoutScholarshipInput;
     upsert?: Scholarship_ProviderUpsertWithoutScholarshipInput;
     disconnect?: Scholarship_ProviderWhereInput | boolean;
     delete?: Scholarship_ProviderWhereInput | boolean;
     connect?: Scholarship_ProviderWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        Scholarship_ProviderUpdateToOneWithWhereWithoutScholarshipInput,
-        Scholarship_ProviderUpdateWithoutScholarshipInput
-      >,
-      Scholarship_ProviderUncheckedUpdateWithoutScholarshipInput
-    >;
+    update?: XOR<XOR<Scholarship_ProviderUpdateToOneWithWhereWithoutScholarshipInput, Scholarship_ProviderUpdateWithoutScholarshipInput>, Scholarship_ProviderUncheckedUpdateWithoutScholarshipInput>;
   };
 
   export type Staff_LogsUncheckedUpdateManyWithoutScholarshipNestedInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutScholarshipInput,
-          Staff_LogsUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<Staff_LogsCreateWithoutScholarshipInput, Staff_LogsUncheckedCreateWithoutScholarshipInput>
       | Staff_LogsCreateWithoutScholarshipInput[]
       | Staff_LogsUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutScholarshipInput
-      | Staff_LogsCreateOrConnectWithoutScholarshipInput[];
-    upsert?:
-      | Staff_LogsUpsertWithWhereUniqueWithoutScholarshipInput
-      | Staff_LogsUpsertWithWhereUniqueWithoutScholarshipInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutScholarshipInput | Staff_LogsCreateOrConnectWithoutScholarshipInput[];
+    upsert?: Staff_LogsUpsertWithWhereUniqueWithoutScholarshipInput | Staff_LogsUpsertWithWhereUniqueWithoutScholarshipInput[];
     createMany?: Staff_LogsCreateManyScholarshipInputEnvelope;
     set?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     disconnect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     delete?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
-    update?:
-      | Staff_LogsUpdateWithWhereUniqueWithoutScholarshipInput
-      | Staff_LogsUpdateWithWhereUniqueWithoutScholarshipInput[];
-    updateMany?:
-      | Staff_LogsUpdateManyWithWhereWithoutScholarshipInput
-      | Staff_LogsUpdateManyWithWhereWithoutScholarshipInput[];
+    update?: Staff_LogsUpdateWithWhereUniqueWithoutScholarshipInput | Staff_LogsUpdateWithWhereUniqueWithoutScholarshipInput[];
+    updateMany?: Staff_LogsUpdateManyWithWhereWithoutScholarshipInput | Staff_LogsUpdateManyWithWhereWithoutScholarshipInput[];
     deleteMany?: Staff_LogsScalarWhereInput | Staff_LogsScalarWhereInput[];
   };
 
   export type Student_NotificationUncheckedUpdateManyWithoutScholarshipNestedInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutScholarshipInput,
-          Student_NotificationUncheckedCreateWithoutScholarshipInput
-        >
+      | XOR<Student_NotificationCreateWithoutScholarshipInput, Student_NotificationUncheckedCreateWithoutScholarshipInput>
       | Student_NotificationCreateWithoutScholarshipInput[]
       | Student_NotificationUncheckedCreateWithoutScholarshipInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutScholarshipInput
-      | Student_NotificationCreateOrConnectWithoutScholarshipInput[];
-    upsert?:
-      | Student_NotificationUpsertWithWhereUniqueWithoutScholarshipInput
-      | Student_NotificationUpsertWithWhereUniqueWithoutScholarshipInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutScholarshipInput | Student_NotificationCreateOrConnectWithoutScholarshipInput[];
+    upsert?: Student_NotificationUpsertWithWhereUniqueWithoutScholarshipInput | Student_NotificationUpsertWithWhereUniqueWithoutScholarshipInput[];
     createMany?: Student_NotificationCreateManyScholarshipInputEnvelope;
     set?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     disconnect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     delete?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
-    update?:
-      | Student_NotificationUpdateWithWhereUniqueWithoutScholarshipInput
-      | Student_NotificationUpdateWithWhereUniqueWithoutScholarshipInput[];
-    updateMany?:
-      | Student_NotificationUpdateManyWithWhereWithoutScholarshipInput
-      | Student_NotificationUpdateManyWithWhereWithoutScholarshipInput[];
+    update?: Student_NotificationUpdateWithWhereUniqueWithoutScholarshipInput | Student_NotificationUpdateWithWhereUniqueWithoutScholarshipInput[];
+    updateMany?: Student_NotificationUpdateManyWithWhereWithoutScholarshipInput | Student_NotificationUpdateManyWithWhereWithoutScholarshipInput[];
     deleteMany?: Student_NotificationScalarWhereInput | Student_NotificationScalarWhereInput[];
   };
 
   export type StudentCreateNestedOneWithoutApplicationInput = {
-    create?: XOR<
-      StudentCreateWithoutApplicationInput,
-      StudentUncheckedCreateWithoutApplicationInput
-    >;
+    create?: XOR<StudentCreateWithoutApplicationInput, StudentUncheckedCreateWithoutApplicationInput>;
     connectOrCreate?: StudentCreateOrConnectWithoutApplicationInput;
     connect?: StudentWhereUniqueInput;
   };
 
   export type ScholarshipCreateNestedOneWithoutApplicationInput = {
-    create?: XOR<
-      ScholarshipCreateWithoutApplicationInput,
-      ScholarshipUncheckedCreateWithoutApplicationInput
-    >;
+    create?: XOR<ScholarshipCreateWithoutApplicationInput, ScholarshipUncheckedCreateWithoutApplicationInput>;
     connectOrCreate?: ScholarshipCreateOrConnectWithoutApplicationInput;
     connect?: ScholarshipWhereUniqueInput;
   };
 
   export type Application_DecisionCreateNestedManyWithoutApplicationInput = {
     create?:
-      | XOR<
-          Application_DecisionCreateWithoutApplicationInput,
-          Application_DecisionUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Application_DecisionCreateWithoutApplicationInput, Application_DecisionUncheckedCreateWithoutApplicationInput>
       | Application_DecisionCreateWithoutApplicationInput[]
       | Application_DecisionUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Application_DecisionCreateOrConnectWithoutApplicationInput
-      | Application_DecisionCreateOrConnectWithoutApplicationInput[];
+    connectOrCreate?: Application_DecisionCreateOrConnectWithoutApplicationInput | Application_DecisionCreateOrConnectWithoutApplicationInput[];
     createMany?: Application_DecisionCreateManyApplicationInputEnvelope;
     connect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
   };
 
   export type Interview_DecisionCreateNestedManyWithoutApplicationInput = {
     create?:
-      | XOR<
-          Interview_DecisionCreateWithoutApplicationInput,
-          Interview_DecisionUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Interview_DecisionCreateWithoutApplicationInput, Interview_DecisionUncheckedCreateWithoutApplicationInput>
       | Interview_DecisionCreateWithoutApplicationInput[]
       | Interview_DecisionUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Interview_DecisionCreateOrConnectWithoutApplicationInput
-      | Interview_DecisionCreateOrConnectWithoutApplicationInput[];
+    connectOrCreate?: Interview_DecisionCreateOrConnectWithoutApplicationInput | Interview_DecisionCreateOrConnectWithoutApplicationInput[];
     createMany?: Interview_DecisionCreateManyApplicationInputEnvelope;
     connect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
   };
 
   export type Staff_LogsCreateNestedManyWithoutApplicationInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutApplicationInput,
-          Staff_LogsUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Staff_LogsCreateWithoutApplicationInput, Staff_LogsUncheckedCreateWithoutApplicationInput>
       | Staff_LogsCreateWithoutApplicationInput[]
       | Staff_LogsUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutApplicationInput
-      | Staff_LogsCreateOrConnectWithoutApplicationInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutApplicationInput | Staff_LogsCreateOrConnectWithoutApplicationInput[];
     createMany?: Staff_LogsCreateManyApplicationInputEnvelope;
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
   };
 
   export type Student_NotificationCreateNestedManyWithoutApplicationInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutApplicationInput,
-          Student_NotificationUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Student_NotificationCreateWithoutApplicationInput, Student_NotificationUncheckedCreateWithoutApplicationInput>
       | Student_NotificationCreateWithoutApplicationInput[]
       | Student_NotificationUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutApplicationInput
-      | Student_NotificationCreateOrConnectWithoutApplicationInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutApplicationInput | Student_NotificationCreateOrConnectWithoutApplicationInput[];
     createMany?: Student_NotificationCreateManyApplicationInputEnvelope;
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
   };
 
   export type Application_DecisionUncheckedCreateNestedManyWithoutApplicationInput = {
     create?:
-      | XOR<
-          Application_DecisionCreateWithoutApplicationInput,
-          Application_DecisionUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Application_DecisionCreateWithoutApplicationInput, Application_DecisionUncheckedCreateWithoutApplicationInput>
       | Application_DecisionCreateWithoutApplicationInput[]
       | Application_DecisionUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Application_DecisionCreateOrConnectWithoutApplicationInput
-      | Application_DecisionCreateOrConnectWithoutApplicationInput[];
+    connectOrCreate?: Application_DecisionCreateOrConnectWithoutApplicationInput | Application_DecisionCreateOrConnectWithoutApplicationInput[];
     createMany?: Application_DecisionCreateManyApplicationInputEnvelope;
     connect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
   };
 
   export type Interview_DecisionUncheckedCreateNestedManyWithoutApplicationInput = {
     create?:
-      | XOR<
-          Interview_DecisionCreateWithoutApplicationInput,
-          Interview_DecisionUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Interview_DecisionCreateWithoutApplicationInput, Interview_DecisionUncheckedCreateWithoutApplicationInput>
       | Interview_DecisionCreateWithoutApplicationInput[]
       | Interview_DecisionUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Interview_DecisionCreateOrConnectWithoutApplicationInput
-      | Interview_DecisionCreateOrConnectWithoutApplicationInput[];
+    connectOrCreate?: Interview_DecisionCreateOrConnectWithoutApplicationInput | Interview_DecisionCreateOrConnectWithoutApplicationInput[];
     createMany?: Interview_DecisionCreateManyApplicationInputEnvelope;
     connect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
   };
 
   export type Staff_LogsUncheckedCreateNestedManyWithoutApplicationInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutApplicationInput,
-          Staff_LogsUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Staff_LogsCreateWithoutApplicationInput, Staff_LogsUncheckedCreateWithoutApplicationInput>
       | Staff_LogsCreateWithoutApplicationInput[]
       | Staff_LogsUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutApplicationInput
-      | Staff_LogsCreateOrConnectWithoutApplicationInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutApplicationInput | Staff_LogsCreateOrConnectWithoutApplicationInput[];
     createMany?: Staff_LogsCreateManyApplicationInputEnvelope;
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
   };
 
   export type Student_NotificationUncheckedCreateNestedManyWithoutApplicationInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutApplicationInput,
-          Student_NotificationUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Student_NotificationCreateWithoutApplicationInput, Student_NotificationUncheckedCreateWithoutApplicationInput>
       | Student_NotificationCreateWithoutApplicationInput[]
       | Student_NotificationUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutApplicationInput
-      | Student_NotificationCreateOrConnectWithoutApplicationInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutApplicationInput | Student_NotificationCreateOrConnectWithoutApplicationInput[];
     createMany?: Student_NotificationCreateManyApplicationInputEnvelope;
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
   };
 
   export type StudentUpdateOneRequiredWithoutApplicationNestedInput = {
-    create?: XOR<
-      StudentCreateWithoutApplicationInput,
-      StudentUncheckedCreateWithoutApplicationInput
-    >;
+    create?: XOR<StudentCreateWithoutApplicationInput, StudentUncheckedCreateWithoutApplicationInput>;
     connectOrCreate?: StudentCreateOrConnectWithoutApplicationInput;
     upsert?: StudentUpsertWithoutApplicationInput;
     connect?: StudentWhereUniqueInput;
-    update?: XOR<
-      XOR<StudentUpdateToOneWithWhereWithoutApplicationInput, StudentUpdateWithoutApplicationInput>,
-      StudentUncheckedUpdateWithoutApplicationInput
-    >;
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutApplicationInput, StudentUpdateWithoutApplicationInput>, StudentUncheckedUpdateWithoutApplicationInput>;
   };
 
   export type ScholarshipUpdateOneRequiredWithoutApplicationNestedInput = {
-    create?: XOR<
-      ScholarshipCreateWithoutApplicationInput,
-      ScholarshipUncheckedCreateWithoutApplicationInput
-    >;
+    create?: XOR<ScholarshipCreateWithoutApplicationInput, ScholarshipUncheckedCreateWithoutApplicationInput>;
     connectOrCreate?: ScholarshipCreateOrConnectWithoutApplicationInput;
     upsert?: ScholarshipUpsertWithoutApplicationInput;
     connect?: ScholarshipWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ScholarshipUpdateToOneWithWhereWithoutApplicationInput,
-        ScholarshipUpdateWithoutApplicationInput
-      >,
-      ScholarshipUncheckedUpdateWithoutApplicationInput
-    >;
+    update?: XOR<XOR<ScholarshipUpdateToOneWithWhereWithoutApplicationInput, ScholarshipUpdateWithoutApplicationInput>, ScholarshipUncheckedUpdateWithoutApplicationInput>;
   };
 
   export type Application_DecisionUpdateManyWithoutApplicationNestedInput = {
     create?:
-      | XOR<
-          Application_DecisionCreateWithoutApplicationInput,
-          Application_DecisionUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Application_DecisionCreateWithoutApplicationInput, Application_DecisionUncheckedCreateWithoutApplicationInput>
       | Application_DecisionCreateWithoutApplicationInput[]
       | Application_DecisionUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Application_DecisionCreateOrConnectWithoutApplicationInput
-      | Application_DecisionCreateOrConnectWithoutApplicationInput[];
-    upsert?:
-      | Application_DecisionUpsertWithWhereUniqueWithoutApplicationInput
-      | Application_DecisionUpsertWithWhereUniqueWithoutApplicationInput[];
+    connectOrCreate?: Application_DecisionCreateOrConnectWithoutApplicationInput | Application_DecisionCreateOrConnectWithoutApplicationInput[];
+    upsert?: Application_DecisionUpsertWithWhereUniqueWithoutApplicationInput | Application_DecisionUpsertWithWhereUniqueWithoutApplicationInput[];
     createMany?: Application_DecisionCreateManyApplicationInputEnvelope;
     set?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     disconnect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     delete?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     connect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
-    update?:
-      | Application_DecisionUpdateWithWhereUniqueWithoutApplicationInput
-      | Application_DecisionUpdateWithWhereUniqueWithoutApplicationInput[];
-    updateMany?:
-      | Application_DecisionUpdateManyWithWhereWithoutApplicationInput
-      | Application_DecisionUpdateManyWithWhereWithoutApplicationInput[];
+    update?: Application_DecisionUpdateWithWhereUniqueWithoutApplicationInput | Application_DecisionUpdateWithWhereUniqueWithoutApplicationInput[];
+    updateMany?: Application_DecisionUpdateManyWithWhereWithoutApplicationInput | Application_DecisionUpdateManyWithWhereWithoutApplicationInput[];
     deleteMany?: Application_DecisionScalarWhereInput | Application_DecisionScalarWhereInput[];
   };
 
   export type Interview_DecisionUpdateManyWithoutApplicationNestedInput = {
     create?:
-      | XOR<
-          Interview_DecisionCreateWithoutApplicationInput,
-          Interview_DecisionUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Interview_DecisionCreateWithoutApplicationInput, Interview_DecisionUncheckedCreateWithoutApplicationInput>
       | Interview_DecisionCreateWithoutApplicationInput[]
       | Interview_DecisionUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Interview_DecisionCreateOrConnectWithoutApplicationInput
-      | Interview_DecisionCreateOrConnectWithoutApplicationInput[];
-    upsert?:
-      | Interview_DecisionUpsertWithWhereUniqueWithoutApplicationInput
-      | Interview_DecisionUpsertWithWhereUniqueWithoutApplicationInput[];
+    connectOrCreate?: Interview_DecisionCreateOrConnectWithoutApplicationInput | Interview_DecisionCreateOrConnectWithoutApplicationInput[];
+    upsert?: Interview_DecisionUpsertWithWhereUniqueWithoutApplicationInput | Interview_DecisionUpsertWithWhereUniqueWithoutApplicationInput[];
     createMany?: Interview_DecisionCreateManyApplicationInputEnvelope;
     set?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     disconnect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     delete?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     connect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
-    update?:
-      | Interview_DecisionUpdateWithWhereUniqueWithoutApplicationInput
-      | Interview_DecisionUpdateWithWhereUniqueWithoutApplicationInput[];
-    updateMany?:
-      | Interview_DecisionUpdateManyWithWhereWithoutApplicationInput
-      | Interview_DecisionUpdateManyWithWhereWithoutApplicationInput[];
+    update?: Interview_DecisionUpdateWithWhereUniqueWithoutApplicationInput | Interview_DecisionUpdateWithWhereUniqueWithoutApplicationInput[];
+    updateMany?: Interview_DecisionUpdateManyWithWhereWithoutApplicationInput | Interview_DecisionUpdateManyWithWhereWithoutApplicationInput[];
     deleteMany?: Interview_DecisionScalarWhereInput | Interview_DecisionScalarWhereInput[];
   };
 
   export type Staff_LogsUpdateManyWithoutApplicationNestedInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutApplicationInput,
-          Staff_LogsUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Staff_LogsCreateWithoutApplicationInput, Staff_LogsUncheckedCreateWithoutApplicationInput>
       | Staff_LogsCreateWithoutApplicationInput[]
       | Staff_LogsUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutApplicationInput
-      | Staff_LogsCreateOrConnectWithoutApplicationInput[];
-    upsert?:
-      | Staff_LogsUpsertWithWhereUniqueWithoutApplicationInput
-      | Staff_LogsUpsertWithWhereUniqueWithoutApplicationInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutApplicationInput | Staff_LogsCreateOrConnectWithoutApplicationInput[];
+    upsert?: Staff_LogsUpsertWithWhereUniqueWithoutApplicationInput | Staff_LogsUpsertWithWhereUniqueWithoutApplicationInput[];
     createMany?: Staff_LogsCreateManyApplicationInputEnvelope;
     set?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     disconnect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     delete?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
-    update?:
-      | Staff_LogsUpdateWithWhereUniqueWithoutApplicationInput
-      | Staff_LogsUpdateWithWhereUniqueWithoutApplicationInput[];
-    updateMany?:
-      | Staff_LogsUpdateManyWithWhereWithoutApplicationInput
-      | Staff_LogsUpdateManyWithWhereWithoutApplicationInput[];
+    update?: Staff_LogsUpdateWithWhereUniqueWithoutApplicationInput | Staff_LogsUpdateWithWhereUniqueWithoutApplicationInput[];
+    updateMany?: Staff_LogsUpdateManyWithWhereWithoutApplicationInput | Staff_LogsUpdateManyWithWhereWithoutApplicationInput[];
     deleteMany?: Staff_LogsScalarWhereInput | Staff_LogsScalarWhereInput[];
   };
 
   export type Student_NotificationUpdateManyWithoutApplicationNestedInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutApplicationInput,
-          Student_NotificationUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Student_NotificationCreateWithoutApplicationInput, Student_NotificationUncheckedCreateWithoutApplicationInput>
       | Student_NotificationCreateWithoutApplicationInput[]
       | Student_NotificationUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutApplicationInput
-      | Student_NotificationCreateOrConnectWithoutApplicationInput[];
-    upsert?:
-      | Student_NotificationUpsertWithWhereUniqueWithoutApplicationInput
-      | Student_NotificationUpsertWithWhereUniqueWithoutApplicationInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutApplicationInput | Student_NotificationCreateOrConnectWithoutApplicationInput[];
+    upsert?: Student_NotificationUpsertWithWhereUniqueWithoutApplicationInput | Student_NotificationUpsertWithWhereUniqueWithoutApplicationInput[];
     createMany?: Student_NotificationCreateManyApplicationInputEnvelope;
     set?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     disconnect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     delete?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
-    update?:
-      | Student_NotificationUpdateWithWhereUniqueWithoutApplicationInput
-      | Student_NotificationUpdateWithWhereUniqueWithoutApplicationInput[];
-    updateMany?:
-      | Student_NotificationUpdateManyWithWhereWithoutApplicationInput
-      | Student_NotificationUpdateManyWithWhereWithoutApplicationInput[];
+    update?: Student_NotificationUpdateWithWhereUniqueWithoutApplicationInput | Student_NotificationUpdateWithWhereUniqueWithoutApplicationInput[];
+    updateMany?: Student_NotificationUpdateManyWithWhereWithoutApplicationInput | Student_NotificationUpdateManyWithWhereWithoutApplicationInput[];
     deleteMany?: Student_NotificationScalarWhereInput | Student_NotificationScalarWhereInput[];
   };
 
   export type Application_DecisionUncheckedUpdateManyWithoutApplicationNestedInput = {
     create?:
-      | XOR<
-          Application_DecisionCreateWithoutApplicationInput,
-          Application_DecisionUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Application_DecisionCreateWithoutApplicationInput, Application_DecisionUncheckedCreateWithoutApplicationInput>
       | Application_DecisionCreateWithoutApplicationInput[]
       | Application_DecisionUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Application_DecisionCreateOrConnectWithoutApplicationInput
-      | Application_DecisionCreateOrConnectWithoutApplicationInput[];
-    upsert?:
-      | Application_DecisionUpsertWithWhereUniqueWithoutApplicationInput
-      | Application_DecisionUpsertWithWhereUniqueWithoutApplicationInput[];
+    connectOrCreate?: Application_DecisionCreateOrConnectWithoutApplicationInput | Application_DecisionCreateOrConnectWithoutApplicationInput[];
+    upsert?: Application_DecisionUpsertWithWhereUniqueWithoutApplicationInput | Application_DecisionUpsertWithWhereUniqueWithoutApplicationInput[];
     createMany?: Application_DecisionCreateManyApplicationInputEnvelope;
     set?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     disconnect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     delete?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
     connect?: Application_DecisionWhereUniqueInput | Application_DecisionWhereUniqueInput[];
-    update?:
-      | Application_DecisionUpdateWithWhereUniqueWithoutApplicationInput
-      | Application_DecisionUpdateWithWhereUniqueWithoutApplicationInput[];
-    updateMany?:
-      | Application_DecisionUpdateManyWithWhereWithoutApplicationInput
-      | Application_DecisionUpdateManyWithWhereWithoutApplicationInput[];
+    update?: Application_DecisionUpdateWithWhereUniqueWithoutApplicationInput | Application_DecisionUpdateWithWhereUniqueWithoutApplicationInput[];
+    updateMany?: Application_DecisionUpdateManyWithWhereWithoutApplicationInput | Application_DecisionUpdateManyWithWhereWithoutApplicationInput[];
     deleteMany?: Application_DecisionScalarWhereInput | Application_DecisionScalarWhereInput[];
   };
 
   export type Interview_DecisionUncheckedUpdateManyWithoutApplicationNestedInput = {
     create?:
-      | XOR<
-          Interview_DecisionCreateWithoutApplicationInput,
-          Interview_DecisionUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Interview_DecisionCreateWithoutApplicationInput, Interview_DecisionUncheckedCreateWithoutApplicationInput>
       | Interview_DecisionCreateWithoutApplicationInput[]
       | Interview_DecisionUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Interview_DecisionCreateOrConnectWithoutApplicationInput
-      | Interview_DecisionCreateOrConnectWithoutApplicationInput[];
-    upsert?:
-      | Interview_DecisionUpsertWithWhereUniqueWithoutApplicationInput
-      | Interview_DecisionUpsertWithWhereUniqueWithoutApplicationInput[];
+    connectOrCreate?: Interview_DecisionCreateOrConnectWithoutApplicationInput | Interview_DecisionCreateOrConnectWithoutApplicationInput[];
+    upsert?: Interview_DecisionUpsertWithWhereUniqueWithoutApplicationInput | Interview_DecisionUpsertWithWhereUniqueWithoutApplicationInput[];
     createMany?: Interview_DecisionCreateManyApplicationInputEnvelope;
     set?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     disconnect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     delete?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
     connect?: Interview_DecisionWhereUniqueInput | Interview_DecisionWhereUniqueInput[];
-    update?:
-      | Interview_DecisionUpdateWithWhereUniqueWithoutApplicationInput
-      | Interview_DecisionUpdateWithWhereUniqueWithoutApplicationInput[];
-    updateMany?:
-      | Interview_DecisionUpdateManyWithWhereWithoutApplicationInput
-      | Interview_DecisionUpdateManyWithWhereWithoutApplicationInput[];
+    update?: Interview_DecisionUpdateWithWhereUniqueWithoutApplicationInput | Interview_DecisionUpdateWithWhereUniqueWithoutApplicationInput[];
+    updateMany?: Interview_DecisionUpdateManyWithWhereWithoutApplicationInput | Interview_DecisionUpdateManyWithWhereWithoutApplicationInput[];
     deleteMany?: Interview_DecisionScalarWhereInput | Interview_DecisionScalarWhereInput[];
   };
 
   export type Staff_LogsUncheckedUpdateManyWithoutApplicationNestedInput = {
     create?:
-      | XOR<
-          Staff_LogsCreateWithoutApplicationInput,
-          Staff_LogsUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Staff_LogsCreateWithoutApplicationInput, Staff_LogsUncheckedCreateWithoutApplicationInput>
       | Staff_LogsCreateWithoutApplicationInput[]
       | Staff_LogsUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Staff_LogsCreateOrConnectWithoutApplicationInput
-      | Staff_LogsCreateOrConnectWithoutApplicationInput[];
-    upsert?:
-      | Staff_LogsUpsertWithWhereUniqueWithoutApplicationInput
-      | Staff_LogsUpsertWithWhereUniqueWithoutApplicationInput[];
+    connectOrCreate?: Staff_LogsCreateOrConnectWithoutApplicationInput | Staff_LogsCreateOrConnectWithoutApplicationInput[];
+    upsert?: Staff_LogsUpsertWithWhereUniqueWithoutApplicationInput | Staff_LogsUpsertWithWhereUniqueWithoutApplicationInput[];
     createMany?: Staff_LogsCreateManyApplicationInputEnvelope;
     set?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     disconnect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     delete?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
     connect?: Staff_LogsWhereUniqueInput | Staff_LogsWhereUniqueInput[];
-    update?:
-      | Staff_LogsUpdateWithWhereUniqueWithoutApplicationInput
-      | Staff_LogsUpdateWithWhereUniqueWithoutApplicationInput[];
-    updateMany?:
-      | Staff_LogsUpdateManyWithWhereWithoutApplicationInput
-      | Staff_LogsUpdateManyWithWhereWithoutApplicationInput[];
+    update?: Staff_LogsUpdateWithWhereUniqueWithoutApplicationInput | Staff_LogsUpdateWithWhereUniqueWithoutApplicationInput[];
+    updateMany?: Staff_LogsUpdateManyWithWhereWithoutApplicationInput | Staff_LogsUpdateManyWithWhereWithoutApplicationInput[];
     deleteMany?: Staff_LogsScalarWhereInput | Staff_LogsScalarWhereInput[];
   };
 
   export type Student_NotificationUncheckedUpdateManyWithoutApplicationNestedInput = {
     create?:
-      | XOR<
-          Student_NotificationCreateWithoutApplicationInput,
-          Student_NotificationUncheckedCreateWithoutApplicationInput
-        >
+      | XOR<Student_NotificationCreateWithoutApplicationInput, Student_NotificationUncheckedCreateWithoutApplicationInput>
       | Student_NotificationCreateWithoutApplicationInput[]
       | Student_NotificationUncheckedCreateWithoutApplicationInput[];
-    connectOrCreate?:
-      | Student_NotificationCreateOrConnectWithoutApplicationInput
-      | Student_NotificationCreateOrConnectWithoutApplicationInput[];
-    upsert?:
-      | Student_NotificationUpsertWithWhereUniqueWithoutApplicationInput
-      | Student_NotificationUpsertWithWhereUniqueWithoutApplicationInput[];
+    connectOrCreate?: Student_NotificationCreateOrConnectWithoutApplicationInput | Student_NotificationCreateOrConnectWithoutApplicationInput[];
+    upsert?: Student_NotificationUpsertWithWhereUniqueWithoutApplicationInput | Student_NotificationUpsertWithWhereUniqueWithoutApplicationInput[];
     createMany?: Student_NotificationCreateManyApplicationInputEnvelope;
     set?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     disconnect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     delete?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
     connect?: Student_NotificationWhereUniqueInput | Student_NotificationWhereUniqueInput[];
-    update?:
-      | Student_NotificationUpdateWithWhereUniqueWithoutApplicationInput
-      | Student_NotificationUpdateWithWhereUniqueWithoutApplicationInput[];
-    updateMany?:
-      | Student_NotificationUpdateManyWithWhereWithoutApplicationInput
-      | Student_NotificationUpdateManyWithWhereWithoutApplicationInput[];
+    update?: Student_NotificationUpdateWithWhereUniqueWithoutApplicationInput | Student_NotificationUpdateWithWhereUniqueWithoutApplicationInput[];
+    updateMany?: Student_NotificationUpdateManyWithWhereWithoutApplicationInput | Student_NotificationUpdateManyWithWhereWithoutApplicationInput[];
     deleteMany?: Student_NotificationScalarWhereInput | Student_NotificationScalarWhereInput[];
   };
 
   export type ApplicationCreateNestedOneWithoutApplication_DecisionInput = {
-    create?: XOR<
-      ApplicationCreateWithoutApplication_DecisionInput,
-      ApplicationUncheckedCreateWithoutApplication_DecisionInput
-    >;
+    create?: XOR<ApplicationCreateWithoutApplication_DecisionInput, ApplicationUncheckedCreateWithoutApplication_DecisionInput>;
     connectOrCreate?: ApplicationCreateOrConnectWithoutApplication_DecisionInput;
     connect?: ApplicationWhereUniqueInput;
   };
 
   export type ISPSU_StaffCreateNestedOneWithoutApplication_DecisionInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutApplication_DecisionInput,
-      ISPSU_StaffUncheckedCreateWithoutApplication_DecisionInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutApplication_DecisionInput, ISPSU_StaffUncheckedCreateWithoutApplication_DecisionInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutApplication_DecisionInput;
     connect?: ISPSU_StaffWhereUniqueInput;
   };
 
   export type ApplicationUpdateOneRequiredWithoutApplication_DecisionNestedInput = {
-    create?: XOR<
-      ApplicationCreateWithoutApplication_DecisionInput,
-      ApplicationUncheckedCreateWithoutApplication_DecisionInput
-    >;
+    create?: XOR<ApplicationCreateWithoutApplication_DecisionInput, ApplicationUncheckedCreateWithoutApplication_DecisionInput>;
     connectOrCreate?: ApplicationCreateOrConnectWithoutApplication_DecisionInput;
     upsert?: ApplicationUpsertWithoutApplication_DecisionInput;
     connect?: ApplicationWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ApplicationUpdateToOneWithWhereWithoutApplication_DecisionInput,
-        ApplicationUpdateWithoutApplication_DecisionInput
-      >,
-      ApplicationUncheckedUpdateWithoutApplication_DecisionInput
-    >;
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutApplication_DecisionInput, ApplicationUpdateWithoutApplication_DecisionInput>, ApplicationUncheckedUpdateWithoutApplication_DecisionInput>;
   };
 
   export type ISPSU_StaffUpdateOneWithoutApplication_DecisionNestedInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutApplication_DecisionInput,
-      ISPSU_StaffUncheckedCreateWithoutApplication_DecisionInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutApplication_DecisionInput, ISPSU_StaffUncheckedCreateWithoutApplication_DecisionInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutApplication_DecisionInput;
     upsert?: ISPSU_StaffUpsertWithoutApplication_DecisionInput;
     disconnect?: ISPSU_StaffWhereInput | boolean;
     delete?: ISPSU_StaffWhereInput | boolean;
     connect?: ISPSU_StaffWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ISPSU_StaffUpdateToOneWithWhereWithoutApplication_DecisionInput,
-        ISPSU_StaffUpdateWithoutApplication_DecisionInput
-      >,
-      ISPSU_StaffUncheckedUpdateWithoutApplication_DecisionInput
-    >;
+    update?: XOR<XOR<ISPSU_StaffUpdateToOneWithWhereWithoutApplication_DecisionInput, ISPSU_StaffUpdateWithoutApplication_DecisionInput>, ISPSU_StaffUncheckedUpdateWithoutApplication_DecisionInput>;
   };
 
   export type ApplicationCreateNestedOneWithoutInterview_DecisionInput = {
-    create?: XOR<
-      ApplicationCreateWithoutInterview_DecisionInput,
-      ApplicationUncheckedCreateWithoutInterview_DecisionInput
-    >;
+    create?: XOR<ApplicationCreateWithoutInterview_DecisionInput, ApplicationUncheckedCreateWithoutInterview_DecisionInput>;
     connectOrCreate?: ApplicationCreateOrConnectWithoutInterview_DecisionInput;
     connect?: ApplicationWhereUniqueInput;
   };
 
   export type ISPSU_StaffCreateNestedOneWithoutInterview_DecisionInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutInterview_DecisionInput,
-      ISPSU_StaffUncheckedCreateWithoutInterview_DecisionInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutInterview_DecisionInput, ISPSU_StaffUncheckedCreateWithoutInterview_DecisionInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutInterview_DecisionInput;
     connect?: ISPSU_StaffWhereUniqueInput;
   };
 
   export type ApplicationUpdateOneRequiredWithoutInterview_DecisionNestedInput = {
-    create?: XOR<
-      ApplicationCreateWithoutInterview_DecisionInput,
-      ApplicationUncheckedCreateWithoutInterview_DecisionInput
-    >;
+    create?: XOR<ApplicationCreateWithoutInterview_DecisionInput, ApplicationUncheckedCreateWithoutInterview_DecisionInput>;
     connectOrCreate?: ApplicationCreateOrConnectWithoutInterview_DecisionInput;
     upsert?: ApplicationUpsertWithoutInterview_DecisionInput;
     connect?: ApplicationWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ApplicationUpdateToOneWithWhereWithoutInterview_DecisionInput,
-        ApplicationUpdateWithoutInterview_DecisionInput
-      >,
-      ApplicationUncheckedUpdateWithoutInterview_DecisionInput
-    >;
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutInterview_DecisionInput, ApplicationUpdateWithoutInterview_DecisionInput>, ApplicationUncheckedUpdateWithoutInterview_DecisionInput>;
   };
 
   export type ISPSU_StaffUpdateOneWithoutInterview_DecisionNestedInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutInterview_DecisionInput,
-      ISPSU_StaffUncheckedCreateWithoutInterview_DecisionInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutInterview_DecisionInput, ISPSU_StaffUncheckedCreateWithoutInterview_DecisionInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutInterview_DecisionInput;
     upsert?: ISPSU_StaffUpsertWithoutInterview_DecisionInput;
     disconnect?: ISPSU_StaffWhereInput | boolean;
     delete?: ISPSU_StaffWhereInput | boolean;
     connect?: ISPSU_StaffWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ISPSU_StaffUpdateToOneWithWhereWithoutInterview_DecisionInput,
-        ISPSU_StaffUpdateWithoutInterview_DecisionInput
-      >,
-      ISPSU_StaffUncheckedUpdateWithoutInterview_DecisionInput
-    >;
+    update?: XOR<XOR<ISPSU_StaffUpdateToOneWithWhereWithoutInterview_DecisionInput, ISPSU_StaffUpdateWithoutInterview_DecisionInput>, ISPSU_StaffUncheckedUpdateWithoutInterview_DecisionInput>;
   };
 
   export type ApplicationCreateNestedOneWithoutStaff_LogsInput = {
-    create?: XOR<
-      ApplicationCreateWithoutStaff_LogsInput,
-      ApplicationUncheckedCreateWithoutStaff_LogsInput
-    >;
+    create?: XOR<ApplicationCreateWithoutStaff_LogsInput, ApplicationUncheckedCreateWithoutStaff_LogsInput>;
     connectOrCreate?: ApplicationCreateOrConnectWithoutStaff_LogsInput;
     connect?: ApplicationWhereUniqueInput;
   };
 
   export type ScholarshipCreateNestedOneWithoutStaff_LogsInput = {
-    create?: XOR<
-      ScholarshipCreateWithoutStaff_LogsInput,
-      ScholarshipUncheckedCreateWithoutStaff_LogsInput
-    >;
+    create?: XOR<ScholarshipCreateWithoutStaff_LogsInput, ScholarshipUncheckedCreateWithoutStaff_LogsInput>;
     connectOrCreate?: ScholarshipCreateOrConnectWithoutStaff_LogsInput;
     connect?: ScholarshipWhereUniqueInput;
   };
 
   export type ISPSU_StaffCreateNestedOneWithoutStaff_LogsInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutStaff_LogsInput,
-      ISPSU_StaffUncheckedCreateWithoutStaff_LogsInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutStaff_LogsInput, ISPSU_StaffUncheckedCreateWithoutStaff_LogsInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutStaff_LogsInput;
     connect?: ISPSU_StaffWhereUniqueInput;
   };
 
   export type ApplicationUpdateOneRequiredWithoutStaff_LogsNestedInput = {
-    create?: XOR<
-      ApplicationCreateWithoutStaff_LogsInput,
-      ApplicationUncheckedCreateWithoutStaff_LogsInput
-    >;
+    create?: XOR<ApplicationCreateWithoutStaff_LogsInput, ApplicationUncheckedCreateWithoutStaff_LogsInput>;
     connectOrCreate?: ApplicationCreateOrConnectWithoutStaff_LogsInput;
     upsert?: ApplicationUpsertWithoutStaff_LogsInput;
     connect?: ApplicationWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ApplicationUpdateToOneWithWhereWithoutStaff_LogsInput,
-        ApplicationUpdateWithoutStaff_LogsInput
-      >,
-      ApplicationUncheckedUpdateWithoutStaff_LogsInput
-    >;
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutStaff_LogsInput, ApplicationUpdateWithoutStaff_LogsInput>, ApplicationUncheckedUpdateWithoutStaff_LogsInput>;
   };
 
   export type ScholarshipUpdateOneRequiredWithoutStaff_LogsNestedInput = {
-    create?: XOR<
-      ScholarshipCreateWithoutStaff_LogsInput,
-      ScholarshipUncheckedCreateWithoutStaff_LogsInput
-    >;
+    create?: XOR<ScholarshipCreateWithoutStaff_LogsInput, ScholarshipUncheckedCreateWithoutStaff_LogsInput>;
     connectOrCreate?: ScholarshipCreateOrConnectWithoutStaff_LogsInput;
     upsert?: ScholarshipUpsertWithoutStaff_LogsInput;
     connect?: ScholarshipWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ScholarshipUpdateToOneWithWhereWithoutStaff_LogsInput,
-        ScholarshipUpdateWithoutStaff_LogsInput
-      >,
-      ScholarshipUncheckedUpdateWithoutStaff_LogsInput
-    >;
+    update?: XOR<XOR<ScholarshipUpdateToOneWithWhereWithoutStaff_LogsInput, ScholarshipUpdateWithoutStaff_LogsInput>, ScholarshipUncheckedUpdateWithoutStaff_LogsInput>;
   };
 
   export type ISPSU_StaffUpdateOneWithoutStaff_LogsNestedInput = {
-    create?: XOR<
-      ISPSU_StaffCreateWithoutStaff_LogsInput,
-      ISPSU_StaffUncheckedCreateWithoutStaff_LogsInput
-    >;
+    create?: XOR<ISPSU_StaffCreateWithoutStaff_LogsInput, ISPSU_StaffUncheckedCreateWithoutStaff_LogsInput>;
     connectOrCreate?: ISPSU_StaffCreateOrConnectWithoutStaff_LogsInput;
     upsert?: ISPSU_StaffUpsertWithoutStaff_LogsInput;
     disconnect?: ISPSU_StaffWhereInput | boolean;
     delete?: ISPSU_StaffWhereInput | boolean;
     connect?: ISPSU_StaffWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ISPSU_StaffUpdateToOneWithWhereWithoutStaff_LogsInput,
-        ISPSU_StaffUpdateWithoutStaff_LogsInput
-      >,
-      ISPSU_StaffUncheckedUpdateWithoutStaff_LogsInput
-    >;
+    update?: XOR<XOR<ISPSU_StaffUpdateToOneWithWhereWithoutStaff_LogsInput, ISPSU_StaffUpdateWithoutStaff_LogsInput>, ISPSU_StaffUncheckedUpdateWithoutStaff_LogsInput>;
   };
 
   export type ApplicationCreateNestedOneWithoutStudent_NotificationsInput = {
-    create?: XOR<
-      ApplicationCreateWithoutStudent_NotificationsInput,
-      ApplicationUncheckedCreateWithoutStudent_NotificationsInput
-    >;
+    create?: XOR<ApplicationCreateWithoutStudent_NotificationsInput, ApplicationUncheckedCreateWithoutStudent_NotificationsInput>;
     connectOrCreate?: ApplicationCreateOrConnectWithoutStudent_NotificationsInput;
     connect?: ApplicationWhereUniqueInput;
   };
 
   export type StudentCreateNestedOneWithoutStudent_NotificationInput = {
-    create?: XOR<
-      StudentCreateWithoutStudent_NotificationInput,
-      StudentUncheckedCreateWithoutStudent_NotificationInput
-    >;
+    create?: XOR<StudentCreateWithoutStudent_NotificationInput, StudentUncheckedCreateWithoutStudent_NotificationInput>;
     connectOrCreate?: StudentCreateOrConnectWithoutStudent_NotificationInput;
     connect?: StudentWhereUniqueInput;
   };
 
   export type ScholarshipCreateNestedOneWithoutStudent_NotificationsInput = {
-    create?: XOR<
-      ScholarshipCreateWithoutStudent_NotificationsInput,
-      ScholarshipUncheckedCreateWithoutStudent_NotificationsInput
-    >;
+    create?: XOR<ScholarshipCreateWithoutStudent_NotificationsInput, ScholarshipUncheckedCreateWithoutStudent_NotificationsInput>;
     connectOrCreate?: ScholarshipCreateOrConnectWithoutStudent_NotificationsInput;
     connect?: ScholarshipWhereUniqueInput;
   };
 
   export type ApplicationUpdateOneRequiredWithoutStudent_NotificationsNestedInput = {
-    create?: XOR<
-      ApplicationCreateWithoutStudent_NotificationsInput,
-      ApplicationUncheckedCreateWithoutStudent_NotificationsInput
-    >;
+    create?: XOR<ApplicationCreateWithoutStudent_NotificationsInput, ApplicationUncheckedCreateWithoutStudent_NotificationsInput>;
     connectOrCreate?: ApplicationCreateOrConnectWithoutStudent_NotificationsInput;
     upsert?: ApplicationUpsertWithoutStudent_NotificationsInput;
     connect?: ApplicationWhereUniqueInput;
     update?: XOR<
-      XOR<
-        ApplicationUpdateToOneWithWhereWithoutStudent_NotificationsInput,
-        ApplicationUpdateWithoutStudent_NotificationsInput
-      >,
+      XOR<ApplicationUpdateToOneWithWhereWithoutStudent_NotificationsInput, ApplicationUpdateWithoutStudent_NotificationsInput>,
       ApplicationUncheckedUpdateWithoutStudent_NotificationsInput
     >;
   };
 
   export type StudentUpdateOneRequiredWithoutStudent_NotificationNestedInput = {
-    create?: XOR<
-      StudentCreateWithoutStudent_NotificationInput,
-      StudentUncheckedCreateWithoutStudent_NotificationInput
-    >;
+    create?: XOR<StudentCreateWithoutStudent_NotificationInput, StudentUncheckedCreateWithoutStudent_NotificationInput>;
     connectOrCreate?: StudentCreateOrConnectWithoutStudent_NotificationInput;
     upsert?: StudentUpsertWithoutStudent_NotificationInput;
     connect?: StudentWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        StudentUpdateToOneWithWhereWithoutStudent_NotificationInput,
-        StudentUpdateWithoutStudent_NotificationInput
-      >,
-      StudentUncheckedUpdateWithoutStudent_NotificationInput
-    >;
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutStudent_NotificationInput, StudentUpdateWithoutStudent_NotificationInput>, StudentUncheckedUpdateWithoutStudent_NotificationInput>;
   };
 
   export type ScholarshipUpdateOneRequiredWithoutStudent_NotificationsNestedInput = {
-    create?: XOR<
-      ScholarshipCreateWithoutStudent_NotificationsInput,
-      ScholarshipUncheckedCreateWithoutStudent_NotificationsInput
-    >;
+    create?: XOR<ScholarshipCreateWithoutStudent_NotificationsInput, ScholarshipUncheckedCreateWithoutStudent_NotificationsInput>;
     connectOrCreate?: ScholarshipCreateOrConnectWithoutStudent_NotificationsInput;
     upsert?: ScholarshipUpsertWithoutStudent_NotificationsInput;
     connect?: ScholarshipWhereUniqueInput;
     update?: XOR<
-      XOR<
-        ScholarshipUpdateToOneWithWhereWithoutStudent_NotificationsInput,
-        ScholarshipUpdateWithoutStudent_NotificationsInput
-      >,
+      XOR<ScholarshipUpdateToOneWithWhereWithoutStudent_NotificationsInput, ScholarshipUpdateWithoutStudent_NotificationsInput>,
       ScholarshipUncheckedUpdateWithoutStudent_NotificationsInput
     >;
   };
 
   export type ISPSU_HeadCreateNestedOneWithoutAnnouncementInput = {
-    create?: XOR<
-      ISPSU_HeadCreateWithoutAnnouncementInput,
-      ISPSU_HeadUncheckedCreateWithoutAnnouncementInput
-    >;
+    create?: XOR<ISPSU_HeadCreateWithoutAnnouncementInput, ISPSU_HeadUncheckedCreateWithoutAnnouncementInput>;
     connectOrCreate?: ISPSU_HeadCreateOrConnectWithoutAnnouncementInput;
     connect?: ISPSU_HeadWhereUniqueInput;
   };
 
   export type ISPSU_HeadUpdateOneRequiredWithoutAnnouncementNestedInput = {
-    create?: XOR<
-      ISPSU_HeadCreateWithoutAnnouncementInput,
-      ISPSU_HeadUncheckedCreateWithoutAnnouncementInput
-    >;
+    create?: XOR<ISPSU_HeadCreateWithoutAnnouncementInput, ISPSU_HeadUncheckedCreateWithoutAnnouncementInput>;
     connectOrCreate?: ISPSU_HeadCreateOrConnectWithoutAnnouncementInput;
     upsert?: ISPSU_HeadUpsertWithoutAnnouncementInput;
     connect?: ISPSU_HeadWhereUniqueInput;
-    update?: XOR<
-      XOR<
-        ISPSU_HeadUpdateToOneWithWhereWithoutAnnouncementInput,
-        ISPSU_HeadUpdateWithoutAnnouncementInput
-      >,
-      ISPSU_HeadUncheckedUpdateWithoutAnnouncementInput
-    >;
+    update?: XOR<XOR<ISPSU_HeadUpdateToOneWithWhereWithoutAnnouncementInput, ISPSU_HeadUpdateWithoutAnnouncementInput>, ISPSU_HeadUncheckedUpdateWithoutAnnouncementInput>;
   };
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -26170,13 +22704,7 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>;
   };
   export type NestedJsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<
-          Required<NestedJsonFilterBase<$PrismaModel>>,
-          Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>
-        >,
-        Required<NestedJsonFilterBase<$PrismaModel>>
-      >
+    | PatchUndefined<Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>, Required<NestedJsonFilterBase<$PrismaModel>>>
     | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>;
 
   export type NestedJsonFilterBase<$PrismaModel = never> = {
@@ -26197,10 +22725,7 @@ export namespace Prisma {
   };
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
-        Either<
-          Required<NestedJsonNullableFilterBase<$PrismaModel>>,
-          Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>
-        >,
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
         Required<NestedJsonNullableFilterBase<$PrismaModel>>
       >
     | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>;
@@ -26358,10 +22883,7 @@ export namespace Prisma {
 
   export type ISPSU_StaffCreateOrConnectWithoutAccountInput = {
     where: ISPSU_StaffWhereUniqueInput;
-    create: XOR<
-      ISPSU_StaffCreateWithoutAccountInput,
-      ISPSU_StaffUncheckedCreateWithoutAccountInput
-    >;
+    create: XOR<ISPSU_StaffCreateWithoutAccountInput, ISPSU_StaffUncheckedCreateWithoutAccountInput>;
   };
 
   export type StudentCreateWithoutAccountInput = {
@@ -26457,14 +22979,8 @@ export namespace Prisma {
   };
 
   export type ISPSU_StaffUpsertWithoutAccountInput = {
-    update: XOR<
-      ISPSU_StaffUpdateWithoutAccountInput,
-      ISPSU_StaffUncheckedUpdateWithoutAccountInput
-    >;
-    create: XOR<
-      ISPSU_StaffCreateWithoutAccountInput,
-      ISPSU_StaffUncheckedCreateWithoutAccountInput
-    >;
+    update: XOR<ISPSU_StaffUpdateWithoutAccountInput, ISPSU_StaffUncheckedUpdateWithoutAccountInput>;
+    create: XOR<ISPSU_StaffCreateWithoutAccountInput, ISPSU_StaffUncheckedCreateWithoutAccountInput>;
     where?: ISPSU_StaffWhereInput;
   };
 
@@ -26577,10 +23093,7 @@ export namespace Prisma {
 
   export type AnnouncementCreateOrConnectWithoutISPSU_HeadInput = {
     where: AnnouncementWhereUniqueInput;
-    create: XOR<
-      AnnouncementCreateWithoutISPSU_HeadInput,
-      AnnouncementUncheckedCreateWithoutISPSU_HeadInput
-    >;
+    create: XOR<AnnouncementCreateWithoutISPSU_HeadInput, AnnouncementUncheckedCreateWithoutISPSU_HeadInput>;
   };
 
   export type AnnouncementCreateManyISPSU_HeadInputEnvelope = {
@@ -26673,10 +23186,7 @@ export namespace Prisma {
 
   export type ScholarshipCreateOrConnectWithoutISPSU_HeadInput = {
     where: ScholarshipWhereUniqueInput;
-    create: XOR<
-      ScholarshipCreateWithoutISPSU_HeadInput,
-      ScholarshipUncheckedCreateWithoutISPSU_HeadInput
-    >;
+    create: XOR<ScholarshipCreateWithoutISPSU_HeadInput, ScholarshipUncheckedCreateWithoutISPSU_HeadInput>;
   };
 
   export type ScholarshipCreateManyISPSU_HeadInputEnvelope = {
@@ -26686,30 +23196,18 @@ export namespace Prisma {
 
   export type AnnouncementUpsertWithWhereUniqueWithoutISPSU_HeadInput = {
     where: AnnouncementWhereUniqueInput;
-    update: XOR<
-      AnnouncementUpdateWithoutISPSU_HeadInput,
-      AnnouncementUncheckedUpdateWithoutISPSU_HeadInput
-    >;
-    create: XOR<
-      AnnouncementCreateWithoutISPSU_HeadInput,
-      AnnouncementUncheckedCreateWithoutISPSU_HeadInput
-    >;
+    update: XOR<AnnouncementUpdateWithoutISPSU_HeadInput, AnnouncementUncheckedUpdateWithoutISPSU_HeadInput>;
+    create: XOR<AnnouncementCreateWithoutISPSU_HeadInput, AnnouncementUncheckedCreateWithoutISPSU_HeadInput>;
   };
 
   export type AnnouncementUpdateWithWhereUniqueWithoutISPSU_HeadInput = {
     where: AnnouncementWhereUniqueInput;
-    data: XOR<
-      AnnouncementUpdateWithoutISPSU_HeadInput,
-      AnnouncementUncheckedUpdateWithoutISPSU_HeadInput
-    >;
+    data: XOR<AnnouncementUpdateWithoutISPSU_HeadInput, AnnouncementUncheckedUpdateWithoutISPSU_HeadInput>;
   };
 
   export type AnnouncementUpdateManyWithWhereWithoutISPSU_HeadInput = {
     where: AnnouncementScalarWhereInput;
-    data: XOR<
-      AnnouncementUpdateManyMutationInput,
-      AnnouncementUncheckedUpdateManyWithoutISPSU_HeadInput
-    >;
+    data: XOR<AnnouncementUpdateManyMutationInput, AnnouncementUncheckedUpdateManyWithoutISPSU_HeadInput>;
   };
 
   export type AnnouncementScalarWhereInput = {
@@ -26760,30 +23258,18 @@ export namespace Prisma {
 
   export type ScholarshipUpsertWithWhereUniqueWithoutISPSU_HeadInput = {
     where: ScholarshipWhereUniqueInput;
-    update: XOR<
-      ScholarshipUpdateWithoutISPSU_HeadInput,
-      ScholarshipUncheckedUpdateWithoutISPSU_HeadInput
-    >;
-    create: XOR<
-      ScholarshipCreateWithoutISPSU_HeadInput,
-      ScholarshipUncheckedCreateWithoutISPSU_HeadInput
-    >;
+    update: XOR<ScholarshipUpdateWithoutISPSU_HeadInput, ScholarshipUncheckedUpdateWithoutISPSU_HeadInput>;
+    create: XOR<ScholarshipCreateWithoutISPSU_HeadInput, ScholarshipUncheckedCreateWithoutISPSU_HeadInput>;
   };
 
   export type ScholarshipUpdateWithWhereUniqueWithoutISPSU_HeadInput = {
     where: ScholarshipWhereUniqueInput;
-    data: XOR<
-      ScholarshipUpdateWithoutISPSU_HeadInput,
-      ScholarshipUncheckedUpdateWithoutISPSU_HeadInput
-    >;
+    data: XOR<ScholarshipUpdateWithoutISPSU_HeadInput, ScholarshipUncheckedUpdateWithoutISPSU_HeadInput>;
   };
 
   export type ScholarshipUpdateManyWithWhereWithoutISPSU_HeadInput = {
     where: ScholarshipScalarWhereInput;
-    data: XOR<
-      ScholarshipUpdateManyMutationInput,
-      ScholarshipUncheckedUpdateManyWithoutISPSU_HeadInput
-    >;
+    data: XOR<ScholarshipUpdateManyMutationInput, ScholarshipUncheckedUpdateManyWithoutISPSU_HeadInput>;
   };
 
   export type ScholarshipScalarWhereInput = {
@@ -26833,16 +23319,11 @@ export namespace Prisma {
 
   export type Application_DecisionCreateOrConnectWithoutISPSU_StaffInput = {
     where: Application_DecisionWhereUniqueInput;
-    create: XOR<
-      Application_DecisionCreateWithoutISPSU_StaffInput,
-      Application_DecisionUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    create: XOR<Application_DecisionCreateWithoutISPSU_StaffInput, Application_DecisionUncheckedCreateWithoutISPSU_StaffInput>;
   };
 
   export type Application_DecisionCreateManyISPSU_StaffInputEnvelope = {
-    data:
-      | Application_DecisionCreateManyISPSU_StaffInput
-      | Application_DecisionCreateManyISPSU_StaffInput[];
+    data: Application_DecisionCreateManyISPSU_StaffInput | Application_DecisionCreateManyISPSU_StaffInput[];
     skipDuplicates?: boolean;
   };
 
@@ -26871,10 +23352,7 @@ export namespace Prisma {
 
   export type AccountCreateOrConnectWithoutISPSU_StaffInput = {
     where: AccountWhereUniqueInput;
-    create: XOR<
-      AccountCreateWithoutISPSU_StaffInput,
-      AccountUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    create: XOR<AccountCreateWithoutISPSU_StaffInput, AccountUncheckedCreateWithoutISPSU_StaffInput>;
   };
 
   export type Interview_DecisionCreateWithoutISPSU_StaffInput = {
@@ -26896,16 +23374,11 @@ export namespace Prisma {
 
   export type Interview_DecisionCreateOrConnectWithoutISPSU_StaffInput = {
     where: Interview_DecisionWhereUniqueInput;
-    create: XOR<
-      Interview_DecisionCreateWithoutISPSU_StaffInput,
-      Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    create: XOR<Interview_DecisionCreateWithoutISPSU_StaffInput, Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput>;
   };
 
   export type Interview_DecisionCreateManyISPSU_StaffInputEnvelope = {
-    data:
-      | Interview_DecisionCreateManyISPSU_StaffInput
-      | Interview_DecisionCreateManyISPSU_StaffInput[];
+    data: Interview_DecisionCreateManyISPSU_StaffInput | Interview_DecisionCreateManyISPSU_StaffInput[];
     skipDuplicates?: boolean;
   };
 
@@ -26928,10 +23401,7 @@ export namespace Prisma {
 
   export type Staff_LogsCreateOrConnectWithoutISPSU_StaffInput = {
     where: Staff_LogsWhereUniqueInput;
-    create: XOR<
-      Staff_LogsCreateWithoutISPSU_StaffInput,
-      Staff_LogsUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    create: XOR<Staff_LogsCreateWithoutISPSU_StaffInput, Staff_LogsUncheckedCreateWithoutISPSU_StaffInput>;
   };
 
   export type Staff_LogsCreateManyISPSU_StaffInputEnvelope = {
@@ -26941,30 +23411,18 @@ export namespace Prisma {
 
   export type Application_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput = {
     where: Application_DecisionWhereUniqueInput;
-    update: XOR<
-      Application_DecisionUpdateWithoutISPSU_StaffInput,
-      Application_DecisionUncheckedUpdateWithoutISPSU_StaffInput
-    >;
-    create: XOR<
-      Application_DecisionCreateWithoutISPSU_StaffInput,
-      Application_DecisionUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    update: XOR<Application_DecisionUpdateWithoutISPSU_StaffInput, Application_DecisionUncheckedUpdateWithoutISPSU_StaffInput>;
+    create: XOR<Application_DecisionCreateWithoutISPSU_StaffInput, Application_DecisionUncheckedCreateWithoutISPSU_StaffInput>;
   };
 
   export type Application_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput = {
     where: Application_DecisionWhereUniqueInput;
-    data: XOR<
-      Application_DecisionUpdateWithoutISPSU_StaffInput,
-      Application_DecisionUncheckedUpdateWithoutISPSU_StaffInput
-    >;
+    data: XOR<Application_DecisionUpdateWithoutISPSU_StaffInput, Application_DecisionUncheckedUpdateWithoutISPSU_StaffInput>;
   };
 
   export type Application_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput = {
     where: Application_DecisionScalarWhereInput;
-    data: XOR<
-      Application_DecisionUpdateManyMutationInput,
-      Application_DecisionUncheckedUpdateManyWithoutISPSU_StaffInput
-    >;
+    data: XOR<Application_DecisionUpdateManyMutationInput, Application_DecisionUncheckedUpdateManyWithoutISPSU_StaffInput>;
   };
 
   export type Application_DecisionScalarWhereInput = {
@@ -26981,14 +23439,8 @@ export namespace Prisma {
   };
 
   export type AccountUpsertWithoutISPSU_StaffInput = {
-    update: XOR<
-      AccountUpdateWithoutISPSU_StaffInput,
-      AccountUncheckedUpdateWithoutISPSU_StaffInput
-    >;
-    create: XOR<
-      AccountCreateWithoutISPSU_StaffInput,
-      AccountUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    update: XOR<AccountUpdateWithoutISPSU_StaffInput, AccountUncheckedUpdateWithoutISPSU_StaffInput>;
+    create: XOR<AccountCreateWithoutISPSU_StaffInput, AccountUncheckedCreateWithoutISPSU_StaffInput>;
     where?: AccountWhereInput;
   };
 
@@ -27022,30 +23474,18 @@ export namespace Prisma {
 
   export type Interview_DecisionUpsertWithWhereUniqueWithoutISPSU_StaffInput = {
     where: Interview_DecisionWhereUniqueInput;
-    update: XOR<
-      Interview_DecisionUpdateWithoutISPSU_StaffInput,
-      Interview_DecisionUncheckedUpdateWithoutISPSU_StaffInput
-    >;
-    create: XOR<
-      Interview_DecisionCreateWithoutISPSU_StaffInput,
-      Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    update: XOR<Interview_DecisionUpdateWithoutISPSU_StaffInput, Interview_DecisionUncheckedUpdateWithoutISPSU_StaffInput>;
+    create: XOR<Interview_DecisionCreateWithoutISPSU_StaffInput, Interview_DecisionUncheckedCreateWithoutISPSU_StaffInput>;
   };
 
   export type Interview_DecisionUpdateWithWhereUniqueWithoutISPSU_StaffInput = {
     where: Interview_DecisionWhereUniqueInput;
-    data: XOR<
-      Interview_DecisionUpdateWithoutISPSU_StaffInput,
-      Interview_DecisionUncheckedUpdateWithoutISPSU_StaffInput
-    >;
+    data: XOR<Interview_DecisionUpdateWithoutISPSU_StaffInput, Interview_DecisionUncheckedUpdateWithoutISPSU_StaffInput>;
   };
 
   export type Interview_DecisionUpdateManyWithWhereWithoutISPSU_StaffInput = {
     where: Interview_DecisionScalarWhereInput;
-    data: XOR<
-      Interview_DecisionUpdateManyMutationInput,
-      Interview_DecisionUncheckedUpdateManyWithoutISPSU_StaffInput
-    >;
+    data: XOR<Interview_DecisionUpdateManyMutationInput, Interview_DecisionUncheckedUpdateManyWithoutISPSU_StaffInput>;
   };
 
   export type Interview_DecisionScalarWhereInput = {
@@ -27063,30 +23503,18 @@ export namespace Prisma {
 
   export type Staff_LogsUpsertWithWhereUniqueWithoutISPSU_StaffInput = {
     where: Staff_LogsWhereUniqueInput;
-    update: XOR<
-      Staff_LogsUpdateWithoutISPSU_StaffInput,
-      Staff_LogsUncheckedUpdateWithoutISPSU_StaffInput
-    >;
-    create: XOR<
-      Staff_LogsCreateWithoutISPSU_StaffInput,
-      Staff_LogsUncheckedCreateWithoutISPSU_StaffInput
-    >;
+    update: XOR<Staff_LogsUpdateWithoutISPSU_StaffInput, Staff_LogsUncheckedUpdateWithoutISPSU_StaffInput>;
+    create: XOR<Staff_LogsCreateWithoutISPSU_StaffInput, Staff_LogsUncheckedCreateWithoutISPSU_StaffInput>;
   };
 
   export type Staff_LogsUpdateWithWhereUniqueWithoutISPSU_StaffInput = {
     where: Staff_LogsWhereUniqueInput;
-    data: XOR<
-      Staff_LogsUpdateWithoutISPSU_StaffInput,
-      Staff_LogsUncheckedUpdateWithoutISPSU_StaffInput
-    >;
+    data: XOR<Staff_LogsUpdateWithoutISPSU_StaffInput, Staff_LogsUncheckedUpdateWithoutISPSU_StaffInput>;
   };
 
   export type Staff_LogsUpdateManyWithWhereWithoutISPSU_StaffInput = {
     where: Staff_LogsScalarWhereInput;
-    data: XOR<
-      Staff_LogsUpdateManyMutationInput,
-      Staff_LogsUncheckedUpdateManyWithoutISPSU_StaffInput
-    >;
+    data: XOR<Staff_LogsUpdateManyMutationInput, Staff_LogsUncheckedUpdateManyWithoutISPSU_StaffInput>;
   };
 
   export type Staff_LogsScalarWhereInput = {
@@ -27129,10 +23557,7 @@ export namespace Prisma {
 
   export type ApplicationCreateOrConnectWithoutStudentInput = {
     where: ApplicationWhereUniqueInput;
-    create: XOR<
-      ApplicationCreateWithoutStudentInput,
-      ApplicationUncheckedCreateWithoutStudentInput
-    >;
+    create: XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput>;
   };
 
   export type ApplicationCreateManyStudentInputEnvelope = {
@@ -27191,10 +23616,7 @@ export namespace Prisma {
 
   export type Student_NotificationCreateOrConnectWithoutStudentInput = {
     where: Student_NotificationWhereUniqueInput;
-    create: XOR<
-      Student_NotificationCreateWithoutStudentInput,
-      Student_NotificationUncheckedCreateWithoutStudentInput
-    >;
+    create: XOR<Student_NotificationCreateWithoutStudentInput, Student_NotificationUncheckedCreateWithoutStudentInput>;
   };
 
   export type Student_NotificationCreateManyStudentInputEnvelope = {
@@ -27204,14 +23626,8 @@ export namespace Prisma {
 
   export type ApplicationUpsertWithWhereUniqueWithoutStudentInput = {
     where: ApplicationWhereUniqueInput;
-    update: XOR<
-      ApplicationUpdateWithoutStudentInput,
-      ApplicationUncheckedUpdateWithoutStudentInput
-    >;
-    create: XOR<
-      ApplicationCreateWithoutStudentInput,
-      ApplicationUncheckedCreateWithoutStudentInput
-    >;
+    update: XOR<ApplicationUpdateWithoutStudentInput, ApplicationUncheckedUpdateWithoutStudentInput>;
+    create: XOR<ApplicationCreateWithoutStudentInput, ApplicationUncheckedCreateWithoutStudentInput>;
   };
 
   export type ApplicationUpdateWithWhereUniqueWithoutStudentInput = {
@@ -27221,10 +23637,7 @@ export namespace Prisma {
 
   export type ApplicationUpdateManyWithWhereWithoutStudentInput = {
     where: ApplicationScalarWhereInput;
-    data: XOR<
-      ApplicationUpdateManyMutationInput,
-      ApplicationUncheckedUpdateManyWithoutStudentInput
-    >;
+    data: XOR<ApplicationUpdateManyMutationInput, ApplicationUncheckedUpdateManyWithoutStudentInput>;
   };
 
   export type ApplicationScalarWhereInput = {
@@ -27276,30 +23689,18 @@ export namespace Prisma {
 
   export type Student_NotificationUpsertWithWhereUniqueWithoutStudentInput = {
     where: Student_NotificationWhereUniqueInput;
-    update: XOR<
-      Student_NotificationUpdateWithoutStudentInput,
-      Student_NotificationUncheckedUpdateWithoutStudentInput
-    >;
-    create: XOR<
-      Student_NotificationCreateWithoutStudentInput,
-      Student_NotificationUncheckedCreateWithoutStudentInput
-    >;
+    update: XOR<Student_NotificationUpdateWithoutStudentInput, Student_NotificationUncheckedUpdateWithoutStudentInput>;
+    create: XOR<Student_NotificationCreateWithoutStudentInput, Student_NotificationUncheckedCreateWithoutStudentInput>;
   };
 
   export type Student_NotificationUpdateWithWhereUniqueWithoutStudentInput = {
     where: Student_NotificationWhereUniqueInput;
-    data: XOR<
-      Student_NotificationUpdateWithoutStudentInput,
-      Student_NotificationUncheckedUpdateWithoutStudentInput
-    >;
+    data: XOR<Student_NotificationUpdateWithoutStudentInput, Student_NotificationUncheckedUpdateWithoutStudentInput>;
   };
 
   export type Student_NotificationUpdateManyWithWhereWithoutStudentInput = {
     where: Student_NotificationScalarWhereInput;
-    data: XOR<
-      Student_NotificationUpdateManyMutationInput,
-      Student_NotificationUncheckedUpdateManyWithoutStudentInput
-    >;
+    data: XOR<Student_NotificationUpdateManyMutationInput, Student_NotificationUncheckedUpdateManyWithoutStudentInput>;
   };
 
   export type Student_NotificationScalarWhereInput = {
@@ -27374,30 +23775,18 @@ export namespace Prisma {
 
   export type ScholarshipCreateOrConnectWithoutScholarship_ProviderInput = {
     where: ScholarshipWhereUniqueInput;
-    create: XOR<
-      ScholarshipCreateWithoutScholarship_ProviderInput,
-      ScholarshipUncheckedCreateWithoutScholarship_ProviderInput
-    >;
+    create: XOR<ScholarshipCreateWithoutScholarship_ProviderInput, ScholarshipUncheckedCreateWithoutScholarship_ProviderInput>;
   };
 
   export type ScholarshipUpsertWithoutScholarship_ProviderInput = {
-    update: XOR<
-      ScholarshipUpdateWithoutScholarship_ProviderInput,
-      ScholarshipUncheckedUpdateWithoutScholarship_ProviderInput
-    >;
-    create: XOR<
-      ScholarshipCreateWithoutScholarship_ProviderInput,
-      ScholarshipUncheckedCreateWithoutScholarship_ProviderInput
-    >;
+    update: XOR<ScholarshipUpdateWithoutScholarship_ProviderInput, ScholarshipUncheckedUpdateWithoutScholarship_ProviderInput>;
+    create: XOR<ScholarshipCreateWithoutScholarship_ProviderInput, ScholarshipUncheckedCreateWithoutScholarship_ProviderInput>;
     where?: ScholarshipWhereInput;
   };
 
   export type ScholarshipUpdateToOneWithWhereWithoutScholarship_ProviderInput = {
     where?: ScholarshipWhereInput;
-    data: XOR<
-      ScholarshipUpdateWithoutScholarship_ProviderInput,
-      ScholarshipUncheckedUpdateWithoutScholarship_ProviderInput
-    >;
+    data: XOR<ScholarshipUpdateWithoutScholarship_ProviderInput, ScholarshipUncheckedUpdateWithoutScholarship_ProviderInput>;
   };
 
   export type ScholarshipUpdateWithoutScholarship_ProviderInput = {
@@ -27482,10 +23871,7 @@ export namespace Prisma {
 
   export type ApplicationCreateOrConnectWithoutScholarshipInput = {
     where: ApplicationWhereUniqueInput;
-    create: XOR<
-      ApplicationCreateWithoutScholarshipInput,
-      ApplicationUncheckedCreateWithoutScholarshipInput
-    >;
+    create: XOR<ApplicationCreateWithoutScholarshipInput, ApplicationUncheckedCreateWithoutScholarshipInput>;
   };
 
   export type ApplicationCreateManyScholarshipInputEnvelope = {
@@ -27519,10 +23905,7 @@ export namespace Prisma {
 
   export type ISPSU_HeadCreateOrConnectWithoutScholarshipInput = {
     where: ISPSU_HeadWhereUniqueInput;
-    create: XOR<
-      ISPSU_HeadCreateWithoutScholarshipInput,
-      ISPSU_HeadUncheckedCreateWithoutScholarshipInput
-    >;
+    create: XOR<ISPSU_HeadCreateWithoutScholarshipInput, ISPSU_HeadUncheckedCreateWithoutScholarshipInput>;
   };
 
   export type Scholarship_ProviderCreateWithoutScholarshipInput = {
@@ -27537,10 +23920,7 @@ export namespace Prisma {
 
   export type Scholarship_ProviderCreateOrConnectWithoutScholarshipInput = {
     where: Scholarship_ProviderWhereUniqueInput;
-    create: XOR<
-      Scholarship_ProviderCreateWithoutScholarshipInput,
-      Scholarship_ProviderUncheckedCreateWithoutScholarshipInput
-    >;
+    create: XOR<Scholarship_ProviderCreateWithoutScholarshipInput, Scholarship_ProviderUncheckedCreateWithoutScholarshipInput>;
   };
 
   export type Staff_LogsCreateWithoutScholarshipInput = {
@@ -27562,10 +23942,7 @@ export namespace Prisma {
 
   export type Staff_LogsCreateOrConnectWithoutScholarshipInput = {
     where: Staff_LogsWhereUniqueInput;
-    create: XOR<
-      Staff_LogsCreateWithoutScholarshipInput,
-      Staff_LogsUncheckedCreateWithoutScholarshipInput
-    >;
+    create: XOR<Staff_LogsCreateWithoutScholarshipInput, Staff_LogsUncheckedCreateWithoutScholarshipInput>;
   };
 
   export type Staff_LogsCreateManyScholarshipInputEnvelope = {
@@ -27596,65 +23973,39 @@ export namespace Prisma {
 
   export type Student_NotificationCreateOrConnectWithoutScholarshipInput = {
     where: Student_NotificationWhereUniqueInput;
-    create: XOR<
-      Student_NotificationCreateWithoutScholarshipInput,
-      Student_NotificationUncheckedCreateWithoutScholarshipInput
-    >;
+    create: XOR<Student_NotificationCreateWithoutScholarshipInput, Student_NotificationUncheckedCreateWithoutScholarshipInput>;
   };
 
   export type Student_NotificationCreateManyScholarshipInputEnvelope = {
-    data:
-      | Student_NotificationCreateManyScholarshipInput
-      | Student_NotificationCreateManyScholarshipInput[];
+    data: Student_NotificationCreateManyScholarshipInput | Student_NotificationCreateManyScholarshipInput[];
     skipDuplicates?: boolean;
   };
 
   export type ApplicationUpsertWithWhereUniqueWithoutScholarshipInput = {
     where: ApplicationWhereUniqueInput;
-    update: XOR<
-      ApplicationUpdateWithoutScholarshipInput,
-      ApplicationUncheckedUpdateWithoutScholarshipInput
-    >;
-    create: XOR<
-      ApplicationCreateWithoutScholarshipInput,
-      ApplicationUncheckedCreateWithoutScholarshipInput
-    >;
+    update: XOR<ApplicationUpdateWithoutScholarshipInput, ApplicationUncheckedUpdateWithoutScholarshipInput>;
+    create: XOR<ApplicationCreateWithoutScholarshipInput, ApplicationUncheckedCreateWithoutScholarshipInput>;
   };
 
   export type ApplicationUpdateWithWhereUniqueWithoutScholarshipInput = {
     where: ApplicationWhereUniqueInput;
-    data: XOR<
-      ApplicationUpdateWithoutScholarshipInput,
-      ApplicationUncheckedUpdateWithoutScholarshipInput
-    >;
+    data: XOR<ApplicationUpdateWithoutScholarshipInput, ApplicationUncheckedUpdateWithoutScholarshipInput>;
   };
 
   export type ApplicationUpdateManyWithWhereWithoutScholarshipInput = {
     where: ApplicationScalarWhereInput;
-    data: XOR<
-      ApplicationUpdateManyMutationInput,
-      ApplicationUncheckedUpdateManyWithoutScholarshipInput
-    >;
+    data: XOR<ApplicationUpdateManyMutationInput, ApplicationUncheckedUpdateManyWithoutScholarshipInput>;
   };
 
   export type ISPSU_HeadUpsertWithoutScholarshipInput = {
-    update: XOR<
-      ISPSU_HeadUpdateWithoutScholarshipInput,
-      ISPSU_HeadUncheckedUpdateWithoutScholarshipInput
-    >;
-    create: XOR<
-      ISPSU_HeadCreateWithoutScholarshipInput,
-      ISPSU_HeadUncheckedCreateWithoutScholarshipInput
-    >;
+    update: XOR<ISPSU_HeadUpdateWithoutScholarshipInput, ISPSU_HeadUncheckedUpdateWithoutScholarshipInput>;
+    create: XOR<ISPSU_HeadCreateWithoutScholarshipInput, ISPSU_HeadUncheckedCreateWithoutScholarshipInput>;
     where?: ISPSU_HeadWhereInput;
   };
 
   export type ISPSU_HeadUpdateToOneWithWhereWithoutScholarshipInput = {
     where?: ISPSU_HeadWhereInput;
-    data: XOR<
-      ISPSU_HeadUpdateWithoutScholarshipInput,
-      ISPSU_HeadUncheckedUpdateWithoutScholarshipInput
-    >;
+    data: XOR<ISPSU_HeadUpdateWithoutScholarshipInput, ISPSU_HeadUncheckedUpdateWithoutScholarshipInput>;
   };
 
   export type ISPSU_HeadUpdateWithoutScholarshipInput = {
@@ -27682,23 +24033,14 @@ export namespace Prisma {
   };
 
   export type Scholarship_ProviderUpsertWithoutScholarshipInput = {
-    update: XOR<
-      Scholarship_ProviderUpdateWithoutScholarshipInput,
-      Scholarship_ProviderUncheckedUpdateWithoutScholarshipInput
-    >;
-    create: XOR<
-      Scholarship_ProviderCreateWithoutScholarshipInput,
-      Scholarship_ProviderUncheckedCreateWithoutScholarshipInput
-    >;
+    update: XOR<Scholarship_ProviderUpdateWithoutScholarshipInput, Scholarship_ProviderUncheckedUpdateWithoutScholarshipInput>;
+    create: XOR<Scholarship_ProviderCreateWithoutScholarshipInput, Scholarship_ProviderUncheckedCreateWithoutScholarshipInput>;
     where?: Scholarship_ProviderWhereInput;
   };
 
   export type Scholarship_ProviderUpdateToOneWithWhereWithoutScholarshipInput = {
     where?: Scholarship_ProviderWhereInput;
-    data: XOR<
-      Scholarship_ProviderUpdateWithoutScholarshipInput,
-      Scholarship_ProviderUncheckedUpdateWithoutScholarshipInput
-    >;
+    data: XOR<Scholarship_ProviderUpdateWithoutScholarshipInput, Scholarship_ProviderUncheckedUpdateWithoutScholarshipInput>;
   };
 
   export type Scholarship_ProviderUpdateWithoutScholarshipInput = {
@@ -27713,58 +24055,34 @@ export namespace Prisma {
 
   export type Staff_LogsUpsertWithWhereUniqueWithoutScholarshipInput = {
     where: Staff_LogsWhereUniqueInput;
-    update: XOR<
-      Staff_LogsUpdateWithoutScholarshipInput,
-      Staff_LogsUncheckedUpdateWithoutScholarshipInput
-    >;
-    create: XOR<
-      Staff_LogsCreateWithoutScholarshipInput,
-      Staff_LogsUncheckedCreateWithoutScholarshipInput
-    >;
+    update: XOR<Staff_LogsUpdateWithoutScholarshipInput, Staff_LogsUncheckedUpdateWithoutScholarshipInput>;
+    create: XOR<Staff_LogsCreateWithoutScholarshipInput, Staff_LogsUncheckedCreateWithoutScholarshipInput>;
   };
 
   export type Staff_LogsUpdateWithWhereUniqueWithoutScholarshipInput = {
     where: Staff_LogsWhereUniqueInput;
-    data: XOR<
-      Staff_LogsUpdateWithoutScholarshipInput,
-      Staff_LogsUncheckedUpdateWithoutScholarshipInput
-    >;
+    data: XOR<Staff_LogsUpdateWithoutScholarshipInput, Staff_LogsUncheckedUpdateWithoutScholarshipInput>;
   };
 
   export type Staff_LogsUpdateManyWithWhereWithoutScholarshipInput = {
     where: Staff_LogsScalarWhereInput;
-    data: XOR<
-      Staff_LogsUpdateManyMutationInput,
-      Staff_LogsUncheckedUpdateManyWithoutScholarshipInput
-    >;
+    data: XOR<Staff_LogsUpdateManyMutationInput, Staff_LogsUncheckedUpdateManyWithoutScholarshipInput>;
   };
 
   export type Student_NotificationUpsertWithWhereUniqueWithoutScholarshipInput = {
     where: Student_NotificationWhereUniqueInput;
-    update: XOR<
-      Student_NotificationUpdateWithoutScholarshipInput,
-      Student_NotificationUncheckedUpdateWithoutScholarshipInput
-    >;
-    create: XOR<
-      Student_NotificationCreateWithoutScholarshipInput,
-      Student_NotificationUncheckedCreateWithoutScholarshipInput
-    >;
+    update: XOR<Student_NotificationUpdateWithoutScholarshipInput, Student_NotificationUncheckedUpdateWithoutScholarshipInput>;
+    create: XOR<Student_NotificationCreateWithoutScholarshipInput, Student_NotificationUncheckedCreateWithoutScholarshipInput>;
   };
 
   export type Student_NotificationUpdateWithWhereUniqueWithoutScholarshipInput = {
     where: Student_NotificationWhereUniqueInput;
-    data: XOR<
-      Student_NotificationUpdateWithoutScholarshipInput,
-      Student_NotificationUncheckedUpdateWithoutScholarshipInput
-    >;
+    data: XOR<Student_NotificationUpdateWithoutScholarshipInput, Student_NotificationUncheckedUpdateWithoutScholarshipInput>;
   };
 
   export type Student_NotificationUpdateManyWithWhereWithoutScholarshipInput = {
     where: Student_NotificationScalarWhereInput;
-    data: XOR<
-      Student_NotificationUpdateManyMutationInput,
-      Student_NotificationUncheckedUpdateManyWithoutScholarshipInput
-    >;
+    data: XOR<Student_NotificationUpdateManyMutationInput, Student_NotificationUncheckedUpdateManyWithoutScholarshipInput>;
   };
 
   export type StudentCreateWithoutApplicationInput = {
@@ -27821,10 +24139,7 @@ export namespace Prisma {
 
   export type StudentCreateOrConnectWithoutApplicationInput = {
     where: StudentWhereUniqueInput;
-    create: XOR<
-      StudentCreateWithoutApplicationInput,
-      StudentUncheckedCreateWithoutApplicationInput
-    >;
+    create: XOR<StudentCreateWithoutApplicationInput, StudentUncheckedCreateWithoutApplicationInput>;
   };
 
   export type ScholarshipCreateWithoutApplicationInput = {
@@ -27884,10 +24199,7 @@ export namespace Prisma {
 
   export type ScholarshipCreateOrConnectWithoutApplicationInput = {
     where: ScholarshipWhereUniqueInput;
-    create: XOR<
-      ScholarshipCreateWithoutApplicationInput,
-      ScholarshipUncheckedCreateWithoutApplicationInput
-    >;
+    create: XOR<ScholarshipCreateWithoutApplicationInput, ScholarshipUncheckedCreateWithoutApplicationInput>;
   };
 
   export type Application_DecisionCreateWithoutApplicationInput = {
@@ -27909,16 +24221,11 @@ export namespace Prisma {
 
   export type Application_DecisionCreateOrConnectWithoutApplicationInput = {
     where: Application_DecisionWhereUniqueInput;
-    create: XOR<
-      Application_DecisionCreateWithoutApplicationInput,
-      Application_DecisionUncheckedCreateWithoutApplicationInput
-    >;
+    create: XOR<Application_DecisionCreateWithoutApplicationInput, Application_DecisionUncheckedCreateWithoutApplicationInput>;
   };
 
   export type Application_DecisionCreateManyApplicationInputEnvelope = {
-    data:
-      | Application_DecisionCreateManyApplicationInput
-      | Application_DecisionCreateManyApplicationInput[];
+    data: Application_DecisionCreateManyApplicationInput | Application_DecisionCreateManyApplicationInput[];
     skipDuplicates?: boolean;
   };
 
@@ -27941,16 +24248,11 @@ export namespace Prisma {
 
   export type Interview_DecisionCreateOrConnectWithoutApplicationInput = {
     where: Interview_DecisionWhereUniqueInput;
-    create: XOR<
-      Interview_DecisionCreateWithoutApplicationInput,
-      Interview_DecisionUncheckedCreateWithoutApplicationInput
-    >;
+    create: XOR<Interview_DecisionCreateWithoutApplicationInput, Interview_DecisionUncheckedCreateWithoutApplicationInput>;
   };
 
   export type Interview_DecisionCreateManyApplicationInputEnvelope = {
-    data:
-      | Interview_DecisionCreateManyApplicationInput
-      | Interview_DecisionCreateManyApplicationInput[];
+    data: Interview_DecisionCreateManyApplicationInput | Interview_DecisionCreateManyApplicationInput[];
     skipDuplicates?: boolean;
   };
 
@@ -27973,10 +24275,7 @@ export namespace Prisma {
 
   export type Staff_LogsCreateOrConnectWithoutApplicationInput = {
     where: Staff_LogsWhereUniqueInput;
-    create: XOR<
-      Staff_LogsCreateWithoutApplicationInput,
-      Staff_LogsUncheckedCreateWithoutApplicationInput
-    >;
+    create: XOR<Staff_LogsCreateWithoutApplicationInput, Staff_LogsUncheckedCreateWithoutApplicationInput>;
   };
 
   export type Staff_LogsCreateManyApplicationInputEnvelope = {
@@ -28007,28 +24306,17 @@ export namespace Prisma {
 
   export type Student_NotificationCreateOrConnectWithoutApplicationInput = {
     where: Student_NotificationWhereUniqueInput;
-    create: XOR<
-      Student_NotificationCreateWithoutApplicationInput,
-      Student_NotificationUncheckedCreateWithoutApplicationInput
-    >;
+    create: XOR<Student_NotificationCreateWithoutApplicationInput, Student_NotificationUncheckedCreateWithoutApplicationInput>;
   };
 
   export type Student_NotificationCreateManyApplicationInputEnvelope = {
-    data:
-      | Student_NotificationCreateManyApplicationInput
-      | Student_NotificationCreateManyApplicationInput[];
+    data: Student_NotificationCreateManyApplicationInput | Student_NotificationCreateManyApplicationInput[];
     skipDuplicates?: boolean;
   };
 
   export type StudentUpsertWithoutApplicationInput = {
-    update: XOR<
-      StudentUpdateWithoutApplicationInput,
-      StudentUncheckedUpdateWithoutApplicationInput
-    >;
-    create: XOR<
-      StudentCreateWithoutApplicationInput,
-      StudentUncheckedCreateWithoutApplicationInput
-    >;
+    update: XOR<StudentUpdateWithoutApplicationInput, StudentUncheckedUpdateWithoutApplicationInput>;
+    create: XOR<StudentCreateWithoutApplicationInput, StudentUncheckedCreateWithoutApplicationInput>;
     where?: StudentWhereInput;
   };
 
@@ -28090,23 +24378,14 @@ export namespace Prisma {
   };
 
   export type ScholarshipUpsertWithoutApplicationInput = {
-    update: XOR<
-      ScholarshipUpdateWithoutApplicationInput,
-      ScholarshipUncheckedUpdateWithoutApplicationInput
-    >;
-    create: XOR<
-      ScholarshipCreateWithoutApplicationInput,
-      ScholarshipUncheckedCreateWithoutApplicationInput
-    >;
+    update: XOR<ScholarshipUpdateWithoutApplicationInput, ScholarshipUncheckedUpdateWithoutApplicationInput>;
+    create: XOR<ScholarshipCreateWithoutApplicationInput, ScholarshipUncheckedCreateWithoutApplicationInput>;
     where?: ScholarshipWhereInput;
   };
 
   export type ScholarshipUpdateToOneWithWhereWithoutApplicationInput = {
     where?: ScholarshipWhereInput;
-    data: XOR<
-      ScholarshipUpdateWithoutApplicationInput,
-      ScholarshipUncheckedUpdateWithoutApplicationInput
-    >;
+    data: XOR<ScholarshipUpdateWithoutApplicationInput, ScholarshipUncheckedUpdateWithoutApplicationInput>;
   };
 
   export type ScholarshipUpdateWithoutApplicationInput = {
@@ -28166,114 +24445,66 @@ export namespace Prisma {
 
   export type Application_DecisionUpsertWithWhereUniqueWithoutApplicationInput = {
     where: Application_DecisionWhereUniqueInput;
-    update: XOR<
-      Application_DecisionUpdateWithoutApplicationInput,
-      Application_DecisionUncheckedUpdateWithoutApplicationInput
-    >;
-    create: XOR<
-      Application_DecisionCreateWithoutApplicationInput,
-      Application_DecisionUncheckedCreateWithoutApplicationInput
-    >;
+    update: XOR<Application_DecisionUpdateWithoutApplicationInput, Application_DecisionUncheckedUpdateWithoutApplicationInput>;
+    create: XOR<Application_DecisionCreateWithoutApplicationInput, Application_DecisionUncheckedCreateWithoutApplicationInput>;
   };
 
   export type Application_DecisionUpdateWithWhereUniqueWithoutApplicationInput = {
     where: Application_DecisionWhereUniqueInput;
-    data: XOR<
-      Application_DecisionUpdateWithoutApplicationInput,
-      Application_DecisionUncheckedUpdateWithoutApplicationInput
-    >;
+    data: XOR<Application_DecisionUpdateWithoutApplicationInput, Application_DecisionUncheckedUpdateWithoutApplicationInput>;
   };
 
   export type Application_DecisionUpdateManyWithWhereWithoutApplicationInput = {
     where: Application_DecisionScalarWhereInput;
-    data: XOR<
-      Application_DecisionUpdateManyMutationInput,
-      Application_DecisionUncheckedUpdateManyWithoutApplicationInput
-    >;
+    data: XOR<Application_DecisionUpdateManyMutationInput, Application_DecisionUncheckedUpdateManyWithoutApplicationInput>;
   };
 
   export type Interview_DecisionUpsertWithWhereUniqueWithoutApplicationInput = {
     where: Interview_DecisionWhereUniqueInput;
-    update: XOR<
-      Interview_DecisionUpdateWithoutApplicationInput,
-      Interview_DecisionUncheckedUpdateWithoutApplicationInput
-    >;
-    create: XOR<
-      Interview_DecisionCreateWithoutApplicationInput,
-      Interview_DecisionUncheckedCreateWithoutApplicationInput
-    >;
+    update: XOR<Interview_DecisionUpdateWithoutApplicationInput, Interview_DecisionUncheckedUpdateWithoutApplicationInput>;
+    create: XOR<Interview_DecisionCreateWithoutApplicationInput, Interview_DecisionUncheckedCreateWithoutApplicationInput>;
   };
 
   export type Interview_DecisionUpdateWithWhereUniqueWithoutApplicationInput = {
     where: Interview_DecisionWhereUniqueInput;
-    data: XOR<
-      Interview_DecisionUpdateWithoutApplicationInput,
-      Interview_DecisionUncheckedUpdateWithoutApplicationInput
-    >;
+    data: XOR<Interview_DecisionUpdateWithoutApplicationInput, Interview_DecisionUncheckedUpdateWithoutApplicationInput>;
   };
 
   export type Interview_DecisionUpdateManyWithWhereWithoutApplicationInput = {
     where: Interview_DecisionScalarWhereInput;
-    data: XOR<
-      Interview_DecisionUpdateManyMutationInput,
-      Interview_DecisionUncheckedUpdateManyWithoutApplicationInput
-    >;
+    data: XOR<Interview_DecisionUpdateManyMutationInput, Interview_DecisionUncheckedUpdateManyWithoutApplicationInput>;
   };
 
   export type Staff_LogsUpsertWithWhereUniqueWithoutApplicationInput = {
     where: Staff_LogsWhereUniqueInput;
-    update: XOR<
-      Staff_LogsUpdateWithoutApplicationInput,
-      Staff_LogsUncheckedUpdateWithoutApplicationInput
-    >;
-    create: XOR<
-      Staff_LogsCreateWithoutApplicationInput,
-      Staff_LogsUncheckedCreateWithoutApplicationInput
-    >;
+    update: XOR<Staff_LogsUpdateWithoutApplicationInput, Staff_LogsUncheckedUpdateWithoutApplicationInput>;
+    create: XOR<Staff_LogsCreateWithoutApplicationInput, Staff_LogsUncheckedCreateWithoutApplicationInput>;
   };
 
   export type Staff_LogsUpdateWithWhereUniqueWithoutApplicationInput = {
     where: Staff_LogsWhereUniqueInput;
-    data: XOR<
-      Staff_LogsUpdateWithoutApplicationInput,
-      Staff_LogsUncheckedUpdateWithoutApplicationInput
-    >;
+    data: XOR<Staff_LogsUpdateWithoutApplicationInput, Staff_LogsUncheckedUpdateWithoutApplicationInput>;
   };
 
   export type Staff_LogsUpdateManyWithWhereWithoutApplicationInput = {
     where: Staff_LogsScalarWhereInput;
-    data: XOR<
-      Staff_LogsUpdateManyMutationInput,
-      Staff_LogsUncheckedUpdateManyWithoutApplicationInput
-    >;
+    data: XOR<Staff_LogsUpdateManyMutationInput, Staff_LogsUncheckedUpdateManyWithoutApplicationInput>;
   };
 
   export type Student_NotificationUpsertWithWhereUniqueWithoutApplicationInput = {
     where: Student_NotificationWhereUniqueInput;
-    update: XOR<
-      Student_NotificationUpdateWithoutApplicationInput,
-      Student_NotificationUncheckedUpdateWithoutApplicationInput
-    >;
-    create: XOR<
-      Student_NotificationCreateWithoutApplicationInput,
-      Student_NotificationUncheckedCreateWithoutApplicationInput
-    >;
+    update: XOR<Student_NotificationUpdateWithoutApplicationInput, Student_NotificationUncheckedUpdateWithoutApplicationInput>;
+    create: XOR<Student_NotificationCreateWithoutApplicationInput, Student_NotificationUncheckedCreateWithoutApplicationInput>;
   };
 
   export type Student_NotificationUpdateWithWhereUniqueWithoutApplicationInput = {
     where: Student_NotificationWhereUniqueInput;
-    data: XOR<
-      Student_NotificationUpdateWithoutApplicationInput,
-      Student_NotificationUncheckedUpdateWithoutApplicationInput
-    >;
+    data: XOR<Student_NotificationUpdateWithoutApplicationInput, Student_NotificationUncheckedUpdateWithoutApplicationInput>;
   };
 
   export type Student_NotificationUpdateManyWithWhereWithoutApplicationInput = {
     where: Student_NotificationScalarWhereInput;
-    data: XOR<
-      Student_NotificationUpdateManyMutationInput,
-      Student_NotificationUncheckedUpdateManyWithoutApplicationInput
-    >;
+    data: XOR<Student_NotificationUpdateManyMutationInput, Student_NotificationUncheckedUpdateManyWithoutApplicationInput>;
   };
 
   export type ApplicationCreateWithoutApplication_DecisionInput = {
@@ -28303,10 +24534,7 @@ export namespace Prisma {
 
   export type ApplicationCreateOrConnectWithoutApplication_DecisionInput = {
     where: ApplicationWhereUniqueInput;
-    create: XOR<
-      ApplicationCreateWithoutApplication_DecisionInput,
-      ApplicationUncheckedCreateWithoutApplication_DecisionInput
-    >;
+    create: XOR<ApplicationCreateWithoutApplication_DecisionInput, ApplicationUncheckedCreateWithoutApplication_DecisionInput>;
   };
 
   export type ISPSU_StaffCreateWithoutApplication_DecisionInput = {
@@ -28335,30 +24563,18 @@ export namespace Prisma {
 
   export type ISPSU_StaffCreateOrConnectWithoutApplication_DecisionInput = {
     where: ISPSU_StaffWhereUniqueInput;
-    create: XOR<
-      ISPSU_StaffCreateWithoutApplication_DecisionInput,
-      ISPSU_StaffUncheckedCreateWithoutApplication_DecisionInput
-    >;
+    create: XOR<ISPSU_StaffCreateWithoutApplication_DecisionInput, ISPSU_StaffUncheckedCreateWithoutApplication_DecisionInput>;
   };
 
   export type ApplicationUpsertWithoutApplication_DecisionInput = {
-    update: XOR<
-      ApplicationUpdateWithoutApplication_DecisionInput,
-      ApplicationUncheckedUpdateWithoutApplication_DecisionInput
-    >;
-    create: XOR<
-      ApplicationCreateWithoutApplication_DecisionInput,
-      ApplicationUncheckedCreateWithoutApplication_DecisionInput
-    >;
+    update: XOR<ApplicationUpdateWithoutApplication_DecisionInput, ApplicationUncheckedUpdateWithoutApplication_DecisionInput>;
+    create: XOR<ApplicationCreateWithoutApplication_DecisionInput, ApplicationUncheckedCreateWithoutApplication_DecisionInput>;
     where?: ApplicationWhereInput;
   };
 
   export type ApplicationUpdateToOneWithWhereWithoutApplication_DecisionInput = {
     where?: ApplicationWhereInput;
-    data: XOR<
-      ApplicationUpdateWithoutApplication_DecisionInput,
-      ApplicationUncheckedUpdateWithoutApplication_DecisionInput
-    >;
+    data: XOR<ApplicationUpdateWithoutApplication_DecisionInput, ApplicationUncheckedUpdateWithoutApplication_DecisionInput>;
   };
 
   export type ApplicationUpdateWithoutApplication_DecisionInput = {
@@ -28387,23 +24603,14 @@ export namespace Prisma {
   };
 
   export type ISPSU_StaffUpsertWithoutApplication_DecisionInput = {
-    update: XOR<
-      ISPSU_StaffUpdateWithoutApplication_DecisionInput,
-      ISPSU_StaffUncheckedUpdateWithoutApplication_DecisionInput
-    >;
-    create: XOR<
-      ISPSU_StaffCreateWithoutApplication_DecisionInput,
-      ISPSU_StaffUncheckedCreateWithoutApplication_DecisionInput
-    >;
+    update: XOR<ISPSU_StaffUpdateWithoutApplication_DecisionInput, ISPSU_StaffUncheckedUpdateWithoutApplication_DecisionInput>;
+    create: XOR<ISPSU_StaffCreateWithoutApplication_DecisionInput, ISPSU_StaffUncheckedCreateWithoutApplication_DecisionInput>;
     where?: ISPSU_StaffWhereInput;
   };
 
   export type ISPSU_StaffUpdateToOneWithWhereWithoutApplication_DecisionInput = {
     where?: ISPSU_StaffWhereInput;
-    data: XOR<
-      ISPSU_StaffUpdateWithoutApplication_DecisionInput,
-      ISPSU_StaffUncheckedUpdateWithoutApplication_DecisionInput
-    >;
+    data: XOR<ISPSU_StaffUpdateWithoutApplication_DecisionInput, ISPSU_StaffUncheckedUpdateWithoutApplication_DecisionInput>;
   };
 
   export type ISPSU_StaffUpdateWithoutApplication_DecisionInput = {
@@ -28457,10 +24664,7 @@ export namespace Prisma {
 
   export type ApplicationCreateOrConnectWithoutInterview_DecisionInput = {
     where: ApplicationWhereUniqueInput;
-    create: XOR<
-      ApplicationCreateWithoutInterview_DecisionInput,
-      ApplicationUncheckedCreateWithoutInterview_DecisionInput
-    >;
+    create: XOR<ApplicationCreateWithoutInterview_DecisionInput, ApplicationUncheckedCreateWithoutInterview_DecisionInput>;
   };
 
   export type ISPSU_StaffCreateWithoutInterview_DecisionInput = {
@@ -28489,30 +24693,18 @@ export namespace Prisma {
 
   export type ISPSU_StaffCreateOrConnectWithoutInterview_DecisionInput = {
     where: ISPSU_StaffWhereUniqueInput;
-    create: XOR<
-      ISPSU_StaffCreateWithoutInterview_DecisionInput,
-      ISPSU_StaffUncheckedCreateWithoutInterview_DecisionInput
-    >;
+    create: XOR<ISPSU_StaffCreateWithoutInterview_DecisionInput, ISPSU_StaffUncheckedCreateWithoutInterview_DecisionInput>;
   };
 
   export type ApplicationUpsertWithoutInterview_DecisionInput = {
-    update: XOR<
-      ApplicationUpdateWithoutInterview_DecisionInput,
-      ApplicationUncheckedUpdateWithoutInterview_DecisionInput
-    >;
-    create: XOR<
-      ApplicationCreateWithoutInterview_DecisionInput,
-      ApplicationUncheckedCreateWithoutInterview_DecisionInput
-    >;
+    update: XOR<ApplicationUpdateWithoutInterview_DecisionInput, ApplicationUncheckedUpdateWithoutInterview_DecisionInput>;
+    create: XOR<ApplicationCreateWithoutInterview_DecisionInput, ApplicationUncheckedCreateWithoutInterview_DecisionInput>;
     where?: ApplicationWhereInput;
   };
 
   export type ApplicationUpdateToOneWithWhereWithoutInterview_DecisionInput = {
     where?: ApplicationWhereInput;
-    data: XOR<
-      ApplicationUpdateWithoutInterview_DecisionInput,
-      ApplicationUncheckedUpdateWithoutInterview_DecisionInput
-    >;
+    data: XOR<ApplicationUpdateWithoutInterview_DecisionInput, ApplicationUncheckedUpdateWithoutInterview_DecisionInput>;
   };
 
   export type ApplicationUpdateWithoutInterview_DecisionInput = {
@@ -28541,23 +24733,14 @@ export namespace Prisma {
   };
 
   export type ISPSU_StaffUpsertWithoutInterview_DecisionInput = {
-    update: XOR<
-      ISPSU_StaffUpdateWithoutInterview_DecisionInput,
-      ISPSU_StaffUncheckedUpdateWithoutInterview_DecisionInput
-    >;
-    create: XOR<
-      ISPSU_StaffCreateWithoutInterview_DecisionInput,
-      ISPSU_StaffUncheckedCreateWithoutInterview_DecisionInput
-    >;
+    update: XOR<ISPSU_StaffUpdateWithoutInterview_DecisionInput, ISPSU_StaffUncheckedUpdateWithoutInterview_DecisionInput>;
+    create: XOR<ISPSU_StaffCreateWithoutInterview_DecisionInput, ISPSU_StaffUncheckedCreateWithoutInterview_DecisionInput>;
     where?: ISPSU_StaffWhereInput;
   };
 
   export type ISPSU_StaffUpdateToOneWithWhereWithoutInterview_DecisionInput = {
     where?: ISPSU_StaffWhereInput;
-    data: XOR<
-      ISPSU_StaffUpdateWithoutInterview_DecisionInput,
-      ISPSU_StaffUncheckedUpdateWithoutInterview_DecisionInput
-    >;
+    data: XOR<ISPSU_StaffUpdateWithoutInterview_DecisionInput, ISPSU_StaffUncheckedUpdateWithoutInterview_DecisionInput>;
   };
 
   export type ISPSU_StaffUpdateWithoutInterview_DecisionInput = {
@@ -28611,10 +24794,7 @@ export namespace Prisma {
 
   export type ApplicationCreateOrConnectWithoutStaff_LogsInput = {
     where: ApplicationWhereUniqueInput;
-    create: XOR<
-      ApplicationCreateWithoutStaff_LogsInput,
-      ApplicationUncheckedCreateWithoutStaff_LogsInput
-    >;
+    create: XOR<ApplicationCreateWithoutStaff_LogsInput, ApplicationUncheckedCreateWithoutStaff_LogsInput>;
   };
 
   export type ScholarshipCreateWithoutStaff_LogsInput = {
@@ -28674,10 +24854,7 @@ export namespace Prisma {
 
   export type ScholarshipCreateOrConnectWithoutStaff_LogsInput = {
     where: ScholarshipWhereUniqueInput;
-    create: XOR<
-      ScholarshipCreateWithoutStaff_LogsInput,
-      ScholarshipUncheckedCreateWithoutStaff_LogsInput
-    >;
+    create: XOR<ScholarshipCreateWithoutStaff_LogsInput, ScholarshipUncheckedCreateWithoutStaff_LogsInput>;
   };
 
   export type ISPSU_StaffCreateWithoutStaff_LogsInput = {
@@ -28706,30 +24883,18 @@ export namespace Prisma {
 
   export type ISPSU_StaffCreateOrConnectWithoutStaff_LogsInput = {
     where: ISPSU_StaffWhereUniqueInput;
-    create: XOR<
-      ISPSU_StaffCreateWithoutStaff_LogsInput,
-      ISPSU_StaffUncheckedCreateWithoutStaff_LogsInput
-    >;
+    create: XOR<ISPSU_StaffCreateWithoutStaff_LogsInput, ISPSU_StaffUncheckedCreateWithoutStaff_LogsInput>;
   };
 
   export type ApplicationUpsertWithoutStaff_LogsInput = {
-    update: XOR<
-      ApplicationUpdateWithoutStaff_LogsInput,
-      ApplicationUncheckedUpdateWithoutStaff_LogsInput
-    >;
-    create: XOR<
-      ApplicationCreateWithoutStaff_LogsInput,
-      ApplicationUncheckedCreateWithoutStaff_LogsInput
-    >;
+    update: XOR<ApplicationUpdateWithoutStaff_LogsInput, ApplicationUncheckedUpdateWithoutStaff_LogsInput>;
+    create: XOR<ApplicationCreateWithoutStaff_LogsInput, ApplicationUncheckedCreateWithoutStaff_LogsInput>;
     where?: ApplicationWhereInput;
   };
 
   export type ApplicationUpdateToOneWithWhereWithoutStaff_LogsInput = {
     where?: ApplicationWhereInput;
-    data: XOR<
-      ApplicationUpdateWithoutStaff_LogsInput,
-      ApplicationUncheckedUpdateWithoutStaff_LogsInput
-    >;
+    data: XOR<ApplicationUpdateWithoutStaff_LogsInput, ApplicationUncheckedUpdateWithoutStaff_LogsInput>;
   };
 
   export type ApplicationUpdateWithoutStaff_LogsInput = {
@@ -28758,23 +24923,14 @@ export namespace Prisma {
   };
 
   export type ScholarshipUpsertWithoutStaff_LogsInput = {
-    update: XOR<
-      ScholarshipUpdateWithoutStaff_LogsInput,
-      ScholarshipUncheckedUpdateWithoutStaff_LogsInput
-    >;
-    create: XOR<
-      ScholarshipCreateWithoutStaff_LogsInput,
-      ScholarshipUncheckedCreateWithoutStaff_LogsInput
-    >;
+    update: XOR<ScholarshipUpdateWithoutStaff_LogsInput, ScholarshipUncheckedUpdateWithoutStaff_LogsInput>;
+    create: XOR<ScholarshipCreateWithoutStaff_LogsInput, ScholarshipUncheckedCreateWithoutStaff_LogsInput>;
     where?: ScholarshipWhereInput;
   };
 
   export type ScholarshipUpdateToOneWithWhereWithoutStaff_LogsInput = {
     where?: ScholarshipWhereInput;
-    data: XOR<
-      ScholarshipUpdateWithoutStaff_LogsInput,
-      ScholarshipUncheckedUpdateWithoutStaff_LogsInput
-    >;
+    data: XOR<ScholarshipUpdateWithoutStaff_LogsInput, ScholarshipUncheckedUpdateWithoutStaff_LogsInput>;
   };
 
   export type ScholarshipUpdateWithoutStaff_LogsInput = {
@@ -28833,23 +24989,14 @@ export namespace Prisma {
   };
 
   export type ISPSU_StaffUpsertWithoutStaff_LogsInput = {
-    update: XOR<
-      ISPSU_StaffUpdateWithoutStaff_LogsInput,
-      ISPSU_StaffUncheckedUpdateWithoutStaff_LogsInput
-    >;
-    create: XOR<
-      ISPSU_StaffCreateWithoutStaff_LogsInput,
-      ISPSU_StaffUncheckedCreateWithoutStaff_LogsInput
-    >;
+    update: XOR<ISPSU_StaffUpdateWithoutStaff_LogsInput, ISPSU_StaffUncheckedUpdateWithoutStaff_LogsInput>;
+    create: XOR<ISPSU_StaffCreateWithoutStaff_LogsInput, ISPSU_StaffUncheckedCreateWithoutStaff_LogsInput>;
     where?: ISPSU_StaffWhereInput;
   };
 
   export type ISPSU_StaffUpdateToOneWithWhereWithoutStaff_LogsInput = {
     where?: ISPSU_StaffWhereInput;
-    data: XOR<
-      ISPSU_StaffUpdateWithoutStaff_LogsInput,
-      ISPSU_StaffUncheckedUpdateWithoutStaff_LogsInput
-    >;
+    data: XOR<ISPSU_StaffUpdateWithoutStaff_LogsInput, ISPSU_StaffUncheckedUpdateWithoutStaff_LogsInput>;
   };
 
   export type ISPSU_StaffUpdateWithoutStaff_LogsInput = {
@@ -28903,10 +25050,7 @@ export namespace Prisma {
 
   export type ApplicationCreateOrConnectWithoutStudent_NotificationsInput = {
     where: ApplicationWhereUniqueInput;
-    create: XOR<
-      ApplicationCreateWithoutStudent_NotificationsInput,
-      ApplicationUncheckedCreateWithoutStudent_NotificationsInput
-    >;
+    create: XOR<ApplicationCreateWithoutStudent_NotificationsInput, ApplicationUncheckedCreateWithoutStudent_NotificationsInput>;
   };
 
   export type StudentCreateWithoutStudent_NotificationInput = {
@@ -28963,10 +25107,7 @@ export namespace Prisma {
 
   export type StudentCreateOrConnectWithoutStudent_NotificationInput = {
     where: StudentWhereUniqueInput;
-    create: XOR<
-      StudentCreateWithoutStudent_NotificationInput,
-      StudentUncheckedCreateWithoutStudent_NotificationInput
-    >;
+    create: XOR<StudentCreateWithoutStudent_NotificationInput, StudentUncheckedCreateWithoutStudent_NotificationInput>;
   };
 
   export type ScholarshipCreateWithoutStudent_NotificationsInput = {
@@ -29026,30 +25167,18 @@ export namespace Prisma {
 
   export type ScholarshipCreateOrConnectWithoutStudent_NotificationsInput = {
     where: ScholarshipWhereUniqueInput;
-    create: XOR<
-      ScholarshipCreateWithoutStudent_NotificationsInput,
-      ScholarshipUncheckedCreateWithoutStudent_NotificationsInput
-    >;
+    create: XOR<ScholarshipCreateWithoutStudent_NotificationsInput, ScholarshipUncheckedCreateWithoutStudent_NotificationsInput>;
   };
 
   export type ApplicationUpsertWithoutStudent_NotificationsInput = {
-    update: XOR<
-      ApplicationUpdateWithoutStudent_NotificationsInput,
-      ApplicationUncheckedUpdateWithoutStudent_NotificationsInput
-    >;
-    create: XOR<
-      ApplicationCreateWithoutStudent_NotificationsInput,
-      ApplicationUncheckedCreateWithoutStudent_NotificationsInput
-    >;
+    update: XOR<ApplicationUpdateWithoutStudent_NotificationsInput, ApplicationUncheckedUpdateWithoutStudent_NotificationsInput>;
+    create: XOR<ApplicationCreateWithoutStudent_NotificationsInput, ApplicationUncheckedCreateWithoutStudent_NotificationsInput>;
     where?: ApplicationWhereInput;
   };
 
   export type ApplicationUpdateToOneWithWhereWithoutStudent_NotificationsInput = {
     where?: ApplicationWhereInput;
-    data: XOR<
-      ApplicationUpdateWithoutStudent_NotificationsInput,
-      ApplicationUncheckedUpdateWithoutStudent_NotificationsInput
-    >;
+    data: XOR<ApplicationUpdateWithoutStudent_NotificationsInput, ApplicationUncheckedUpdateWithoutStudent_NotificationsInput>;
   };
 
   export type ApplicationUpdateWithoutStudent_NotificationsInput = {
@@ -29078,23 +25207,14 @@ export namespace Prisma {
   };
 
   export type StudentUpsertWithoutStudent_NotificationInput = {
-    update: XOR<
-      StudentUpdateWithoutStudent_NotificationInput,
-      StudentUncheckedUpdateWithoutStudent_NotificationInput
-    >;
-    create: XOR<
-      StudentCreateWithoutStudent_NotificationInput,
-      StudentUncheckedCreateWithoutStudent_NotificationInput
-    >;
+    update: XOR<StudentUpdateWithoutStudent_NotificationInput, StudentUncheckedUpdateWithoutStudent_NotificationInput>;
+    create: XOR<StudentCreateWithoutStudent_NotificationInput, StudentUncheckedCreateWithoutStudent_NotificationInput>;
     where?: StudentWhereInput;
   };
 
   export type StudentUpdateToOneWithWhereWithoutStudent_NotificationInput = {
     where?: StudentWhereInput;
-    data: XOR<
-      StudentUpdateWithoutStudent_NotificationInput,
-      StudentUncheckedUpdateWithoutStudent_NotificationInput
-    >;
+    data: XOR<StudentUpdateWithoutStudent_NotificationInput, StudentUncheckedUpdateWithoutStudent_NotificationInput>;
   };
 
   export type StudentUpdateWithoutStudent_NotificationInput = {
@@ -29150,23 +25270,14 @@ export namespace Prisma {
   };
 
   export type ScholarshipUpsertWithoutStudent_NotificationsInput = {
-    update: XOR<
-      ScholarshipUpdateWithoutStudent_NotificationsInput,
-      ScholarshipUncheckedUpdateWithoutStudent_NotificationsInput
-    >;
-    create: XOR<
-      ScholarshipCreateWithoutStudent_NotificationsInput,
-      ScholarshipUncheckedCreateWithoutStudent_NotificationsInput
-    >;
+    update: XOR<ScholarshipUpdateWithoutStudent_NotificationsInput, ScholarshipUncheckedUpdateWithoutStudent_NotificationsInput>;
+    create: XOR<ScholarshipCreateWithoutStudent_NotificationsInput, ScholarshipUncheckedCreateWithoutStudent_NotificationsInput>;
     where?: ScholarshipWhereInput;
   };
 
   export type ScholarshipUpdateToOneWithWhereWithoutStudent_NotificationsInput = {
     where?: ScholarshipWhereInput;
-    data: XOR<
-      ScholarshipUpdateWithoutStudent_NotificationsInput,
-      ScholarshipUncheckedUpdateWithoutStudent_NotificationsInput
-    >;
+    data: XOR<ScholarshipUpdateWithoutStudent_NotificationsInput, ScholarshipUncheckedUpdateWithoutStudent_NotificationsInput>;
   };
 
   export type ScholarshipUpdateWithoutStudent_NotificationsInput = {
@@ -29250,30 +25361,18 @@ export namespace Prisma {
 
   export type ISPSU_HeadCreateOrConnectWithoutAnnouncementInput = {
     where: ISPSU_HeadWhereUniqueInput;
-    create: XOR<
-      ISPSU_HeadCreateWithoutAnnouncementInput,
-      ISPSU_HeadUncheckedCreateWithoutAnnouncementInput
-    >;
+    create: XOR<ISPSU_HeadCreateWithoutAnnouncementInput, ISPSU_HeadUncheckedCreateWithoutAnnouncementInput>;
   };
 
   export type ISPSU_HeadUpsertWithoutAnnouncementInput = {
-    update: XOR<
-      ISPSU_HeadUpdateWithoutAnnouncementInput,
-      ISPSU_HeadUncheckedUpdateWithoutAnnouncementInput
-    >;
-    create: XOR<
-      ISPSU_HeadCreateWithoutAnnouncementInput,
-      ISPSU_HeadUncheckedCreateWithoutAnnouncementInput
-    >;
+    update: XOR<ISPSU_HeadUpdateWithoutAnnouncementInput, ISPSU_HeadUncheckedUpdateWithoutAnnouncementInput>;
+    create: XOR<ISPSU_HeadCreateWithoutAnnouncementInput, ISPSU_HeadUncheckedCreateWithoutAnnouncementInput>;
     where?: ISPSU_HeadWhereInput;
   };
 
   export type ISPSU_HeadUpdateToOneWithWhereWithoutAnnouncementInput = {
     where?: ISPSU_HeadWhereInput;
-    data: XOR<
-      ISPSU_HeadUpdateWithoutAnnouncementInput,
-      ISPSU_HeadUncheckedUpdateWithoutAnnouncementInput
-    >;
+    data: XOR<ISPSU_HeadUpdateWithoutAnnouncementInput, ISPSU_HeadUncheckedUpdateWithoutAnnouncementInput>;
   };
 
   export type ISPSU_HeadUpdateWithoutAnnouncementInput = {

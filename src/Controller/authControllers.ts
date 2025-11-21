@@ -13,13 +13,7 @@ import {
   sendAuthCodeRegisterZodType,
 } from '../Validator/ZodSchemaUserAuth';
 import { authHTML } from '../utils/HTML-AuthCode';
-import {
-  prismaCheckEmailExist,
-  prismaCheckStudentIdExist,
-  prismaCreateStudentAccount,
-  prismaGetAccountById,
-  prismaUpdateAccountPassword,
-} from '../Models/AccountModels';
+import { prismaCheckEmailExist, prismaCheckStudentIdExist, prismaCreateStudentAccount, prismaGetAccountById, prismaUpdateAccountPassword } from '../Models/AccountModels';
 import { GenerateCode } from '../Helper/CodeGenerator';
 import { CreateEmailOptions } from 'resend';
 import { prismaGetUnreadNotificationsCount } from '../Models/Student_NotificationModels';
@@ -27,11 +21,7 @@ import { AuthCode } from '../Models/Auth_CodeModels';
 import { prismaGetAllAnnouncement } from '../Models/AnnouncementModels';
 import { getAnnouncementsZodType } from '../Validator/ZodSchemaUserPost';
 
-export const registerAccount = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const registerAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const origin = 'register';
     const {
@@ -58,6 +48,30 @@ export const registerAccount = async (
       studentType,
       verificationCode,
     } = (req as Request & { validated: registerAccountZodType }).validated.body;
+    console.log(
+      studentId,
+      studentEmail,
+      studentContact,
+      studentFirstName,
+      studentMiddleName,
+      studentLastName,
+      studentGender,
+      studentAddress,
+      institute,
+      course,
+      year,
+      section,
+      pwd,
+      indigenous,
+      studentPassword,
+      studentDateofBirth,
+      prefixName,
+      fourPs,
+      dswd,
+      civilStatus,
+      studentType,
+      verificationCode,
+    )
     const Code = await AuthCode.validate(verificationCode, studentEmail, origin);
     if (!Code.validated || !Code.AuthCode) {
       res.status(400).json({ success: false, message: Code.message });
@@ -108,15 +122,10 @@ export const registerAccount = async (
     next(error);
   }
 };
-export const loginAccounts = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const loginAccounts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const origin: string = 'login';
-    const { studentId, userPassword, code } = (req as Request & { validated: loginAccountsZodType })
-      .validated.body;
+    const { studentId, userPassword, code } = (req as Request & { validated: loginAccountsZodType }).validated.body;
 
     const Student = await prismaCheckStudentIdExist(studentId);
     if (!Student) {
@@ -153,16 +162,10 @@ export const loginAccounts = async (
     next(error);
   }
 };
-export const sendAuthCodeRegister = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const sendAuthCodeRegister = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const origin: string = 'register';
-    const { studentId, studentEmail } = (
-      req as Request & { validated: sendAuthCodeRegisterZodType }
-    ).validated.body;
+    const { studentId, studentEmail } = (req as Request & { validated: sendAuthCodeRegisterZodType }).validated.body;
 
     const checkIfExistingEmail = await prismaCheckEmailExist(studentEmail);
     if (checkIfExistingEmail) {
@@ -178,17 +181,14 @@ export const sendAuthCodeRegister = async (
     if (Code) {
       const { validated } = await AuthCode.validate(Code.code, Code.owner, Code.origin);
       if (validated) {
-        const resendAvailableIn =
-          (new Date(Code.dateExpiry).getTime() - new Date().getTime()) / 1000;
-        res
-          .status(200)
-          .json({
-            success: true,
-            message: 'Email Already Sent',
-            expiresAt: Code.dateExpiry,
-            ttl: 120,
-            resendAvailableIn,
-          });
+        const resendAvailableIn = (new Date(Code.dateExpiry).getTime() - new Date().getTime()) / 1000;
+        res.status(200).json({
+          success: true,
+          message: 'Email Already Sent',
+          expiresAt: Code.dateExpiry,
+          ttl: 120,
+          resendAvailableIn,
+        });
         return;
       }
     }
@@ -205,22 +205,15 @@ export const sendAuthCodeRegister = async (
       res.status(500).json({ success: false, message: 'Email Not Sent!!' });
       return;
     }
-    res
-      .status(200)
-      .json({ success: true, message: 'Email Sent!!', expiresAt, ttl: 120, resendAvailableIn: 60 });
+    res.status(200).json({ success: true, message: 'Email Sent!!', expiresAt, ttl: 120, resendAvailableIn: 60 });
   } catch (error) {
     next(error);
   }
 };
-export const sendAuthCodeLogin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const sendAuthCodeLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const origin: string = 'login';
-    const { studentId, userPassword } = (req as Request & { validated: sendAuthCodeLoginZodType })
-      .validated.body;
+    const { studentId, userPassword } = (req as Request & { validated: sendAuthCodeLoginZodType }).validated.body;
 
     const checkUserExist = await prismaCheckStudentIdExist(studentId);
     if (!checkUserExist || checkUserExist.role !== 'Student') {
@@ -244,47 +237,31 @@ export const sendAuthCodeLogin = async (
     if (Code) {
       const { validated } = await AuthCode.validate(Code.code, Code.owner, Code.origin);
       if (validated) {
-        const resendAvailableIn =
-          (new Date(Code.dateExpiry).getTime() - new Date().getTime()) / 1000;
-        res
-          .status(200)
-          .json({
-            success: true,
-            message: 'Code Already Sent!',
-            expiresAt: Code.dateExpiry,
-            ttl: 120,
-            resendAvailableIn,
-          });
+        const resendAvailableIn = (new Date(Code.dateExpiry).getTime() - new Date().getTime()) / 1000;
+        res.status(200).json({
+          success: true,
+          message: 'Code Already Sent!',
+          expiresAt: Code.dateExpiry,
+          ttl: 120,
+          resendAvailableIn,
+        });
         return;
       }
     }
-    const SendCode = await SendAuthCode(
-      mailOptions,
-      origin,
-      checkUserExist.email,
-      sendCode,
-      expiresAt,
-    );
+    const SendCode = await SendAuthCode(mailOptions, origin, checkUserExist.email, sendCode, expiresAt);
     if (SendCode.success === false) {
       res.status(500).json({ success: false, message: 'Server Error' });
       return;
     }
-    res
-      .status(200)
-      .json({ success: true, message: 'Code Send!!', expiresAt, ttl: 120, resendAvailableIn: 60 });
+    res.status(200).json({ success: true, message: 'Code Send!!', expiresAt, ttl: 120, resendAvailableIn: 60 });
   } catch (error) {
     console.log(error);
     next(error);
   }
 };
-export const forgotPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email, newPassword, code } = (req as Request & { validated: forgotPasswordZodType })
-      .validated.body;
+    const { email, newPassword, code } = (req as Request & { validated: forgotPasswordZodType }).validated.body;
     const Student = await prismaCheckEmailExist(email);
     if (!Student || Student.role !== 'Student') {
       res.status(400).json({ success: false, message: 'Email does not Exist!' });
@@ -310,14 +287,9 @@ export const forgotPassword = async (
     next(error);
   }
 };
-export const forgotPasswordSendAuthCode = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const forgotPasswordSendAuthCode = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email } = (req as Request & { validated: forgotPasswordSendAuthCodeZodType }).validated
-      .body;
+    const { email } = (req as Request & { validated: forgotPasswordSendAuthCodeZodType }).validated.body;
     const origin = 'forgotPassword';
     const checkEmail = await prismaCheckEmailExist(email);
     if (!checkEmail || checkEmail.role !== 'Student') {
@@ -328,17 +300,14 @@ export const forgotPasswordSendAuthCode = async (
     if (Code) {
       const { validated } = await AuthCode.validate(Code.code, email, origin);
       if (validated) {
-        const resendAvailableIn =
-          (new Date(Code.dateExpiry).getTime() - new Date().getTime()) / 1000;
-        res
-          .status(200)
-          .json({
-            success: true,
-            message: 'Email Already Sent!',
-            expiresAt: Code.dateExpiry,
-            ttl: 120,
-            resendAvailableIn,
-          });
+        const resendAvailableIn = (new Date(Code.dateExpiry).getTime() - new Date().getTime()) / 1000;
+        res.status(200).json({
+          success: true,
+          message: 'Email Already Sent!',
+          expiresAt: Code.dateExpiry,
+          ttl: 120,
+          resendAvailableIn,
+        });
         return;
       }
     }
@@ -355,9 +324,7 @@ export const forgotPasswordSendAuthCode = async (
       res.status(500).json({ success: false, messagel: 'Email Not Sent!' });
       return;
     }
-    res
-      .status(200)
-      .json({ success: true, message: 'Email Sent!', expiresAt, ttl: 120, resendAvailableIn: 60 });
+    res.status(200).json({ success: true, message: 'Email Sent!', expiresAt, ttl: 120, resendAvailableIn: 60 });
   } catch (error) {
     next(error);
   }

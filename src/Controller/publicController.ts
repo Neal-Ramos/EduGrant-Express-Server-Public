@@ -3,15 +3,9 @@ import { getAnnouncementsZodType } from '../Validator/ZodSchemaUserPost';
 import { prismaGetAllAnnouncement } from '../Models/AnnouncementModels';
 import { WasabiCreateSignedURL, WasabiUpload } from '../Config/Wasabi';
 
-export const uploadWasabi = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const uploadWasabi = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const file: Express.Multer.File | undefined = (req.files as Express.Multer.File[]).find(
-      (f) => f.fieldname === 'IMG',
-    );
+    const file: Express.Multer.File | undefined = (req.files as Express.Multer.File[]).find((f) => f.fieldname === 'IMG');
     if (!file) {
       res.status(404).json();
       return;
@@ -28,15 +22,9 @@ export const uploadWasabi = async (
     next(error);
   }
 };
-export const getAnnouncementsPublic = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const getAnnouncementsPublic = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, dataPerPage, sortBy, order, status } = (
-      req as Request & { validated: getAnnouncementsZodType }
-    ).validated.query;
+    const { page, dataPerPage, sortBy, order, status } = (req as Request & { validated: getAnnouncementsZodType }).validated.query;
 
     const announcements = await prismaGetAllAnnouncement(page, dataPerPage, sortBy, order, status);
 

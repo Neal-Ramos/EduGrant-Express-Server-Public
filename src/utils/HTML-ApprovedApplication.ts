@@ -1,8 +1,4 @@
-export const ApproveHTML = (
-  applicantName: string,
-  applicantStudentId: string,
-  applicanteEmail: string,
-): string => `
+export const ApproveHTML = (applicantName: string, applicantStudentId: string, applicanteEmail: string): string => `
 <!doctype html>
 <html lang="en">
 <head>

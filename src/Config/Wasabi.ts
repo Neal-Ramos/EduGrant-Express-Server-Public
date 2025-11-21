@@ -10,10 +10,7 @@ export const s3 = new S3({
 });
 const BucketName: string = process.env.WASABI_BUCKET_NAME as string;
 
-export const WasabiUpload = async (
-  file: Express.Multer.File,
-  folderName: string,
-): Promise<{ success: boolean; message: string; path?: string }> => {
+export const WasabiUpload = async (file: Express.Multer.File, folderName: string): Promise<{ success: boolean; message: string; path?: string }> => {
   try {
     const filePath: string = `${folderName}/${Date.now()}-${file.originalname}`;
 
@@ -35,9 +32,7 @@ export const WasabiUpload = async (
     return { success: false, message: error.message };
   }
 };
-export const WasabiCreateSignedURL = async (
-  path: string,
-): Promise<{ success: boolean; message: string; signedUrl?: string }> => {
+export const WasabiCreateSignedURL = async (path: string): Promise<{ success: boolean; message: string; signedUrl?: string }> => {
   try {
     const signedUrl = await s3.getSignedUrl('getObject', {
       Bucket: BucketName,
@@ -56,9 +51,7 @@ export const WasabiCreateSignedURL = async (
     return { success: false, message: error.message };
   }
 };
-export const WasabiDownloadFile = async (
-  path: string,
-): Promise<{ success: boolean; message: string; downloadURL?: string }> => {
+export const WasabiDownloadFile = async (path: string): Promise<{ success: boolean; message: string; downloadURL?: string }> => {
   try {
     const signedUrl = await s3.getSignedUrl('getObject', {
       Bucket: BucketName,

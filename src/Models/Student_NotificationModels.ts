@@ -8,16 +8,7 @@ export const prismaGetAllNotifications = async (
   sortBy: string | undefined,
   order: string | undefined,
 ): Promise<{ notification: Student_Notification[]; totalCount: number }> => {
-  const allowedSortBy: string[] = [
-    'ownerId',
-    'applicationId',
-    'scholarshipId',
-    'title',
-    'description',
-    'status',
-    'read',
-    'dateCreated',
-  ];
+  const allowedSortBy: string[] = ['ownerId', 'applicationId', 'scholarshipId', 'title', 'description', 'status', 'read', 'dateCreated'];
   const transac = await prisma.$transaction(async (tx) => {
     const notification = await tx.student_Notification.findMany({
       take: dataPerPage,
@@ -45,10 +36,7 @@ export const prismaGetAllNotifications = async (
 export const prismaGetUnreadNotificationsCount = async (accountId: number): Promise<number> => {
   return prisma.student_Notification.count({ where: { ownerId: accountId, read: false } });
 };
-export const prismaReadTrueNotification = async (
-  accountId: number,
-  notifiactionId: number,
-): Promise<Student_Notification> => {
+export const prismaReadTrueNotification = async (accountId: number, notifiactionId: number): Promise<Student_Notification> => {
   const read = await prisma.student_Notification.update({
     where: {
       ownerId: accountId,

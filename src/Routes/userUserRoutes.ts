@@ -29,31 +29,13 @@ const UserUserRoutes = Router();
 UserUserRoutes.use(TokenAuth);
 UserUserRoutes.post('/logout', logoutUser);
 UserUserRoutes.post('/markAllReadNotifications', markAllReadNotifications);
-UserUserRoutes.post(
-  '/updateStudentInfo',
-  upload.any(),
-  validate(updateStudentInfoZodSchema),
-  updateStudentInfo,
-);
-UserUserRoutes.post(
-  '/updateApplication',
-  upload.any(),
-  validate(updateApplicationZodSchema),
-  updateApplication,
-);
+UserUserRoutes.post('/updateStudentInfo', upload.any(), validate(updateStudentInfoZodSchema), updateStudentInfo);
+UserUserRoutes.post('/updateApplication', upload.any(), validate(updateApplicationZodSchema), updateApplication);
 UserUserRoutes.post('/readNotification', validate(readNotificationZodSchema), readNotification);
-UserUserRoutes.post(
-  '/sendAuthCodeChangeAccountCred',
-  validate(sendAuthCodeChangeAccountCredZodSchema),
-  sendAuthCodeChangeAccountCred,
-);
+UserUserRoutes.post('/sendAuthCodeChangeAccountCred', validate(sendAuthCodeChangeAccountCredZodSchema), sendAuthCodeChangeAccountCred);
 UserUserRoutes.post('/changePassword', validate(changePasswordZodSchema), changePassword);
 UserUserRoutes.post('/getFileUrl', validate(getFileUrlZodSchema), getFileUrl);
-UserUserRoutes.post(
-  '/downloadApplicationFile',
-  validate(downloadApplicationFileZodSchema),
-  downloadApplicationFile,
-);
+UserUserRoutes.post('/downloadApplicationFile', validate(downloadApplicationFileZodSchema), downloadApplicationFile);
 
 UserUserRoutes.get('/getDashboard', getDashboard);
 

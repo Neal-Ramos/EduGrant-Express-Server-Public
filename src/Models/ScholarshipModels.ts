@@ -75,15 +75,7 @@ export const prismaGetScholarship = async (
   countRenew: number;
   countExpired: number;
 }> => {
-  const allowedSortBy: string[] = [
-    'title',
-    'type',
-    'pending',
-    'approved',
-    'declined',
-    'deadline',
-    'dateCreated',
-  ];
+  const allowedSortBy: string[] = ['title', 'type', 'pending', 'approved', 'declined', 'deadline', 'dateCreated'];
   const allowedSortByProvider: string[] = ['name'];
   const allowedStatus: string[] = ['ACTIVE', 'ENDED', 'EXPIRED', 'RENEW'];
   const allowedOrder: string[] = ['asc', 'desc'];
@@ -92,10 +84,7 @@ export const prismaGetScholarship = async (
     title: { in: filters?.find((f) => f.id === 'title')?.value },
     ...(search
       ? {
-          OR: [
-            { title: { contains: search, mode: 'insensitive' } },
-            { Scholarship_Provider: { name: { contains: search, mode: 'insensitive' } } },
-          ],
+          OR: [{ title: { contains: search, mode: 'insensitive' } }, { Scholarship_Provider: { name: { contains: search, mode: 'insensitive' } } }],
         }
       : {}),
   };
@@ -143,99 +132,96 @@ export const prismaGetScholarship = async (
     }
   }
 
-  const [scholarship, totalCount, countActive, countRenew, countExpired, countEnded] =
-    await Promise.all([
-      prisma.scholarship.findMany({
-        //scholarship
-        ...(dataPerPage ? { take: dataPerPage } : undefined),
-        ...(page && dataPerPage ? { skip: (page - 1) * dataPerPage } : undefined),
-        orderBy: [
-          ...(allowedSortBy.includes(sortBy || '')
-            ? [{ [sortBy as string]: allowedOrder.includes(order || '') ? order : 'asc' }]
-            : []),
-          ...(allowedSortByProvider.includes(sortBy || '')
-            ? [
-                {
-                  Scholarship_Provider: {
-                    [sortBy as string]: allowedOrder.includes(order || '') ? order : 'asc',
-                  },
+  const [scholarship, totalCount, countActive, countRenew, countExpired, countEnded] = await Promise.all([
+    prisma.scholarship.findMany({
+      //scholarship
+      ...(dataPerPage ? { take: dataPerPage } : undefined),
+      ...(page && dataPerPage ? { skip: (page - 1) * dataPerPage } : undefined),
+      orderBy: [
+        ...(allowedSortBy.includes(sortBy || '') ? [{ [sortBy as string]: allowedOrder.includes(order || '') ? order : 'asc' }] : []),
+        ...(allowedSortByProvider.includes(sortBy || '')
+          ? [
+              {
+                Scholarship_Provider: {
+                  [sortBy as string]: allowedOrder.includes(order || '') ? order : 'asc',
                 },
-              ]
-            : []),
-        ],
-        include: {
-          Scholarship_Provider: true,
-          Application: {
-            where: {
-              ownerId: accountId,
-              status: { not: 'RENEW' },
-            },
-            select: {
-              ownerId: true,
-              status: true,
-            },
+              },
+            ]
+          : []),
+      ],
+      include: {
+        Scholarship_Provider: true,
+        Application: {
+          where: {
+            ownerId: accountId,
+            status: { not: 'RENEW' },
+          },
+          select: {
+            ownerId: true,
+            status: true,
           },
         },
-        where: whereClause,
-      }),
-      prisma.scholarship.count({
-        //totalCount
-        where: {
-          OR: [
-            { phase: 1 },
-            {
-              phase: { gt: 1 },
-              Application: { some: { ownerId: accountId, status: { not: 'BLOCKED' } } },
-            },
-          ],
-        },
-      }),
-      prisma.scholarship.count({
-        //countActive
-        where: {
-          deadline: { gt: new Date() },
-          phase: 1,
-        },
-      }),
-      prisma.scholarship.count({
-        //countRenew
-        where: {
-          deadline: { gt: new Date() },
-          phase: { gt: 1 },
-          Application: { some: { ownerId: accountId, status: { not: 'BLOCKED' } } },
-        },
-      }),
-      prisma.scholarship.count({
-        //countExpired
-        where: {
-          deadline: { lt: new Date() },
-          ended: false,
-          OR: [
-            {
-              phase: 1,
-            },
-            {
-              Application: { some: { ownerId: accountId, status: { not: 'BLOCKED' } } },
-              phase: { gt: 1 },
-            },
-          ],
-        },
-      }),
-      prisma.scholarship.count({
-        where: {
-          ended: true,
-          OR: [
-            {
-              phase: 1,
-            },
-            {
-              Application: { some: { ownerId: accountId, status: { not: 'BLOCKED' } } },
-              phase: { gt: 1 },
-            },
-          ],
-        },
-      }),
-    ]);
+      },
+      where: whereClause,
+    }),
+    prisma.scholarship.count({
+      //totalCount
+      where: {
+        OR: [
+          { phase: 1 },
+          {
+            phase: { gt: 1 },
+            Application: { some: { ownerId: accountId, status: { not: 'BLOCKED' } } },
+          },
+        ],
+      },
+    }),
+    prisma.scholarship.count({
+      //countActive
+      where: {
+        deadline: { gt: new Date() },
+        phase: 1,
+      },
+    }),
+    prisma.scholarship.count({
+      //countRenew
+      where: {
+        deadline: { gt: new Date() },
+        phase: { gt: 1 },
+        Application: { some: { ownerId: accountId, status: { not: 'BLOCKED' } } },
+      },
+    }),
+    prisma.scholarship.count({
+      //countExpired
+      where: {
+        deadline: { lt: new Date() },
+        ended: false,
+        OR: [
+          {
+            phase: 1,
+          },
+          {
+            Application: { some: { ownerId: accountId, status: { not: 'BLOCKED' } } },
+            phase: { gt: 1 },
+          },
+        ],
+      },
+    }),
+    prisma.scholarship.count({
+      where: {
+        ended: true,
+        OR: [
+          {
+            phase: 1,
+          },
+          {
+            Application: { some: { ownerId: accountId, status: { not: 'BLOCKED' } } },
+            phase: { gt: 1 },
+          },
+        ],
+      },
+    }),
+  ]);
   return { scholarship, totalCount, countActive, countRenew, countExpired };
 };
 export const prismaGetRenewScholarship = async (
@@ -253,17 +239,7 @@ export const prismaGetRenewScholarship = async (
   countRenew: number;
   countExpired: number;
 }> => {
-  const allowedSortBy: string[] = [
-    'title',
-    'description',
-    'type',
-    'approved',
-    'declined',
-    'interview',
-    'ended',
-    'deadline',
-    'dateCreated',
-  ];
+  const allowedSortBy: string[] = ['title', 'description', 'type', 'approved', 'declined', 'interview', 'ended', 'deadline', 'dateCreated'];
   const allowedFilters: string[] = ['title', 'amount', 'description', 'type'];
   const allowedStatus: string[] = ['ACTIVE', 'ARCHIVED', 'EXPIRED'];
   const allowedOrder: string[] = ['asc', 'desc'];
@@ -299,11 +275,7 @@ export const prismaGetRenewScholarship = async (
     prisma.scholarship.findMany({
       ...(dataPerPage ? { take: dataPerPage } : undefined),
       ...(page && dataPerPage ? { skip: (page - 1) * dataPerPage } : undefined),
-      orderBy: [
-        ...(allowedSortBy.includes(sortBy || '')
-          ? [{ [sortBy as string]: allowedOrder.includes(order || '') ? order : 'asc' }]
-          : []),
-      ],
+      orderBy: [...(allowedSortBy.includes(sortBy || '') ? [{ [sortBy as string]: allowedOrder.includes(order || '') ? order : 'asc' }] : [])],
       include: {
         Scholarship_Provider: true,
       },
@@ -359,23 +331,14 @@ export const prismaSearchScholarshipTitle = async (
   countRenew: number;
   countExpired: number;
 }> => {
-  const allowedSortBy: string[] = [
-    'title',
-    'amount',
-    'description',
-    'type',
-    'phase',
-    'dateCreated',
-  ];
+  const allowedSortBy: string[] = ['title', 'amount', 'description', 'type', 'phase', 'dateCreated'];
   const finalOrder: string | undefined = ['asc', 'desc'].includes(order || '') ? order : 'asc';
 
   const [searchResults, totalCount, countActive, countRenew, countExpired] = await Promise.all([
     prisma.scholarship.findMany({
       take: dataPerPage,
       skip: page && dataPerPage ? (page - 1) * dataPerPage : undefined,
-      orderBy: [
-        ...(allowedSortBy.includes(sortBy || '') ? [{ [sortBy as string]: finalOrder }] : []),
-      ],
+      orderBy: [...(allowedSortBy.includes(sortBy || '') ? [{ [sortBy as string]: finalOrder }] : [])],
       where: {
         ...(status === 'ACTIVE'
           ? {
@@ -465,10 +428,7 @@ export const prismaSearchScholarshipTitle = async (
   ]);
   return { searchResults, totalCount, countActive, countRenew, countExpired };
 };
-export const prismaGetScholarshipsById = async (
-  scholarshipId: number,
-  accountId?: number,
-): Promise<Scholarship | null> => {
+export const prismaGetScholarshipsById = async (scholarshipId: number, accountId?: number): Promise<Scholarship | null> => {
   const scholarship = await prisma.scholarship.findUnique({
     where: {
       scholarshipId: scholarshipId,
@@ -615,15 +575,14 @@ export const prismaRenewScholarship = async (
     });
     if (applicationRecords.length === 0) break;
 
-    const BulkCreateNotifications: Prisma.Student_NotificationCreateManyInput[] =
-      applicationRecords.map((app) => ({
-        ownerId: app.ownerId,
-        title: 'RENEWAL ELIGIBLE',
-        status: 'RENEW',
-        description: `Your scholarship application is now eligible for renewal. Please review your information and submit the renewal requirements before the deadline to continue your scholarship benefits.`,
-        applicationId: app.applicationId,
-        scholarshipId: app.scholarshipId,
-      }));
+    const BulkCreateNotifications: Prisma.Student_NotificationCreateManyInput[] = applicationRecords.map((app) => ({
+      ownerId: app.ownerId,
+      title: 'RENEWAL ELIGIBLE',
+      status: 'RENEW',
+      description: `Your scholarship application is now eligible for renewal. Please review your information and submit the renewal requirements before the deadline to continue your scholarship benefits.`,
+      applicationId: app.applicationId,
+      scholarshipId: app.scholarshipId,
+    }));
     await prisma.student_Notification.createMany({
       data: BulkCreateNotifications,
     });
@@ -644,9 +603,7 @@ export const prismaDeleteScholarship = async (scholarshipId: number): Promise<nu
   });
   return transac.count;
 };
-export const prismaGetScholarshipByArray = async (
-  scholarshipId: number,
-): Promise<ScholarshipWithChildType | null> => {
+export const prismaGetScholarshipByArray = async (scholarshipId: number): Promise<ScholarshipWithChildType | null> => {
   return prisma.scholarship.findUnique({
     where: {
       scholarshipId: scholarshipId,
@@ -662,11 +619,7 @@ export const prismaFiltersScholarship = async (status: string | undefined): Prom
   const FilterScholar = ['ACTIVE', 'EXPIRED'];
   const filterScholarship = await prisma.scholarship.findMany({
     where: {
-      ...(FilterScholar.includes(status || '')
-        ? status === 'ACTIVE'
-          ? { deadline: { gt: new Date() } }
-          : { deadline: { lt: new Date() } }
-        : undefined),
+      ...(FilterScholar.includes(status || '') ? (status === 'ACTIVE' ? { deadline: { gt: new Date() } } : { deadline: { lt: new Date() } }) : undefined),
       ...(status === 'ARCHIVED' ? { ended: true } : undefined),
       ...(status === 'RENEW' ? { phase: { gt: 1 } } : undefined),
     },
@@ -679,11 +632,7 @@ export const prismaFiltersScholarship = async (status: string | undefined): Prom
   const provider = await prisma.scholarship_Provider.findMany({
     where: {
       Scholarship: {
-        ...(FilterScholar.includes(status || '')
-          ? status === 'ACTIVE'
-            ? { deadline: { gt: new Date() }, phase: 1 }
-            : { deadline: { lt: new Date() }, phase: 1 }
-          : undefined),
+        ...(FilterScholar.includes(status || '') ? (status === 'ACTIVE' ? { deadline: { gt: new Date() }, phase: 1 } : { deadline: { lt: new Date() }, phase: 1 }) : undefined),
         ...(status === 'ARCHIVED' ? { ended: true } : undefined),
         ...(status === 'RENEW' ? { phase: { gt: 1 } } : undefined),
       },
@@ -710,9 +659,7 @@ export const prismaGetScholarshipDocuments = async (scholarshipId: number): Prom
   });
   return documents;
 };
-export const prismaEndScholarship = async (
-  scholarshipId: number,
-): Promise<{ endedScholarship: Scholarship | null; endenApplications: Application[] }> => {
+export const prismaEndScholarship = async (scholarshipId: number): Promise<{ endedScholarship: Scholarship | null; endenApplications: Application[] }> => {
   const [endedScholarship, endenApplications] = await Promise.all([
     prisma.scholarship.update({
       where: {
@@ -767,24 +714,14 @@ export const prismaStudentCountsInToken = async (
   const firstDate = new Date(now.getFullYear(), now.getMonth(), 1);
   const lastDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-  const [
-    availableScholarshipCount,
-    applicationCount,
-    announcementCount,
-    ISPSU_StaffCount,
-    applicationGroupStatusCount,
-    applicationHistoryCount,
-  ] = await Promise.all([
+  const [availableScholarshipCount, applicationCount, announcementCount, ISPSU_StaffCount, applicationGroupStatusCount, applicationHistoryCount] = await Promise.all([
     prisma.scholarship.count({
       where: {
         deadline: { gt: new Date() },
         OR: [
           { phase: 1 },
           {
-            AND: [
-              { phase: { gt: 1 } },
-              { ...(accountId ? { Application: { some: { ownerId: accountId } } } : {}) },
-            ],
+            AND: [{ phase: { gt: 1 } }, { ...(accountId ? { Application: { some: { ownerId: accountId } } } : {}) }],
           },
         ],
       },
@@ -821,9 +758,7 @@ export const prismaStudentCountsInToken = async (
     }),
   ]);
   const applicationCountPerStatus: Record<string, number> = {};
-  applicationGroupStatusCount.forEach(
-    (e) => (applicationCountPerStatus[e.status] = e._count.status),
-  );
+  applicationGroupStatusCount.forEach((e) => (applicationCountPerStatus[e.status] = e._count.status));
 
   return {
     availableScholarshipCount,

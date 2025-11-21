@@ -13,9 +13,7 @@ import { GenerateAlphabet } from '../Helper/ApplicationHelper';
 import { extractNumber } from '../Helper/Helpers';
 import { Application, Prisma, prisma, Student_Notification } from '../lib/prisma';
 
-export const prismaGetApplication = async (
-  applicationId: number,
-): Promise<prismaGetApplicationType | null> => {
+export const prismaGetApplication = async (applicationId: number): Promise<prismaGetApplicationType | null> => {
   const application = await prisma.application.findUnique({
     where: { applicationId: applicationId },
     include: {
@@ -52,40 +50,12 @@ export const prismaGetAllApplication = async (
   applicationsCount: number;
   countsByStatus: Record<string, number>;
 }> => {
-  const allowedSortBy: string | undefined = ['status', 'dateCreated', 'processedDate'].includes(
-    sortBy as string,
-  )
+  const allowedSortBy: string | undefined = ['status', 'dateCreated', 'processedDate'].includes(sortBy as string) ? sortBy : undefined;
+  const allowedSortByStudent: string | undefined = ['fName', 'lName', 'mName', 'indigenous', 'PWD', 'institute', 'course', 'year', 'section'].includes(sortBy as string) ? sortBy : undefined;
+  const allowedSortByScholarship: string | undefined = ['title', 'amount', 'description', 'type', 'requiredGWA', 'limit', 'phase', 'deadline', 'dateCreated'].includes(sortBy as string)
     ? sortBy
     : undefined;
-  const allowedSortByStudent: string | undefined = [
-    'fName',
-    'lName',
-    'mName',
-    'indigenous',
-    'PWD',
-    'institute',
-    'course',
-    'year',
-    'section',
-  ].includes(sortBy as string)
-    ? sortBy
-    : undefined;
-  const allowedSortByScholarship: string | undefined = [
-    'title',
-    'amount',
-    'description',
-    'type',
-    'requiredGWA',
-    'limit',
-    'phase',
-    'deadline',
-    'dateCreated',
-  ].includes(sortBy as string)
-    ? sortBy
-    : undefined;
-  const allowedSortByDecision: string | undefined = ['processedDate'].includes(sortBy as string)
-    ? sortBy
-    : undefined;
+  const allowedSortByDecision: string | undefined = ['processedDate'].includes(sortBy as string) ? sortBy : undefined;
   const finalOrder: string = ['asc', 'desc'].includes(order as string) ? (order as string) : 'asc';
 
   const [applications, applicationsCount, rawStatusCounts] = await Promise.all([
@@ -108,12 +78,8 @@ export const prismaGetAllApplication = async (
       orderBy: {
         ...(allowedSortBy ? { [allowedSortBy]: finalOrder } : {}),
         ...(allowedSortByStudent ? { Student: { [allowedSortByStudent]: finalOrder } } : {}),
-        ...(allowedSortByScholarship
-          ? { Scholarship: { [allowedSortByScholarship]: finalOrder } }
-          : {}),
-        ...(allowedSortByDecision
-          ? { Application_Decision: { [allowedSortByDecision]: finalOrder } }
-          : {}),
+        ...(allowedSortByScholarship ? { Scholarship: { [allowedSortByScholarship]: finalOrder } } : {}),
+        ...(allowedSortByDecision ? { Application_Decision: { [allowedSortByDecision]: finalOrder } } : {}),
       },
       include: {
         Student: {
@@ -259,11 +225,7 @@ export const prismaSearchApplication = async (
     const applications = await tx.application.findMany({
       ...(dataPerPage ? { take: dataPerPage } : undefined),
       ...(dataPerPage && page ? { skip: (page - 1) * dataPerPage, take: dataPerPage } : undefined),
-      orderBy: [
-        ...(allowedSortBy.includes(sortBy || '')
-          ? [{ [sortBy as string]: order === 'desc' ? 'desc' : 'asc' }]
-          : []),
-      ],
+      orderBy: [...(allowedSortBy.includes(sortBy || '') ? [{ [sortBy as string]: order === 'desc' ? 'desc' : 'asc' }] : [])],
       where: {
         ownerId: ownerId,
         ...(allowedStatusFilter.includes(status || '') ? { status: status } : undefined),
@@ -312,9 +274,7 @@ export const prismaSearchApplication = async (
   return transac;
 };
 
-export const prismaCheckApproveGov = async (
-  accountId: number,
-): Promise<ApplicationWithScholarshipType | null> => {
+export const prismaCheckApproveGov = async (accountId: number): Promise<ApplicationWithScholarshipType | null> => {
   const applications = await prisma.application.findFirst({
     where: {
       ownerId: accountId,
@@ -418,10 +378,7 @@ export const prismaApproveApplication = async (
             scholarshipId: e.scholarshipId,
           },
           data: {
-            pending:
-              e.status === 'PENDING' || e.status === 'REVIEWED'
-                ? { decrement: e._count.applicationId }
-                : undefined,
+            pending: e.status === 'PENDING' || e.status === 'REVIEWED' ? { decrement: e._count.applicationId } : undefined,
             declined: e.status === 'DECLINED' ? { decrement: e._count.applicationId } : undefined,
             approved: e.status === 'APPROVED' ? { decrement: e._count.applicationId } : undefined,
           },
@@ -666,10 +623,7 @@ export const prismaDeclineApplication = async (
 
   return transac;
 };
-export const prismaCheckApplicationDuplicate = async (
-  accountId: number,
-  scholarshipId: number,
-): Promise<Application | null> => {
+export const prismaCheckApplicationDuplicate = async (accountId: number, scholarshipId: number): Promise<Application | null> => {
   const applicationDuplicate = await prisma.application.findFirst({
     where: {
       ownerId: accountId,
@@ -798,8 +752,7 @@ export const prismaBlockApplicationByOwnerId = async (ownerId: number): Promise<
           scholarshipId: e.id,
         },
         data: {
-          pending:
-            e.status === 'PENDING' || e.status === 'REVIEWED' ? { decrement: e.count } : undefined,
+          pending: e.status === 'PENDING' || e.status === 'REVIEWED' ? { decrement: e.count } : undefined,
           declined: e.status === 'DECLINED' ? { decrement: e.count } : undefined,
           approved: e.status === 'APPROVED' ? { decrement: e.count } : undefined,
         },
@@ -820,11 +773,7 @@ export const prismaBlockApplicationByOwnerId = async (ownerId: number): Promise<
   });
   return result.count;
 };
-export const prismaRenewApplication = async (
-  applicationId: number,
-  renewFiles: RecordApplicationFilesTypes,
-  supabasePath: string[],
-): Promise<prismaRenewApplicationType> => {
+export const prismaRenewApplication = async (applicationId: number, renewFiles: RecordApplicationFilesTypes, supabasePath: string[]): Promise<prismaRenewApplicationType> => {
   const result = await prisma.application.update({
     where: {
       applicationId: applicationId,
@@ -865,9 +814,7 @@ export const prismaRenewApplication = async (
   });
   return result;
 };
-export const prismaBlockApplicationByApplicationId = async (
-  applicationId: number,
-): Promise<Application | null> => {
+export const prismaBlockApplicationByApplicationId = async (applicationId: number): Promise<Application | null> => {
   const block = await prisma.application.update({
     where: { applicationId: applicationId },
     data: {
@@ -889,117 +836,116 @@ export const prismaGetFiltersForApplicationsCSV = async (
   studentYear?: string[],
   studentSection?: string[],
 ): Promise<{}> => {
-  const [scholarshipTitles, applicationStatuses, institutes, courses, years, sections] =
-    await Promise.all([
-      prisma.scholarship.groupBy({
-        by: ['title'],
-        _count: {
-          _all: true,
-        },
-        where: {
-          OR: [
-            {
-              Application: {
-                some: {
-                  status: { in: ['APPROVED', 'DECLINED', 'PENDING', 'INTERVIEW', 'BLOCKED'] },
-                },
+  const [scholarshipTitles, applicationStatuses, institutes, courses, years, sections] = await Promise.all([
+    prisma.scholarship.groupBy({
+      by: ['title'],
+      _count: {
+        _all: true,
+      },
+      where: {
+        OR: [
+          {
+            Application: {
+              some: {
+                status: { in: ['APPROVED', 'DECLINED', 'PENDING', 'INTERVIEW', 'BLOCKED'] },
               },
             },
-          ],
-        },
-      }),
-      scholarship
-        ? prisma.application.groupBy({
-            //applicationStatuses
-            by: ['status'],
-            _count: {
-              _all: true,
-            },
-            where: {
-              status: { in: applicationStatus },
-              Scholarship: { title: { in: scholarship } },
-            },
-          })
-        : [],
-      applicationStatus
-        ? prisma.student.groupBy({
-            //institutes
-            by: ['institute'],
-            _count: {
-              _all: true,
-            },
-            where: {
-              institute: { in: studentInstitute },
-              Application: {
-                some: {
-                  Scholarship: { title: { in: scholarship } },
-                  status: { in: applicationStatus },
-                },
+          },
+        ],
+      },
+    }),
+    scholarship
+      ? prisma.application.groupBy({
+          //applicationStatuses
+          by: ['status'],
+          _count: {
+            _all: true,
+          },
+          where: {
+            status: { in: applicationStatus },
+            Scholarship: { title: { in: scholarship } },
+          },
+        })
+      : [],
+    applicationStatus
+      ? prisma.student.groupBy({
+          //institutes
+          by: ['institute'],
+          _count: {
+            _all: true,
+          },
+          where: {
+            institute: { in: studentInstitute },
+            Application: {
+              some: {
+                Scholarship: { title: { in: scholarship } },
+                status: { in: applicationStatus },
               },
             },
-          })
-        : [],
-      studentInstitute
-        ? prisma.student.groupBy({
-            //course
-            by: ['course'],
-            _count: {
-              _all: true,
-            },
-            where: {
-              course: { in: studentCourse },
-              institute: { in: studentInstitute },
-              Application: {
-                some: {
-                  Scholarship: { title: { in: scholarship } },
-                  status: { in: applicationStatus },
-                },
+          },
+        })
+      : [],
+    studentInstitute
+      ? prisma.student.groupBy({
+          //course
+          by: ['course'],
+          _count: {
+            _all: true,
+          },
+          where: {
+            course: { in: studentCourse },
+            institute: { in: studentInstitute },
+            Application: {
+              some: {
+                Scholarship: { title: { in: scholarship } },
+                status: { in: applicationStatus },
               },
             },
-          })
-        : [],
-      studentCourse
-        ? prisma.student.groupBy({
-            //year
-            by: ['year'],
-            _count: {
-              _all: true,
-            },
-            where: {
-              year: { in: studentYear },
-              course: { in: studentCourse },
-              institute: { in: studentInstitute },
-              Application: {
-                some: {
-                  Scholarship: { title: { in: scholarship } },
-                  status: { in: applicationStatus },
-                },
+          },
+        })
+      : [],
+    studentCourse
+      ? prisma.student.groupBy({
+          //year
+          by: ['year'],
+          _count: {
+            _all: true,
+          },
+          where: {
+            year: { in: studentYear },
+            course: { in: studentCourse },
+            institute: { in: studentInstitute },
+            Application: {
+              some: {
+                Scholarship: { title: { in: scholarship } },
+                status: { in: applicationStatus },
               },
             },
-          })
-        : [],
-      studentYear
-        ? prisma.student.groupBy({
-            //section
-            by: ['section'],
-            _count: {
-              _all: true,
-            },
-            where: {
-              section: { in: studentSection },
-              year: { in: studentYear },
-              course: { in: studentCourse },
-              institute: { in: studentInstitute },
-              Application: {
-                some: {
-                  Scholarship: { title: { in: scholarship } },
-                  status: { in: applicationStatus },
-                },
+          },
+        })
+      : [],
+    studentYear
+      ? prisma.student.groupBy({
+          //section
+          by: ['section'],
+          _count: {
+            _all: true,
+          },
+          where: {
+            section: { in: studentSection },
+            year: { in: studentYear },
+            course: { in: studentCourse },
+            institute: { in: studentInstitute },
+            Application: {
+              some: {
+                Scholarship: { title: { in: scholarship } },
+                status: { in: applicationStatus },
               },
             },
-          })
-        : [],
-    ]);
+          },
+        })
+      : [],
+  ]);
   const applicationCountByScholarshipTitle = await Promise.all(
     scholarshipTitles.map(async (e) => {
       return {
@@ -1013,17 +959,11 @@ export const prismaGetFiltersForApplicationsCSV = async (
 
   return {
     scholarshipTitles: applicationCountByScholarshipTitle,
-    applicationStatuses: applicationStatuses.length
-      ? applicationStatuses.map((e) => ({ label: e.status, count: e._count._all }))
-      : [],
-    institutes: institutes.length
-      ? institutes.map((e) => ({ label: e.institute, count: e._count._all }))
-      : [],
+    applicationStatuses: applicationStatuses.length ? applicationStatuses.map((e) => ({ label: e.status, count: e._count._all })) : [],
+    institutes: institutes.length ? institutes.map((e) => ({ label: e.institute, count: e._count._all })) : [],
     courses: courses.length ? courses.map((e) => ({ label: e.course, count: e._count._all })) : [],
     years: years.length ? years.map((e) => ({ label: e.year, count: e._count._all })) : [],
-    sections: sections.length
-      ? sections.map((e) => ({ label: e.section, count: e._count._all }))
-      : [],
+    sections: sections.length ? sections.map((e) => ({ label: e.section, count: e._count._all })) : [],
   };
 };
 export const prismaGetApplicationsCSV = async (
@@ -1100,33 +1040,18 @@ export const prismaGetApplicationsCSV = async (
       },
     },
   });
-  const clean = (obj: Record<string, any>) =>
-    Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
+  const clean = (obj: Record<string, any>) => Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
   const CSV = records.map((r) => {
     const No = 0;
 
     const familyBackground = r.Student.familyBackground as familyBackgroundType;
-    const {
-      fatherTotalParentsTaxableIncome,
-      motherTotalParentsTaxableIncome,
-      guardianTotalParentsTaxableIncome,
-    } = {
-      fatherTotalParentsTaxableIncome: dataSelections.includes('Father Taxable Income')
-        ? extractNumber(familyBackground.motherTotalParentsTaxableIncome)
-        : null,
-      motherTotalParentsTaxableIncome: dataSelections.includes('Mother Taxable Income')
-        ? extractNumber(familyBackground.fatherTotalParentsTaxableIncome)
-        : null,
-      guardianTotalParentsTaxableIncome: dataSelections.includes('Guardian Taxable Income')
-        ? extractNumber(familyBackground.guardianTotalParentsTaxableIncome)
-        : null,
+    const { fatherTotalParentsTaxableIncome, motherTotalParentsTaxableIncome, guardianTotalParentsTaxableIncome } = {
+      fatherTotalParentsTaxableIncome: dataSelections.includes('Father Taxable Income') ? extractNumber(familyBackground.motherTotalParentsTaxableIncome) : null,
+      motherTotalParentsTaxableIncome: dataSelections.includes('Mother Taxable Income') ? extractNumber(familyBackground.fatherTotalParentsTaxableIncome) : null,
+      guardianTotalParentsTaxableIncome: dataSelections.includes('Guardian Taxable Income') ? extractNumber(familyBackground.guardianTotalParentsTaxableIncome) : null,
     };
-    const totalTotalParentsTaxableIncome: number | null = dataSelections.includes(
-      'Total Taxable Income',
-    )
-      ? (fatherTotalParentsTaxableIncome || 0) +
-        (motherTotalParentsTaxableIncome || 0) +
-        (guardianTotalParentsTaxableIncome || 0)
+    const totalTotalParentsTaxableIncome: number | null = dataSelections.includes('Total Taxable Income')
+      ? (fatherTotalParentsTaxableIncome || 0) + (motherTotalParentsTaxableIncome || 0) + (guardianTotalParentsTaxableIncome || 0)
       : null;
 
     return clean({
@@ -1147,11 +1072,7 @@ export const prismaGetApplicationsCSV = async (
       Course: r.Student.course,
       Year: r.Student.year,
       Section: r.Student.section,
-      ['Birth Date']: r.Student.dateOfBirth
-        ? typeof r.Student.dateOfBirth === 'string'
-          ? r.Student.dateOfBirth
-          : new Date(r.Student.dateOfBirth).toISOString().split('T')[0]
-        : null,
+      ['Birth Date']: r.Student.dateOfBirth ? (typeof r.Student.dateOfBirth === 'string' ? r.Student.dateOfBirth : new Date(r.Student.dateOfBirth).toISOString().split('T')[0]) : null,
       ['Father Taxable Income']: fatherTotalParentsTaxableIncome,
       ['Mother Taxable Income']: motherTotalParentsTaxableIncome,
       ['Guardian Taxable Income']: guardianTotalParentsTaxableIncome,
@@ -1173,9 +1094,7 @@ export const prismaGetApplicationHistory = async (
   filter?: { id: string; value: string[] }[],
   search?: string,
 ): Promise<{ applications: Application[]; counts: {}[]; totalCount: number }> => {
-  const finalSortBy: string | undefined = ['status', 'dateCreated'].includes(sortBy as string)
-    ? (sortBy as string)
-    : undefined;
+  const finalSortBy: string | undefined = ['status', 'dateCreated'].includes(sortBy as string) ? (sortBy as string) : undefined;
   const finalOrder: string = ['asc', 'desc'].includes(order as string) ? (order as string) : 'asc';
   const [applications, groupCount, totalCount] = await Promise.all([
     prisma.application.findMany({

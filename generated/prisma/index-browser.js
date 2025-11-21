@@ -4,17 +4,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-const {
-  Decimal,
-  DbNull,
-  JsonNull,
-  AnyNull,
-  NullTypes,
-  makeStrictEnum,
-  Public,
-  getRuntime,
-  skip,
-} = require('./runtime/index-browser.js');
+const { Decimal, DbNull, JsonNull, AnyNull, NullTypes, makeStrictEnum, Public, getRuntime, skip } = require('./runtime/index-browser.js');
 
 const Prisma = {};
 
@@ -334,10 +324,7 @@ class PrismaClient {
 - Use Driver Adapters: https://pris.ly/d/driver-adapters
 `;
         } else {
-          message =
-            'PrismaClient is unable to run in this browser environment, or has been bundled for the browser (running in `' +
-            runtime.prettyName +
-            '`).';
+          message = 'PrismaClient is unable to run in this browser environment, or has been bundled for the browser (running in `' + runtime.prettyName + '`).';
         }
 
         message += `

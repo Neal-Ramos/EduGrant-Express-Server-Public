@@ -3,13 +3,7 @@ import { AuthCode } from '../Models/Auth_CodeModels';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const SendAuthCode = async (
-  mailOptions: CreateEmailOptions,
-  origin: string,
-  receiver: string,
-  sendCode: string,
-  expiresAt: Date,
-): Promise<{ success: boolean; message: string }> => {
+export const SendAuthCode = async (mailOptions: CreateEmailOptions, origin: string, receiver: string, sendCode: string, expiresAt: Date): Promise<{ success: boolean; message: string }> => {
   try {
     const { data, error } = await resend.emails.send(mailOptions);
     if (error) {
@@ -33,9 +27,7 @@ export const SendAuthCode = async (
     return { success: false, message: 'Unexpected Error: ' + error?.message };
   }
 };
-export const sendAdminRegValidation = async (
-  mailOptions: CreateEmailOptions,
-): Promise<{ success: boolean; message: string }> => {
+export const sendAdminRegValidation = async (mailOptions: CreateEmailOptions): Promise<{ success: boolean; message: string }> => {
   try {
     const { data, error } = await resend.emails.send(mailOptions);
     if (error) {
@@ -48,9 +40,7 @@ export const sendAdminRegValidation = async (
     return { success: false, message: 'Unexpected Error: ' + error?.message };
   }
 };
-export const sendApplicationUpdate = async (
-  mailOptions: CreateEmailOptions,
-): Promise<{ success: boolean; message: string }> => {
+export const sendApplicationUpdate = async (mailOptions: CreateEmailOptions): Promise<{ success: boolean; message: string }> => {
   try {
     const { data, error } = await resend.emails.send(mailOptions);
     if (error) {
