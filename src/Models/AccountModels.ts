@@ -1,8 +1,7 @@
-import { Account } from "@prisma/client";
 import { hashSync } from "bcryptjs";
 import { ResponseUploadSupabase } from "../Config/Supabase";
 import { AccountRelations, prismaGetAccountByIdType, prismaUpdateStaffAccountType } from "../Types/AccountTypes";
-import { prisma } from "../lib/prisma"
+import { Account, prisma } from "../lib/prisma"
 
 export const prismaCheckEmailExist = async(email: string): Promise<AccountRelations|null>=>{
     const emailExist = await prisma.account.findUnique({

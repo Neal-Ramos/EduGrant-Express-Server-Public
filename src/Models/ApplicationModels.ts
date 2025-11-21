@@ -1,9 +1,8 @@
-import { Application, Prisma, Student_Notification } from "@prisma/client";
 import { RecordApplicationFilesTypes } from "../Types/postControllerTypes";
 import { ApplicationWithScholarshipType, familyBackgroundType, prismaAcceptForInterviewType, prismaApproveApplicationType, prismaCreateApplicationType, prismaDeclineApplicationType, prismaGetApplicationType, prismaRenewApplicationType } from "../Types/ApplicationType";
 import { GenerateAlphabet } from "../Helper/ApplicationHelper";
 import { extractNumber } from "../Helper/Helpers";
-import { prisma } from "../lib/prisma"
+import { Application, Prisma, prisma, Student_Notification } from "../lib/prisma"
 
 export const prismaGetApplication = async (applicationId: number): Promise<prismaGetApplicationType | null> => {
     const application = await prisma.application.findUnique({

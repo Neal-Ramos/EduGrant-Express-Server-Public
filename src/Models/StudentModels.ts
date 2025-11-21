@@ -1,6 +1,5 @@
-import { Student } from "@prisma/client";
 import { AccountWithRelationsType } from "../Types/StudentTypes";
-import { prisma } from "../lib/prisma"
+import { prisma, Student } from "../lib/prisma"
 
 export const prismaFiltersStudent = async(status?: string): Promise<{}>=> {
 
