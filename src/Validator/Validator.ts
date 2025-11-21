@@ -59,3 +59,13 @@ export const toDate = () => {
         return d
     })
 }
+export const toBoolean = () => {
+    return z.union([z.string(), z.boolean()]).transform((val, cxt) => {
+        if(typeof val === "boolean")return val
+        if(val !== "true" && val !== "false"){
+            cxt.addIssue({code:"custom", message: "value must be \"true\" || \"false\"!"})
+            return z.NEVER
+        }
+        return val === "false"
+    })
+}

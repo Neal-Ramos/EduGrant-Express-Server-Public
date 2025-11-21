@@ -1,5 +1,5 @@
 import z, { boolean, email } from "zod";
-import { toDate } from "./Validator";
+import { toBoolean, toDate } from "./Validator";
 
 export const registerAccountZodSchema = z.object({
   body: z.object({
@@ -19,6 +19,11 @@ export const registerAccountZodSchema = z.object({
     indigenous: z.string().trim().optional(),
     studentPassword: z.string().trim().min(8),
     studentDateofBirth: toDate(),
+    prefixName: z.string().optional(),
+    fourPs: toBoolean(),
+    dswd: toBoolean(),
+    civilStatus: z.string(),
+    studentType: z.string(),
     verificationCode: z.string().trim(),
   }),
 });
@@ -49,6 +54,11 @@ export const sendAuthCodeRegisterZodSchema = z.object({
     section: z.string().min(1).trim(),
     pwd: z.string().trim().optional(),
     indigenous: z.string().trim().optional(),
+    prefixName: z.string().optional(),
+    fourPs: toBoolean(),
+    dswd: toBoolean(),
+    civilStatus: z.string(),
+    studentType: z.string(),
     studentPassword: z.string().trim().min(8),
     studentDateofBirth: toDate(),
   }),

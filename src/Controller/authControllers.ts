@@ -17,9 +17,30 @@ import { getAnnouncementsZodType } from "../Validator/ZodSchemaUserPost";
 export const registerAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const origin = "register";
-        const { studentId, studentEmail, studentContact,
-            studentFirstName, studentMiddleName, studentLastName, studentGender, studentAddress,
-            studentDateofBirth, course, year , section, studentPassword, verificationCode, institute, pwd, indigenous } = (req as Request & {validated: registerAccountZodType}).validated.body;
+        const {
+            studentId,
+            studentEmail,
+            studentContact,
+            studentFirstName,
+            studentMiddleName,
+            studentLastName,
+            studentGender,
+            studentAddress,
+            institute,
+            course,
+            year,
+            section,
+            pwd,
+            indigenous,
+            studentPassword,
+            studentDateofBirth,
+            prefixName,
+            fourPs,
+            dswd,
+            civilStatus,
+            studentType,
+            verificationCode,
+        } = (req as Request & {validated: registerAccountZodType}).validated.body;
         const Code = await AuthCode.validate(verificationCode , studentEmail, origin)
         if(!Code.validated || !Code.AuthCode){
             res.status(400).json({success:false, message:Code.message});
@@ -36,9 +57,29 @@ export const registerAccount = async (req: Request, res: Response, next: NextFun
             return
         }
         const HashedPassword = await bcrypt.hash(studentPassword, 10)
-        const newUser = await prismaCreateStudentAccount(studentId, studentEmail, studentContact,
-            HashedPassword, studentFirstName, studentMiddleName, studentLastName, studentGender,
-            studentDateofBirth, studentAddress, course, year , section, institute, pwd, indigenous );
+        const newUser = await prismaCreateStudentAccount(
+            fourPs,
+            dswd,
+            civilStatus,
+            studentType,
+            studentId,
+            studentEmail,
+            studentContact,
+            HashedPassword,
+            studentFirstName,
+            studentMiddleName,
+            studentLastName,
+            studentGender,
+            studentDateofBirth,
+            studentAddress,
+            course,
+            year,
+            section,
+            institute,
+            pwd,
+            indigenous,
+            prefixName,
+        );
         if(newUser.accountId === 0){
             res.status(500).json({success: false, message:"Database Error!!"});
             return;

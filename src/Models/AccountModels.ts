@@ -45,9 +45,10 @@ export const prismaCreateISPSU_Staff = async (email: string, firstName: string, 
         })
         return createHeadAccount
 }
-export const prismaCreateStudentAccount = async (studentId: string, studentEmail: string, studentContact: string,
+export const prismaCreateStudentAccount = async (fourPs: boolean, dswd: boolean, civilStatus: string, studentType: string, studentId: string, studentEmail: string, studentContact: string,
 HashedPassword: string, studentFirstName: string, studentMiddleName: string|undefined, studentLastName: string, studentGender: string,
-studentDateofBirth: Date, studentAddress: string, course: string, year: string , section: string, institute: string, pwd?: string, indigenous?: string): Promise<Account>=>{
+studentDateofBirth: Date, studentAddress: string, course: string, year: string , section: string, institute: string, pwd?: string, indigenous?: string,
+prefixName?: string): Promise<Account>=>{
     const newStudentAccount = await prisma.account.create({
         data:{
             email: studentEmail,
@@ -69,7 +70,12 @@ studentDateofBirth: Date, studentAddress: string, course: string, year: string ,
                     institute: institute,
                     PWD: pwd,
                     indigenous: indigenous,
-                    familyBackground: {}
+                    familyBackground: {},
+                    dswdMember: dswd,
+                    fourPsMember: fourPs,
+                    civilStatus: civilStatus,
+                    studentType: studentType,
+                    prefixName: prefixName
                 }
             }
         }
