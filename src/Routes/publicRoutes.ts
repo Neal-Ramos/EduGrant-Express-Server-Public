@@ -1,17 +1,15 @@
-import { Router } from 'express';
-import { getAnnouncementsZodSchema } from '../Validator/ZodSchemaUserPost';
-import { getAnnouncementsPublic, uploadWasabi } from '../Controller/publicController';
-import { validate } from '../Validator/Validator';
-import upload from '../Helper/upload';
+import { Router } from "express";
+import { getAnnouncementsZodSchema } from "../Validator/ZodSchemaUserPost";
+import { getAnnouncementsPublic, uploadWasabi } from "../Controller/publicController";
+import { validate } from "../Validator/Validator";
+import upload from "../Config/upload";
 
-const PublicRoutes = Router();
+ 
 
-PublicRoutes.post('/uploadWasabi', upload.any(), uploadWasabi);
+const PublicRoutes = Router()
 
-PublicRoutes.get(
-  '/getAnnouncementsPublic',
-  validate(getAnnouncementsZodSchema),
-  getAnnouncementsPublic,
-);
+PublicRoutes.post("/uploadWasabi", upload.any(), uploadWasabi)
 
-export default PublicRoutes;
+PublicRoutes.get("/getAnnouncementsPublic", validate(getAnnouncementsZodSchema), getAnnouncementsPublic)
+
+export default PublicRoutes

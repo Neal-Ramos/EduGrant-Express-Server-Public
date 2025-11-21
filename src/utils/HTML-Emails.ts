@@ -1,9 +1,5 @@
-export const AdminAccountValidationHTML = (
-  token: string,
-  requesterName: string,
-  requesterEmail: string,
-): string => {
-  return `
+export const AdminAccountValidationHTML = (token: string, requesterName: string, requesterEmail: string): string=> {
+    return `
     <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -67,5 +63,5 @@ export const AdminAccountValidationHTML = (
     </table>
   </body>
   </html>
-`;
-};
+`
+}
