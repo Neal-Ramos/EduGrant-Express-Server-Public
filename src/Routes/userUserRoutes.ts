@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { changePassword, downloadApplicationFile, getDashboard, getFileUrl, logoutUser, markAllReadNotifications, readNotification, sendAuthCodeChangeAccountCred, updateApplication, updateStudentInfo } from "../Controller/userController";
-import { TokenAuth } from "../Config/TokenAuth";
+import { TokenAuth } from "../Helper/TokenAuth";
 import { validate } from "../Validator/Validator";
 import { changePasswordZodSchema, downloadApplicationFileZodSchema, getFileUrlZodSchema, readNotificationZodSchema, sendAuthCodeChangeAccountCredZodSchema, updateApplicationZodSchema, updateStudentInfoZodSchema } from "../Validator/ZodSchemaUserUser";
-import upload from "../Config/upload";
+import upload from "../Helper/upload";
 
 const UserUserRoutes = Router();
 

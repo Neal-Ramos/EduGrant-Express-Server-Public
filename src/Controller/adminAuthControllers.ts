@@ -5,7 +5,7 @@ import { compare, hash } from "bcryptjs";
 import { adminCodeAuthenticationZodType, adminLoginZodType, forgetPassZodType, sendAuthCodeForgetPassZodType } from "../Validator/ZodSchemanAdminAuth";
 import { authHTML } from "../utils/HTML-AuthCode";
 import { getStaffByEmail, prismaCheckEmailExist, prismaUpdateAccountPassword } from "../Models/AccountModels";
-import { GenerateCode } from "../Config/CodeGenerator";
+import { GenerateCode } from "../Helper/CodeGenerator";
 import { CreateEmailOptions } from "resend";
 import { AuthCode } from "../Models/Auth_CodeModels";
 

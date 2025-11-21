@@ -7,7 +7,7 @@ import { TokenPayload } from "../Types/authControllerTypes";
 import { forgotPasswordSendAuthCodeZodType, forgotPasswordZodType, loginAccountsZodType, registerAccountZodType, sendAuthCodeLoginZodType, sendAuthCodeRegisterZodType } from "../Validator/ZodSchemaUserAuth";
 import { authHTML } from "../utils/HTML-AuthCode";
 import { prismaCheckEmailExist, prismaCheckStudentIdExist, prismaCreateStudentAccount, prismaGetAccountById, prismaUpdateAccountPassword } from "../Models/AccountModels";
-import { GenerateCode } from "../Config/CodeGenerator";
+import { GenerateCode } from "../Helper/CodeGenerator";
 import { CreateEmailOptions } from "resend";
 import { prismaGetUnreadNotificationsCount } from "../Models/Student_NotificationModels";
 import { AuthCode } from "../Models/Auth_CodeModels";

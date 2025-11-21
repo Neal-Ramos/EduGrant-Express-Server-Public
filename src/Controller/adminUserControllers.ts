@@ -3,7 +3,7 @@ import { adminLogoutZodType, changeStaffCredZodType, editHeadZodType, editStaffC
 import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateHeadAccount, prismaUpdateStaffAccount, prismaUpdateWebTour } from "../Models/AccountModels";
 import { compare, hash } from "bcryptjs";
 import { prismaUpdateStaffInfo } from "../Models/ISPSU_StaffModels";
-import { GenerateCode } from "../Config/CodeGenerator";
+import { GenerateCode } from "../Helper/CodeGenerator";
 import { CreateEmailOptions } from "resend";
 import { authHTML } from "../utils/HTML-AuthCode";
 import { SendAuthCode } from "../Config/Resend";

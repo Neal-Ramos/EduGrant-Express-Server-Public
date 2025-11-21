@@ -1,5 +1,5 @@
 import { Router } from "express";
-import upload from "../Config/upload";
+import upload from "../Helper/upload";
 import { getAllAdmin, adminAddScholarships, getScholarship, updateScholarship, deleteScholarship, 
     searchApplication, getApplicationById, getFilterData, approveApplication, declineApplication, getApplication, 
     searchAdmin, deleteAdmin, createAnnouncement, getAnnouncement, deleteAnnouncement, getScholarshipsById, forInterview,
@@ -7,7 +7,7 @@ import { getAllAdmin, adminAddScholarships, getScholarship, updateScholarship, d
     deleteStudent, getStudents, getStudentsById, searchStudent, getFiltersCSV, downloadApplicationCSV, adminTokenAuthentication,
     downloadStudentsCSV, getFiltersStudentsCSV,endScholarship, validateStaff, getFileUrl, downloadApplicationFile, createISPSUStaffAccount,
     deleteISPSU_Staff, } from "../Controller/adminPostControllers";
-import { AdminTokenAuth } from "../Config/TokenAuth";
+import { AdminTokenAuth } from "../Helper/TokenAuth";
 import { adminAddScholarshipsZodSchema, approveApplicationZodSchema, createAnnouncementZodSchema, declineApplicationZodSchema, deleteAdminZodSchema, deleteAnnouncementZodSchema, 
     deleteISPSU_StaffZodSchema, deleteScholarshipZodSchema, deleteStudentZodSchema, downloadApplicationCSVZodSchema, downloadStudentsCSVZodSchema, editAnnouncementZodSchema, endScholarshipZodSchema, forInterviewZodSchema, getAllAdminZodSchema, getAnnouncementByIdZodSchema, getAnnouncementZodSchema, getApplicationByIdZodSchema, getApplicationZodSchema, 
     getFilterDataZodSchema, getFiltersCSVZodSchema, getScholarshipsByIdZodSchema, getScholarshipZodSchema, getStaffByIdZodSchema, getStaffLogsZodSchema, getStudentsByIdZodSchema, getStudentsZodSchema, renewalScholarshipZodSchema, searchAdminZodSchema, searchApplicationZodSchema, 

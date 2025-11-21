@@ -2,7 +2,7 @@ import { Router } from "express";
 import { getAnnouncementsZodSchema } from "../Validator/ZodSchemaUserPost";
 import { getAnnouncementsPublic, uploadWasabi } from "../Controller/publicController";
 import { validate } from "../Validator/Validator";
-import upload from "../Config/upload";
+import upload from "../Helper/upload";
 
  
 

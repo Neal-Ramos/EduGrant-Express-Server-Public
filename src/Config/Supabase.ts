@@ -1,6 +1,6 @@
 import { FileObject, StorageError } from '@supabase/storage-js';
 import { createClient } from '@supabase/supabase-js'
-import { normalizeString } from './normalizeString';
+import { normalizeString } from '../Helper/normalizeString';
 
 export const supabase = createClient(process.env.SUPABASE_PROJECT_URL as string, process.env.SUPABASE_SERVICE_KEY as string)
    

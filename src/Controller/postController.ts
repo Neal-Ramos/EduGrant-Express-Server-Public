@@ -8,8 +8,8 @@ import { prismaGetAccountById } from "../Models/AccountModels";
 import { prismaGetAllAnnouncement, prismaGetAnnouncementById } from "../Models/AnnouncementModels";
 import { prismaGetAllNotifications, prismaGetUnreadNotificationsCount } from "../Models/Student_NotificationModels";
 import { DocumentEntry, RecordApplicationFilesTypes, RecordDocumentEntry } from "../Types/postControllerTypes";
-import { cookieOptionsStudent } from "../Config/TokenAuth";
-import { normalizeString } from "../Config/normalizeString";
+import { cookieOptionsStudent } from "../Helper/TokenAuth";
+import { normalizeString } from "../Helper/normalizeString";
 import { io } from "..";
 import { DenormalizeApplication } from "../Helper/ApplicationHelper";
 

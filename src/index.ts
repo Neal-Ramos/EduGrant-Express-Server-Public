@@ -15,7 +15,7 @@ import UserUserRoutes from "./Routes/userUserRoutes";
 import AdminAuthRoutes from "./Routes/adminAuthRoutes";
 import AdminPostRoutes from "./Routes/adminPostRoutes";
 import AdminUserRoutes from "./Routes/adminUserRoutes";
-import { healthCheckMiddleware } from "./Config/healthCheckMiddleware";
+import { healthCheckMiddleware } from "./Helper/healthCheckMiddleware";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import PublicRoutes from "./Routes/publicRoutes";

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { supabase } from './Supabase';
+import { supabase } from '../Config/Supabase';
 import { prisma } from '../lib/prisma';
 
 export const healthCheckMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void>=> {

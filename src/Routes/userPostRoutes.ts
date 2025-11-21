@@ -1,8 +1,8 @@
 import { Router } from "express";
-import upload from "../Config/upload";
+import upload from "../Helper/upload";
 import { applyRenewScholarship, applyScholarship, downloadScholarshipForm, getAllScholarship, getAnnouncements, getAnnouncementsById, getApplicationHistory, getApplications, getNotifications, 
     getScholarshipsbyId, getStudentApplicationById, getStudentById, searchScholarship, tokenValidation } from "../Controller/postController";
-import { TokenAuth } from "../Config/TokenAuth";
+import { TokenAuth } from "../Helper/TokenAuth";
 import { validate } from "../Validator/Validator";
 import { applyRenewScholarshipZodSchema, applyScholarshipZodSchema, downloadScholarshipFormZodSchema, getAllScholarshipZodSchema, getAnnouncementsByIdZodSchema, getAnnouncementsZodSchema, 
     getApplicationHistoryZodSchema, 
