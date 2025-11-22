@@ -61,9 +61,9 @@ export const toDate = () => {
   });
 };
 export const toBoolean = () => {
-  return z.union([z.string(), z.boolean()]).transform((val, ctx) => {
+  return z.union([z.string(), z.boolean(), z.undefined()]).transform((val) => {
+    if(!val) return false
     if (typeof val === "boolean") return val;
-    
     return val === "true";
   });
 };
