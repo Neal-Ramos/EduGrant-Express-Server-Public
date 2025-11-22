@@ -19,19 +19,18 @@ import {
   UploadSupabasePrivate,
 } from '../Config/Supabase';
 import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateStudentAccount } from '../Models/AccountModels';
-import { compare, hash } from 'bcryptjs';
+import { compare } from 'bcryptjs';
 import { CreateEmailOptions } from 'resend';
 import { SendAuthCode } from '../Config/Resend';
 import { authHTML } from '../utils/HTML-AuthCode';
 import { prismaGetApplication, prismaUpdateApplicationSubmittedFiles } from '../Models/ApplicationModels';
 import { prismaGetScholarshipsById } from '../Models/ScholarshipModels';
-import { applicationFilesTypes, RecordApplicationFilesTypes } from '../Types/postControllerTypes';
+import { RecordApplicationFilesTypes } from '../Types/postControllerTypes';
 import { prismaGetDashboardData } from '../Models/StudentModels';
 import { prismaReadAllNotifications, prismaReadTrueNotification } from '../Models/Student_NotificationModels';
 import { GenerateCode } from '../Helper/CodeGenerator';
 import { AuthCode } from '../Models/Auth_CodeModels';
 import { cookieOptionsStudent } from '../Helper/TokenAuth';
-import { error } from 'console';
 import { io } from '..';
 import { DenormalizeApplication } from '../Helper/ApplicationHelper';
 

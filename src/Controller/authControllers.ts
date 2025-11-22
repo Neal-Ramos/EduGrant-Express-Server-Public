@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import crypto from 'crypto';
-import { sign, verify } from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import bcrypt, { hash } from 'bcryptjs';
 import { SendAuthCode } from '../Config/Resend';
-import { TokenPayload } from '../Types/authControllerTypes';
 import {
   forgotPasswordSendAuthCodeZodType,
   forgotPasswordZodType,
@@ -13,13 +11,11 @@ import {
   sendAuthCodeRegisterZodType,
 } from '../Validator/ZodSchemaUserAuth';
 import { authHTML } from '../utils/HTML-AuthCode';
-import { prismaCheckEmailExist, prismaCheckStudentIdExist, prismaCreateStudentAccount, prismaGetAccountById, prismaUpdateAccountPassword } from '../Models/AccountModels';
+import { prismaCheckEmailExist, prismaCheckStudentIdExist, prismaCreateStudentAccount, prismaUpdateAccountPassword } from '../Models/AccountModels';
 import { GenerateCode } from '../Helper/CodeGenerator';
 import { CreateEmailOptions } from 'resend';
 import { prismaGetUnreadNotificationsCount } from '../Models/Student_NotificationModels';
 import { AuthCode } from '../Models/Auth_CodeModels';
-import { prismaGetAllAnnouncement } from '../Models/AnnouncementModels';
-import { getAnnouncementsZodType } from '../Validator/ZodSchemaUserPost';
 
 export const registerAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -48,30 +44,7 @@ export const registerAccount = async (req: Request, res: Response, next: NextFun
       studentType,
       verificationCode,
     } = (req as Request & { validated: registerAccountZodType }).validated.body;
-    console.log(
-      studentId,
-      studentEmail,
-      studentContact,
-      studentFirstName,
-      studentMiddleName,
-      studentLastName,
-      studentGender,
-      studentAddress,
-      institute,
-      course,
-      year,
-      section,
-      pwd,
-      indigenous,
-      studentPassword,
-      studentDateofBirth,
-      prefixName,
-      fourPs,
-      dswd,
-      civilStatus,
-      studentType,
-      verificationCode,
-    )
+
     const Code = await AuthCode.validate(verificationCode, studentEmail, origin);
     if (!Code.validated || !Code.AuthCode) {
       res.status(400).json({ success: false, message: Code.message });

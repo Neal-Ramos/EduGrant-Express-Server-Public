@@ -24,7 +24,6 @@ import {
   prismaGetApplication,
   prismaGetApplicationHistory,
   prismaRenewApplication,
-  prismaSearchApplication,
 } from '../Models/ApplicationModels';
 import { prismaGetAccountById } from '../Models/AccountModels';
 import { prismaGetAllAnnouncement, prismaGetAnnouncementById } from '../Models/AnnouncementModels';
