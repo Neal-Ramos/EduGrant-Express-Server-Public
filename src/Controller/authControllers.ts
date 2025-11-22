@@ -44,6 +44,7 @@ export const registerAccount = async (req: Request, res: Response, next: NextFun
       studentType,
       verificationCode,
     } = (req as Request & { validated: registerAccountZodType }).validated.body;
+    console.log(req.body)
 
     const Code = await AuthCode.validate(verificationCode, studentEmail, origin);
     if (!Code.validated || !Code.AuthCode) {
