@@ -1,28 +1,59 @@
 import { AccountWithRelationsType } from '../Types/StudentTypes';
-import { prisma, Student } from '../lib/prisma';
+import { Prisma, prisma, Student } from '../lib/prisma';
 
-export const prismaFiltersStudent = async (status?: string): Promise<{}> => {
-  const StudentFilter = await prisma.student.findMany({
-    distinct: ['course', 'year', 'section'],
-    where: {
-      Application: {
-        some: {
-          status: status ? status : undefined,
-        },
-      },
-    },
-    select: {
-      institute: true,
-      course: true,
-      year: true,
-      section: true,
-    },
-  });
+export const prismaFiltersStudent = async (status?: string): Promise<{
+  course: string[],
+  year: string[],
+  section: string[],
+  institute: string[],
+  scholarshipTitle: string[],
+  scholarshipPhase: string[],
+  scholarshipProvider: string[]
+}> => {
+  const whereClauseStudent = {
+    Application: {
+      some: {status: status}
+    }
+  }
+
+  const [studentCourse, studentYear, studentSection, studentInstitute, scholarshipTitle, scholarshipPhase, scholarshipProvider] = await Promise.all([
+    prisma.student.groupBy({
+      by:"course",
+      where: whereClauseStudent
+    }),
+    prisma.student.groupBy({
+      by:"year",
+      where: whereClauseStudent
+    }),
+    prisma.student.groupBy({
+      by:"section",
+      where: whereClauseStudent
+    }),
+    prisma.student.groupBy({
+      by:"institute",
+      where: whereClauseStudent
+    }),
+    prisma.scholarship.groupBy({
+      by:"title",
+      where: whereClauseStudent
+    }),
+    prisma.scholarship.groupBy({
+      by:"phase",
+      where: whereClauseStudent
+    }),
+    prisma.scholarship_Provider.groupBy({
+      by:"name",
+    }),
+  ])
+
   return {
-    course: [...new Set(StudentFilter.map((item) => item.course))],
-    year: [...new Set(StudentFilter.map((item) => item.year))],
-    section: [...new Set(StudentFilter.map((item) => item.section))],
-    institute: [...new Set(StudentFilter.map((item) => item.institute))],
+    course: studentCourse.map(e => e.course),
+    year: studentYear.map(e => e.year),
+    section: studentSection.map(e => e.section),
+    institute: studentInstitute.map(e => e.institute),
+    scholarshipTitle: scholarshipTitle.map(e => e.title),
+    scholarshipPhase: scholarshipPhase.map(e => e.phase.toString()),
+    scholarshipProvider: scholarshipProvider.map(e => e.name)
   };
 };
 export const prismaGetDashboardData = async (accountId?: number): Promise<{}> => {

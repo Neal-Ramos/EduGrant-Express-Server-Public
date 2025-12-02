@@ -778,10 +778,17 @@ export const getFilterData = async (req: Request, res: Response, next: NextFunct
       return;
     }
 
-    const getScholarshipsFilters = await prismaFiltersScholarship(scholarshipStatus);
-    const getFilterData = await prismaFiltersStudent(applicationStatus);
+    const {course, year, section, institute, scholarshipTitle, scholarshipPhase, scholarshipProvider} = await prismaFiltersStudent(applicationStatus);
+    let getScholarshipsFilters
 
-    res.status(200).json({ getFilterData, getScholarshipsFilters }); //{optionsScholarship, optionsApplication}
+    if(applicationStatus){
+      getScholarshipsFilters = {scholarship: scholarshipTitle, phase: scholarshipPhase, provider: scholarshipProvider}
+    }
+    else{
+      getScholarshipsFilters = await prismaFiltersScholarship(scholarshipStatus);
+    }
+
+    res.status(200).json({ getFilterData: {course, year, section, institute}, getScholarshipsFilters }); //{optionsScholarship, optionsApplication}
   } catch (error) {
     next(error);
   }
