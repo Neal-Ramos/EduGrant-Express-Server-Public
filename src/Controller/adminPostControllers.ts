@@ -927,7 +927,7 @@ export const forInterview = async (req: Request, res: Response, next: NextFuncti
     const applicantEmail: string = `${checkApplication.Student.Account.email}`;
     const mailOptions: CreateEmailOptions = {
       from: 'service@edugrant.online',
-      to: checkApplication.Student.Account.email || '',
+      to: checkApplication.Student.Account.email,
       subject: 'Eligible for Interview',
       html: interviewHTML(applicantName, applicantStudentId, applicantEmail),
     };

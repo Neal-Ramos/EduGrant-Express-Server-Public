@@ -367,6 +367,7 @@ export const prismaApproveApplication = async (
         status: { in: ['INTERVIEW', 'PENDING', 'RENEW'] },
         Scholarship: {
           type: 'government',
+          ended: false
         },
       },
       _count: { applicationId: true },
@@ -398,11 +399,11 @@ export const prismaApproveApplication = async (
         status: 'BLOCKED',
       },
     });
-    return { approveApplication, notification };
+    return { approveApplication, notification};
   });
   // create notifications for blocked applications
   const BlockedApplications = await prisma.application.findMany({
-    where: { status: 'BLOCKED' },
+    where: { status: 'BLOCKED', Student_Notifications:{none:{title: "Application Blocked"}}},
     include: {
       Scholarship: {
         include: {
