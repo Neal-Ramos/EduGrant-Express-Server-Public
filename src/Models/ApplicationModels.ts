@@ -52,7 +52,7 @@ export const prismaGetAllApplication = async (
 }> => {
   const allowedSortBy: string | undefined = ['status', 'dateCreated', 'processedDate'].includes(sortBy as string) ? sortBy : undefined;
   const allowedSortByStudent: string | undefined = ['fName', 'lName', 'mName', 'indigenous', 'PWD', 'institute', 'course', 'year', 'section'].includes(sortBy as string) ? sortBy : undefined;
-  const allowedSortByScholarship: string | undefined = ['title', 'amount', 'description', 'type', 'requiredGWA', 'limit', 'phase', 'deadline', 'dateCreated'].includes(sortBy as string)
+  const allowedSortByScholarship: string | undefined = ['title', 'amount', 'description', 'type', 'requiredGWA', 'limit', 'phase', 'deadline'].includes(sortBy as string)
     ? sortBy
     : undefined;
   const allowedSortByDecision: string | undefined = ['processedDate'].includes(sortBy as string) ? sortBy : undefined;
