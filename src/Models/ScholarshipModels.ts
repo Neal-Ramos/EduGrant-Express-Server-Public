@@ -1,7 +1,7 @@
 import { ResponseUploadSupabase } from '../Config/Supabase';
 import { DocumentEntry } from '../Types/postControllerTypes';
 import { io } from '..';
-import { prismaRenewScholarshipType, ScholarshipWithChildType } from '../Types/ScholarshipTypes';
+import { prismaGetScholarshipType, prismaRenewScholarshipType, ScholarshipWithChildType } from '../Types/ScholarshipTypes';
 import { Application, prisma, Prisma, Scholarship } from '../lib/prisma';
 
 export const prismaCreateScholarship = async (
@@ -69,7 +69,7 @@ export const prismaGetScholarship = async (
   accountId?: number,
   search?: string,
 ): Promise<{
-  scholarship: Scholarship[];
+  scholarship: prismaGetScholarshipType[];
   totalCount: number;
   countActive: number;
   countRenew: number;

@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { getAnnouncementsZodType } from '../Validator/ZodSchemaUserPost';
 import { prismaGetAllAnnouncement } from '../Models/AnnouncementModels';
 import { WasabiCreateSignedURL, WasabiUpload } from '../Config/Wasabi';
+import { getScholarshipZodType } from '../Validator/ZodSchemaAdminPost';
+import { prismaGetScholarship } from '../Models/ScholarshipModels';
 
 export const uploadWasabi = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -41,5 +43,30 @@ export const getAnnouncementsPublic = async (req: Request, res: Response, next: 
     res.status(200).json({ announcements: announcements.announcements, meta });
   } catch (error) {
     next(error);
+  }
+};
+export const getScholarshipPublic = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { dataPerPage, page, sortBy, order, status, filters, search } = (req as Request & { validated: getScholarshipZodType }).validated.query;
+
+    const { scholarship, totalCount, countActive, countRenew, countExpired } = await prismaGetScholarship(page, dataPerPage, sortBy, order, status, filters, undefined, search);
+
+    const safeScholarships = scholarship.map(e => {
+      const {Application, ...safe} = e
+      return safe
+    })
+    const meta = {
+      page: page,
+      pageSize: dataPerPage,
+      totalRows: totalCount,
+      totalPage: Math.ceil(totalCount / (dataPerPage || totalCount)),
+      sortBy: sortBy ? sortBy : 'default',
+      order: order ? order : 'default',
+      filters: (filters as {id: string}[] | undefined)?.map((e) => e.id),
+    };
+
+    res.status(200).json({ success: true, scholarship: safeScholarships, totalCount, countActive, countRenew, countExpired, meta });
+  } catch (error) {
+    next(error)
   }
 };

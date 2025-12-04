@@ -17,3 +17,14 @@ export type prismaRenewScholarshipType = Prisma.ScholarshipGetPayload<{
     };
   };
 }>;
+export type prismaGetScholarshipType = Prisma.ScholarshipGetPayload<{
+  include: {
+    Scholarship_Provider: true,
+    Application: {
+      select: {
+        ownerId: true,
+        status: true,
+      },
+    },
+  },
+}>

@@ -44,7 +44,6 @@ export const registerAccount = async (req: Request, res: Response, next: NextFun
       studentType,
       verificationCode,
     } = (req as Request & { validated: registerAccountZodType }).validated.body;
-    console.log(req.body)
 
     const Code = await AuthCode.validate(verificationCode, studentEmail, origin);
     if (!Code.validated || !Code.AuthCode) {
@@ -229,7 +228,6 @@ export const sendAuthCodeLogin = async (req: Request, res: Response, next: NextF
     }
     res.status(200).json({ success: true, message: 'Code Send!!', expiresAt, ttl: 120, resendAvailableIn: 60 });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
