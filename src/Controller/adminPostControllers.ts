@@ -1045,6 +1045,7 @@ export const getApplication = async (req: Request, res: Response, next: NextFunc
 
     if(cachedData){
       res.status(200).json(cachedData)
+      return
     }
 
     const getApplication = await prismaGetAllApplication(status, page, dataPerPage, sortBy, order, filters, scholarshipId);
