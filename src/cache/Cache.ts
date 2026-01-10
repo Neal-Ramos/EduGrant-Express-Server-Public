@@ -1,0 +1,33 @@
+type CacheEntry<T> = {
+    value: T,
+    expiryDate: number
+}
+
+const cacheMap = new Map<string, CacheEntry<unknown>>()
+const cacheLimit = 500
+
+export function getCache<T>(key: string): T | null{
+    const entry = cacheMap.get(key)
+
+    if(!entry || entry?.expiryDate < Date.now()){
+        cacheMap.delete(key)
+        return null
+    }
+    console.log("Get -", Array.from(cacheMap.entries()));
+    return entry.value as T
+}
+
+export function setCache<T>(key: string, value: T){
+    if(cacheMap.size >= cacheLimit){
+        const oldKey = cacheMap.keys().next().value
+        if(oldKey != undefined)cacheMap.delete(oldKey)
+    }
+
+    const expiryDate = Date.now() + (120 * 1000)
+    cacheMap.set(key, {value, expiryDate})
+    console.log("Set -", Array.from(cacheMap.entries()));
+}
+
+export function clearCache(key: string){
+    cacheMap.delete(key)
+}

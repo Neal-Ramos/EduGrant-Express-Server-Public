@@ -81,6 +81,7 @@ import { downloadApplicationFileZodType, getFileUrlZodType } from '../Validator/
 import { createAccountZodType } from '../Validator/ZodSchemanAdminAuth';
 import { DenormalizeApplication } from '../Helper/ApplicationHelper';
 import { sendApplicationUpdate } from '../Config/Resend';
+import { getCache, setCache } from '../cache/Cache';
 
 export const getAllAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -1031,6 +1032,8 @@ export const declineApplication = async (req: Request, res: Response, next: Next
 export const getApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { status, page, dataPerPage, sortBy, order, filters, scholarshipId } = (req as Request & { validated: getApplicationZodType }).validated.query;
+    const cacheKey = `ISPSUGetApplication-${status}-${page}-${dataPerPage}-${sortBy}-${order}-${filters}-${scholarshipId}`
+    const cachedData = await getCache(cacheKey)
     const userId = Number(req.tokenPayload.accountId);
 
     const user = await prismaGetAccountById(userId);
@@ -1038,6 +1041,11 @@ export const getApplication = async (req: Request, res: Response, next: NextFunc
       res.clearCookie('AdminToken', cookieOptionsStaff);
       res.status(401).json({ success: false, message: 'Account Did not Find!' });
       return;
+    }
+
+    if(cachedData){
+      res.status(200).json(cachedData)
+      return
     }
 
     const getApplication = await prismaGetAllApplication(status, page, dataPerPage, sortBy, order, filters, scholarshipId);
@@ -1053,6 +1061,8 @@ export const getApplication = async (req: Request, res: Response, next: NextFunc
       filters: filters?.map((data) => data.id),
     };
     res.status(200).json({ success: true, data: getApplication.applications.flat(3), meta });
+
+    setCache(cacheKey, {success: true, data: getApplication.applications.flat(3), meta})
     return;
   } catch (error) {
     next(error);
