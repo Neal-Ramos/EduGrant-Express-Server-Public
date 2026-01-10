@@ -1,5 +1,3 @@
-import { json } from "zod"
-
 type CacheEntry<T> = {
     value: T,
     expiryDate: number
@@ -15,7 +13,7 @@ export function getCache<T>(key: string): T | null{
         cacheMap.delete(key)
         return null
     }
-    console.log(`Get - ${JSON.stringify(cacheMap)}`)
+    console.log(`Get - ${cacheMap}`)
     return entry.value as T
 }
 
@@ -27,7 +25,7 @@ export function setCache<T>(key: string, value: T){
 
     const expiryDate = Date.now() + (2 * 1000)
     cacheMap.set(key, {value, expiryDate})
-    console.log(`Set - ${JSON.stringify(cacheMap)}`)
+    console.log(`Set - ${cacheMap}`)
 }
 
 export function clearCache(key: string){
