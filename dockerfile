@@ -21,4 +21,4 @@ CMD ["node", "dist/index.js"]
 
 #Start Docker
 #docker build -t edugrant-server .
-#docker run -p 3000:3000 --env-file .env edugrant-server
+#docker run -p 4000:4000 --env-file .env edugrant-server
