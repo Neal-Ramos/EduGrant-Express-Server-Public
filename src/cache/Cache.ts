@@ -13,7 +13,7 @@ export function getCache<T>(key: string): T | null{
         cacheMap.delete(key)
         return null
     }
-    console.log(`Get - ${cacheMap}`)
+    console.log("Get -", Array.from(cacheMap.entries()));
     return entry.value as T
 }
 
@@ -23,9 +23,9 @@ export function setCache<T>(key: string, value: T){
         if(oldKey != undefined)cacheMap.delete(oldKey)
     }
 
-    const expiryDate = Date.now() + (2 * 1000)
+    const expiryDate = Date.now() + (120 * 1000)
     cacheMap.set(key, {value, expiryDate})
-    console.log(`Set - ${cacheMap}`)
+    console.log("Set -", Array.from(cacheMap.entries()));
 }
 
 export function clearCache(key: string){
