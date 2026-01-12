@@ -12,8 +12,8 @@ import { AuthCode } from '../Models/Auth_CodeModels';
 export const adminLogIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { adminEmail, adminPassword } = (req as Request & { validated: adminLoginZodType }).validated.body;
-
     const correctCredenatials = await getStaffByEmail(adminEmail);
+    
     if (!correctCredenatials || correctCredenatials.role === 'Student') {
       res.status(401).json({ success: false, message: 'Invalid Credentials' });
       return;
