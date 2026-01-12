@@ -21,6 +21,7 @@ import { ResponseUploadSupabase, UploadSupabase } from '../Config/Supabase';
 export const adminLogout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { AdminToken } = (req as Request & { validated: adminLogoutZodType }).validated.cookies;
+    
     res.clearCookie('AdminToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
