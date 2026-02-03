@@ -26,8 +26,7 @@ const apiLimiter = rateLimit({
   message: 'Too many requests, please try again later.',
 });
 const corsOptions = {
-  // origin: process.env.CORS_URL_ORIGIN,
-  origin: "https://edugrant-test.vercel.app",
+  origin: process.env.CORS_URL_ORIGIN,
   credentials: true,
 };
 
