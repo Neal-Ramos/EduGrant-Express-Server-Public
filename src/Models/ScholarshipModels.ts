@@ -82,11 +82,9 @@ export const prismaGetScholarship = async (
   let whereClause: Prisma.ScholarshipWhereInput = {
     Scholarship_Provider: { name: { in: filters?.find((f) => f.id === 'name')?.value } },
     title: { in: filters?.find((f) => f.id === 'title')?.value },
-    ...(search
-      ? {
-          OR: [{ title: { contains: search, mode: 'insensitive' } }, { Scholarship_Provider: { name: { contains: search, mode: 'insensitive' } } }],
-        }
-      : {}),
+    ...(search? {
+          title: { contains: search, mode: 'insensitive' }
+        }: {}),
   };
   if (status && allowedStatus.includes(status)) {
     if (status === 'ENDED') {
