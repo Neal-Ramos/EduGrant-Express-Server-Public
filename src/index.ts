@@ -27,7 +27,7 @@ const apiLimiter = rateLimit({
 });
 const corsOptions = {
   // origin: process.env.CORS_URL_ORIGIN,
-  origin: "https://edugrant-test.vercel.app/",
+  origin: "https://edugrant-test.vercel.app",
   credentials: true,
 };
 
