@@ -26,7 +26,8 @@ const apiLimiter = rateLimit({
   message: 'Too many requests, please try again later.',
 });
 const corsOptions = {
-  origin: process.env.CORS_URL_ORIGIN,
+  // origin: process.env.CORS_URL_ORIGIN,
+  origin: "https://edugrant-test.vercel.app/",
   credentials: true,
 };
 
@@ -46,8 +47,8 @@ app.use((req, res, next) => {
   }
   next();
 });
-app.set("trust proxy", 1)
-app.use(apiLimiter)
+// app.set("trust proxy", 1)
+// app.use(apiLimiter)
 app.use(healthCheckMiddleware);
 
 app.use(PublicRoutes);
