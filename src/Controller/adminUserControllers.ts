@@ -210,7 +210,7 @@ export const editStaffCredSendAuthCode = async (req: Request, res: Response, nex
 
     const mailOptions: CreateEmailOptions = {
       to: checkStaff.email,
-      from: process.env.RESEND_VERIFIED_DOMAIN as string,
+      from: process.env.RESEND_VERIFIED_SENDER as string,
       subject: 'Change Login Info',
       html: authHTML(code),
     };

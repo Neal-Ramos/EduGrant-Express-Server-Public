@@ -259,7 +259,7 @@ export const sendAuthCodeChangeAccountCred = async (req: Request, res: Response,
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
     const mailOptions: CreateEmailOptions = {
       to: checkAccount.email,
-      from: process.env.RESEND_VERIFIED_DOMAIN as string,
+      from: process.env.RESEND_VERIFIED_SENDER as string,
       subject: 'Change Account Password',
       html: authHTML(code),
     };
