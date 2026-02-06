@@ -853,7 +853,7 @@ export const approveApplication = async (req: Request, res: Response, next: Next
     const applicantStudentId: string = `${checkApplication.Student.Account.schoolId}`;
     const applicantEmail: string = `${checkApplication.Student.Account.email}`;
     const mailOptions: CreateEmailOptions = {
-      from: 'service@edugrant.online',
+      from: process.env.RESEND_VERIFIED_DOMAIN as string,
       to: applicantEmail,
       subject: 'Approved Application',
       html: ApproveHTML(applicantName, applicantStudentId, applicantEmail),
@@ -927,7 +927,7 @@ export const forInterview = async (req: Request, res: Response, next: NextFuncti
     const applicantStudentId: string = `${checkApplication.Student.Account.schoolId}`;
     const applicantEmail: string = `${checkApplication.Student.Account.email}`;
     const mailOptions: CreateEmailOptions = {
-      from: 'service@edugrant.online',
+      from: process.env.RESEND_VERIFIED_DOMAIN as string,
       to: checkApplication.Student.Account.email,
       subject: 'Eligible for Interview',
       html: interviewHTML(applicantName, applicantStudentId, applicantEmail),
@@ -999,7 +999,7 @@ export const declineApplication = async (req: Request, res: Response, next: Next
     const applicantStudentId: string = `${checkApplication.Student.Account.schoolId}`;
     const applicantEmail: string = `${checkApplication.Student.Account.email}`;
     const mailOptions: CreateEmailOptions = {
-      from: 'service@edugrant.online',
+      from: process.env.RESEND_VERIFIED_DOMAIN as string,
       to: applicantEmail || '',
       subject: 'Approved Application',
       html: declineHTML(applicantName, applicantStudentId, applicantEmail),

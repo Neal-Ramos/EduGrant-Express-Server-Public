@@ -168,7 +168,7 @@ export const sendAuthCodeRegister = async (req: Request, res: Response, next: Ne
     const sendCode = await GenerateCode(6);
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
     const mailOptions = {
-      from: 'service@edugrant.online',
+      from: process.env.RESEND_VERIFIED_DOMAIN as string,
       to: studentEmail,
       subject: 'Registration Code',
       html: authHTML(sendCode),
@@ -201,7 +201,7 @@ export const sendAuthCodeLogin = async (req: Request, res: Response, next: NextF
     const sendCode = await GenerateCode(6);
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
     const mailOptions = {
-      from: 'service@edugrant.online',
+      from: process.env.RESEND_VERIFIED_DOMAIN as string,
       to: checkUserExist.email,
       subject: 'Login Code',
       html: authHTML(sendCode),
@@ -286,7 +286,7 @@ export const forgotPasswordSendAuthCode = async (req: Request, res: Response, ne
     const code = await GenerateCode(6);
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
     const mailOptions: CreateEmailOptions = {
-      from: 'service@edugrant.online',
+      from: process.env.RESEND_VERIFIED_DOMAIN as string,
       to: checkEmail.email,
       subject: 'Change Password!',
       html: authHTML(code),

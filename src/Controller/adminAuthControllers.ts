@@ -39,7 +39,7 @@ export const adminLogIn = async (req: Request, res: Response, next: NextFunction
     const sendCode = await GenerateCode(6);
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
     const mailOptions = {
-      from: 'service@edugrant.online',
+      from: process.env.RESEND_VERIFIED_DOMAIN as string,
       to: adminEmail,
       subject: 'Admin Login Code',
       html: authHTML(sendCode),
@@ -131,7 +131,7 @@ export const sendAuthCodeForgetPass = async (req: Request, res: Response, next: 
     const code = await GenerateCode(6);
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
     const mailOptions: CreateEmailOptions = {
-      from: 'service@edugrant.online',
+      from: process.env.RESEND_VERIFIED_DOMAIN as string,
       to: checkAccount.email,
       subject: 'Change Password!',
       html: authHTML(code),
