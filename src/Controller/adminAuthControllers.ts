@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response } from 'express';
-import { SendAuthCode } from '../Config/Resend';
-import { sign } from 'jsonwebtoken';
 import { compare, hash } from 'bcryptjs';
+import { NextFunction, Request, Response } from 'express';
+import { sign } from 'jsonwebtoken';
+import { CreateEmailOptions } from 'resend';
+import { GenerateCode } from '../Helper/CodeGenerator';
+import { getStaffByEmail, prismaCheckEmailExist, prismaUpdateAccountPassword } from '../Models/AccountModels';
+import { AuthCode } from '../Models/Auth_CodeModels';
+import { SendAuthCode } from '../Services/Resend';
 import { adminCodeAuthenticationZodType, adminLoginZodType, forgetPassZodType, sendAuthCodeForgetPassZodType } from '../Validator/ZodSchemanAdminAuth';
 import { authHTML } from '../utils/HTML-AuthCode';
-import { getStaffByEmail, prismaCheckEmailExist, prismaUpdateAccountPassword } from '../Models/AccountModels';
-import { GenerateCode } from '../Helper/CodeGenerator';
-import { CreateEmailOptions } from 'resend';
-import { AuthCode } from '../Models/Auth_CodeModels';
 
 export const adminLogIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

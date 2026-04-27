@@ -1,4 +1,4 @@
-import { ResponseUploadSupabase } from '../Config/Supabase';
+import { ResponseUploadSupabase } from '../Services/Supabase';
 import { prismaGetStaffAccountsType, prismaGetStaffByIdType } from '../Types/ISPSU_StaffTypes';
 import { Account, ISPSU_Staff, prisma } from '../lib/prisma';
 

@@ -1,7 +1,7 @@
-import { ResponseUploadSupabase } from '../Config/Supabase';
-import { DocumentEntry } from '../Types/postControllerTypes';
 import { io } from '..';
+import { ResponseUploadSupabase } from '../Services/Supabase';
 import { prismaGetScholarshipType, prismaRenewScholarshipType, ScholarshipWithChildType } from '../Types/ScholarshipTypes';
+import { DocumentEntry } from '../Types/postControllerTypes';
 import { Application, prisma, Prisma, Scholarship } from '../lib/prisma';
 
 export const prismaCreateScholarship = async (

@@ -1,21 +1,21 @@
+import bcrypt, { hash } from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
 import { sign } from 'jsonwebtoken';
-import bcrypt, { hash } from 'bcryptjs';
-import { SendAuthCode } from '../Config/Resend';
+import { CreateEmailOptions } from 'resend';
+import { GenerateCode } from '../Helper/CodeGenerator';
+import { prismaCheckEmailExist, prismaCheckStudentIdExist, prismaCreateStudentAccount, prismaUpdateAccountPassword } from '../Models/AccountModels';
+import { AuthCode } from '../Models/Auth_CodeModels';
+import { prismaGetUnreadNotificationsCount } from '../Models/Student_NotificationModels';
+import { SendAuthCode } from '../Services/Resend';
 import {
-  forgotPasswordSendAuthCodeZodType,
-  forgotPasswordZodType,
-  loginAccountsZodType,
-  registerAccountZodType,
-  sendAuthCodeLoginZodType,
-  sendAuthCodeRegisterZodType,
+    forgotPasswordSendAuthCodeZodType,
+    forgotPasswordZodType,
+    loginAccountsZodType,
+    registerAccountZodType,
+    sendAuthCodeLoginZodType,
+    sendAuthCodeRegisterZodType,
 } from '../Validator/ZodSchemaUserAuth';
 import { authHTML } from '../utils/HTML-AuthCode';
-import { prismaCheckEmailExist, prismaCheckStudentIdExist, prismaCreateStudentAccount, prismaUpdateAccountPassword } from '../Models/AccountModels';
-import { GenerateCode } from '../Helper/CodeGenerator';
-import { CreateEmailOptions } from 'resend';
-import { prismaGetUnreadNotificationsCount } from '../Models/Student_NotificationModels';
-import { AuthCode } from '../Models/Auth_CodeModels';
 
 export const registerAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

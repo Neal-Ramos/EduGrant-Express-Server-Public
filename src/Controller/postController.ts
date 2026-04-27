@@ -1,38 +1,38 @@
-import { Response, Request, NextFunction } from 'express';
-import { filtersDataTypes } from '../Types/adminPostControllerTypes';
-import { ResponseUploadSupabasePrivate, SupabaseDeletePrivateFile, UploadSupabasePrivate } from '../Config/Supabase';
-import {
-  applyScholarshipZodType,
-  downloadScholarshipFormZodType,
-  getAllScholarshipZodType,
-  getAnnouncementsByIdZodType,
-  getAnnouncementsZodType,
-  getApplicationHistoryZodType,
-  getApplicationsZodType,
-  getNotificationsZodType,
-  getScholarshipsByIdZodType,
-  getStudentApplicationByIdZodType,
-  getStudentByIdZodType,
-  searchScholarshipZodType,
-} from '../Validator/ZodSchemaUserPost';
-import { prismaGetScholarship, prismaGetScholarshipsById, prismaSearchScholarshipTitle, prismaStudentCountsInToken } from '../Models/ScholarshipModels';
-import {
-  prismaCheckApplicationDuplicate,
-  prismaCheckApproveGov,
-  prismaCreateApplication,
-  prismaGetAllAccountApplication,
-  prismaGetApplication,
-  prismaGetApplicationHistory,
-  prismaRenewApplication,
-} from '../Models/ApplicationModels';
-import { prismaGetAccountById } from '../Models/AccountModels';
-import { prismaGetAllAnnouncement, prismaGetAnnouncementById } from '../Models/AnnouncementModels';
-import { prismaGetAllNotifications, prismaGetUnreadNotificationsCount } from '../Models/Student_NotificationModels';
-import { DocumentEntry, RecordApplicationFilesTypes, RecordDocumentEntry } from '../Types/postControllerTypes';
-import { cookieOptionsStudent } from '../Helper/TokenAuth';
-import { normalizeString } from '../Helper/normalizeString';
+import { NextFunction, Request, Response } from 'express';
 import { io } from '..';
 import { DenormalizeApplication } from '../Helper/ApplicationHelper';
+import { cookieOptionsStudent } from '../Helper/TokenAuth';
+import { normalizeString } from '../Helper/normalizeString';
+import { prismaGetAccountById } from '../Models/AccountModels';
+import { prismaGetAllAnnouncement, prismaGetAnnouncementById } from '../Models/AnnouncementModels';
+import {
+    prismaCheckApplicationDuplicate,
+    prismaCheckApproveGov,
+    prismaCreateApplication,
+    prismaGetAllAccountApplication,
+    prismaGetApplication,
+    prismaGetApplicationHistory,
+    prismaRenewApplication,
+} from '../Models/ApplicationModels';
+import { prismaGetScholarship, prismaGetScholarshipsById, prismaSearchScholarshipTitle, prismaStudentCountsInToken } from '../Models/ScholarshipModels';
+import { prismaGetAllNotifications, prismaGetUnreadNotificationsCount } from '../Models/Student_NotificationModels';
+import { ResponseUploadSupabasePrivate, SupabaseDeletePrivateFile, UploadSupabasePrivate } from '../Services/Supabase';
+import { filtersDataTypes } from '../Types/adminPostControllerTypes';
+import { DocumentEntry, RecordApplicationFilesTypes, RecordDocumentEntry } from '../Types/postControllerTypes';
+import {
+    applyScholarshipZodType,
+    downloadScholarshipFormZodType,
+    getAllScholarshipZodType,
+    getAnnouncementsByIdZodType,
+    getAnnouncementsZodType,
+    getApplicationHistoryZodType,
+    getApplicationsZodType,
+    getNotificationsZodType,
+    getScholarshipsByIdZodType,
+    getStudentApplicationByIdZodType,
+    getStudentByIdZodType,
+    searchScholarshipZodType,
+} from '../Validator/ZodSchemaUserPost';
 
 export const getAllScholarship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

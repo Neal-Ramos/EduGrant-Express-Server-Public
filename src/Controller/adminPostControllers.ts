@@ -1,87 +1,87 @@
-import { NextFunction, Request, Response } from 'express';
-import { Prisma } from '../lib/prisma';
-import { DeleteSupabase, ResponseUploadSupabase, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase } from '../Config/Supabase';
-import {
-  adminAddScholarshipsZodType,
-  approveApplicationZodType,
-  createAnnouncementZodType,
-  declineApplicationZodType,
-  deleteAdminZodType,
-  deleteAnnouncementZodType,
-  deleteISPSU_StaffZodType,
-  deleteScholarshipZodType,
-  deleteStudentZodType,
-  downloadApplicationCSVZodType,
-  downloadStudentsCSVZodType,
-  editAnnouncementZodType,
-  endScholarshipZodType,
-  forInterviewZondType,
-  getAllAdminZodType,
-  getAnnouncementByIdZodType,
-  getAnnouncementZodType,
-  getApplicationByIdZodType,
-  getApplicationZodType,
-  getFilterDataZodType,
-  getFiltersCSVZodType,
-  getScholarshipsByIdZodType,
-  getScholarshipZodType,
-  getStaffByIdZodType,
-  getStaffLogsZodType,
-  getStudentsByIdZodType,
-  getStudentsZodType,
-  renewalScholarshipZodType,
-  searchAdminZodType,
-  searchApplicationZodType,
-  searchStudentZodType,
-  updateScholarshipZodType,
-  updateStudentAccountZodType,
-  validateStaffZodType,
-} from '../Validator/ZodSchemaAdminPost';
-import { CreateEmailOptions } from 'resend';
-import { ApproveHTML } from '../utils/HTML-ApprovedApplication';
-import { interviewHTML } from '../utils/HTML-InterviewApplication';
-import { prismaGetStaffAccounts, prismaGetStaffById, prismaSearchISPUStaff, prismaTotalCountStaff, prismaValidateStaff } from '../Models/ISPSU_StaffModels';
-import { prismaCheckEmailExist, prismaCreateISPSU_Staff, prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from '../Models/AccountModels';
-import {
-  prismaCreateScholarship,
-  prismaDeleteScholarship,
-  prismaEndScholarship,
-  prismaFiltersScholarship,
-  prismaGetScholarship,
-  prismaGetScholarshipByArray,
-  prismaGetScholarshipsById,
-  prismaRenewScholarship,
-  prismaStudentCountsInToken,
-  prismaUpdateScholarship,
-} from '../Models/ScholarshipModels';
-import {
-  prismaAcceptForInterview,
-  prismaApproveApplication,
-  prismaBlockApplicationByApplicationId,
-  prismaCheckApproveGov,
-  prismaDeclineApplication,
-  prismaGetAllApplication,
-  prismaGetApplication,
-  prismaGetApplicationsCSV,
-  prismaGetFiltersForApplicationsCSV,
-  prismaSearchApplication,
-} from '../Models/ApplicationModels';
-import { prismaExportCSV, prismaFiltersStudent, prismaGetFiltersStudentCSV, prismaGetStudentById, prismaGetStudents, prismaSearchStudents } from '../Models/StudentModels';
-import { prismaGetApplicationByIdScholarshipId } from '../Models/Application_DecisionModels';
-import { prismaCreateAnnouncement, prismaDeleteAnnouncement, prismaEditAnnouncement, prismaGetAllAnnouncement, prismaGetAnnouncementById } from '../Models/AnnouncementModels';
-import { declineHTML } from '../utils/HTML-DeclinedApplication';
-import { chunkArray } from '../Helper/Helpers';
-import { io } from '..';
-import { prismaGetStaffLogs } from '../Models/Staff_LogsModels';
 import { hash } from 'bcryptjs';
+import { NextFunction, Request, Response } from 'express';
+import { CreateEmailOptions } from 'resend';
+import { io } from '..';
+import { DenormalizeApplication } from '../Helper/ApplicationHelper';
 import { ExportToExcel } from '../Helper/ExcelJS';
-import { TokenPayload } from '../Types/authControllerTypes';
+import { chunkArray } from '../Helper/Helpers';
 import { cookieOptionsStaff } from '../Helper/TokenAuth';
+import { prismaCheckEmailExist, prismaCreateISPSU_Staff, prismaDeleteAccount, prismaGetAccountById, prismaGetHeadDashboard, prismaHEADUpdateStudentAccount } from '../Models/AccountModels';
+import { prismaCreateAnnouncement, prismaDeleteAnnouncement, prismaEditAnnouncement, prismaGetAllAnnouncement, prismaGetAnnouncementById } from '../Models/AnnouncementModels';
+import {
+    prismaAcceptForInterview,
+    prismaApproveApplication,
+    prismaBlockApplicationByApplicationId,
+    prismaCheckApproveGov,
+    prismaDeclineApplication,
+    prismaGetAllApplication,
+    prismaGetApplication,
+    prismaGetApplicationsCSV,
+    prismaGetFiltersForApplicationsCSV,
+    prismaSearchApplication,
+} from '../Models/ApplicationModels';
+import { prismaGetApplicationByIdScholarshipId } from '../Models/Application_DecisionModels';
+import { prismaGetStaffAccounts, prismaGetStaffById, prismaSearchISPUStaff, prismaTotalCountStaff, prismaValidateStaff } from '../Models/ISPSU_StaffModels';
+import {
+    prismaCreateScholarship,
+    prismaDeleteScholarship,
+    prismaEndScholarship,
+    prismaFiltersScholarship,
+    prismaGetScholarship,
+    prismaGetScholarshipByArray,
+    prismaGetScholarshipsById,
+    prismaRenewScholarship,
+    prismaStudentCountsInToken,
+    prismaUpdateScholarship,
+} from '../Models/ScholarshipModels';
+import { prismaGetStaffLogs } from '../Models/Staff_LogsModels';
+import { prismaExportCSV, prismaFiltersStudent, prismaGetFiltersStudentCSV, prismaGetStudentById, prismaGetStudents, prismaSearchStudents } from '../Models/StudentModels';
+import { sendApplicationUpdate } from '../Services/Resend';
+import { DeleteSupabase, ResponseUploadSupabase, SupabaseCreateSignedUrl, SupabaseDeletePrivateFile, SupabaseDownloadFile, UploadSupabase } from '../Services/Supabase';
+import { TokenPayload } from '../Types/authControllerTypes';
+import {
+    adminAddScholarshipsZodType,
+    approveApplicationZodType,
+    createAnnouncementZodType,
+    declineApplicationZodType,
+    deleteAdminZodType,
+    deleteAnnouncementZodType,
+    deleteISPSU_StaffZodType,
+    deleteScholarshipZodType,
+    deleteStudentZodType,
+    downloadApplicationCSVZodType,
+    downloadStudentsCSVZodType,
+    editAnnouncementZodType,
+    endScholarshipZodType,
+    forInterviewZondType,
+    getAllAdminZodType,
+    getAnnouncementByIdZodType,
+    getAnnouncementZodType,
+    getApplicationByIdZodType,
+    getApplicationZodType,
+    getFilterDataZodType,
+    getFiltersCSVZodType,
+    getScholarshipsByIdZodType,
+    getScholarshipZodType,
+    getStaffByIdZodType,
+    getStaffLogsZodType,
+    getStudentsByIdZodType,
+    getStudentsZodType,
+    renewalScholarshipZodType,
+    searchAdminZodType,
+    searchApplicationZodType,
+    searchStudentZodType,
+    updateScholarshipZodType,
+    updateStudentAccountZodType,
+    validateStaffZodType,
+} from '../Validator/ZodSchemaAdminPost';
 import { downloadApplicationFileZodType, getFileUrlZodType } from '../Validator/ZodSchemaUserUser';
 import { createAccountZodType } from '../Validator/ZodSchemanAdminAuth';
-import { DenormalizeApplication } from '../Helper/ApplicationHelper';
-import { sendApplicationUpdate } from '../Config/Resend';
 import { getCache, setCache } from '../cache/Cache';
+import { Prisma } from '../lib/prisma';
+import { ApproveHTML } from '../utils/HTML-ApprovedApplication';
+import { declineHTML } from '../utils/HTML-DeclinedApplication';
+import { interviewHTML } from '../utils/HTML-InterviewApplication';
 
 export const getAllAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

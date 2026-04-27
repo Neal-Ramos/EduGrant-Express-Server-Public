@@ -1,22 +1,22 @@
-import { NextFunction, Request, Response } from 'express';
-import {
-  adminLogoutZodType,
-  changeStaffCredZodType,
-  editHeadZodType,
-  editStaffCredSendAuthCodeZodType,
-  editStaffInfoZodType,
-  editStaffZodType,
-  updateTourZodType,
-} from '../Validator/ZodSchemaAdminUser';
-import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateHeadAccount, prismaUpdateStaffAccount, prismaUpdateWebTour } from '../Models/AccountModels';
 import { compare, hash } from 'bcryptjs';
-import { prismaUpdateStaffInfo } from '../Models/ISPSU_StaffModels';
-import { GenerateCode } from '../Helper/CodeGenerator';
+import { NextFunction, Request, Response } from 'express';
 import { CreateEmailOptions } from 'resend';
-import { authHTML } from '../utils/HTML-AuthCode';
-import { SendAuthCode } from '../Config/Resend';
+import { GenerateCode } from '../Helper/CodeGenerator';
+import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateHeadAccount, prismaUpdateStaffAccount, prismaUpdateWebTour } from '../Models/AccountModels';
 import { AuthCode } from '../Models/Auth_CodeModels';
-import { ResponseUploadSupabase, UploadSupabase } from '../Config/Supabase';
+import { prismaUpdateStaffInfo } from '../Models/ISPSU_StaffModels';
+import { SendAuthCode } from '../Services/Resend';
+import { ResponseUploadSupabase, UploadSupabase } from '../Services/Supabase';
+import { authHTML } from '../utils/HTML-AuthCode';
+import {
+    adminLogoutZodType,
+    changeStaffCredZodType,
+    editHeadZodType,
+    editStaffCredSendAuthCodeZodType,
+    editStaffInfoZodType,
+    editStaffZodType,
+    updateTourZodType,
+} from '../Validator/ZodSchemaAdminUser';
 
 export const adminLogout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

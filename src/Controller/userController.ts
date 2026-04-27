@@ -1,13 +1,17 @@
+import { compare } from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
-import {
-  changePasswordZodType,
-  downloadApplicationFileZodType,
-  getFileUrlZodType,
-  readNotificationZodType,
-  sendAuthCodeChangeAccountCredZodType,
-  updateApplicationZodType,
-  updateStudentInfoZodType,
-} from '../Validator/ZodSchemaUserUser';
+import { CreateEmailOptions } from 'resend';
+import { io } from '..';
+import { DenormalizeApplication } from '../Helper/ApplicationHelper';
+import { GenerateCode } from '../Helper/CodeGenerator';
+import { cookieOptionsStudent } from '../Helper/TokenAuth';
+import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateStudentAccount } from '../Models/AccountModels';
+import { prismaGetApplication, prismaUpdateApplicationSubmittedFiles } from '../Models/ApplicationModels';
+import { AuthCode } from '../Models/Auth_CodeModels';
+import { prismaGetScholarshipsById } from '../Models/ScholarshipModels';
+import { prismaGetDashboardData } from '../Models/StudentModels';
+import { prismaReadAllNotifications, prismaReadTrueNotification } from '../Models/Student_NotificationModels';
+import { SendAuthCode } from '../Services/Resend';
 import {
   DeleteSupabase,
   ResponseUploadSupabase,
@@ -17,22 +21,18 @@ import {
   SupabaseDownloadFile,
   UploadSupabase,
   UploadSupabasePrivate,
-} from '../Config/Supabase';
-import { prismaGetAccountById, prismaUpdateAccountLoginCredentials, prismaUpdateStudentAccount } from '../Models/AccountModels';
-import { compare } from 'bcryptjs';
-import { CreateEmailOptions } from 'resend';
-import { SendAuthCode } from '../Config/Resend';
-import { authHTML } from '../utils/HTML-AuthCode';
-import { prismaGetApplication, prismaUpdateApplicationSubmittedFiles } from '../Models/ApplicationModels';
-import { prismaGetScholarshipsById } from '../Models/ScholarshipModels';
+} from '../Services/Supabase';
 import { RecordApplicationFilesTypes } from '../Types/postControllerTypes';
-import { prismaGetDashboardData } from '../Models/StudentModels';
-import { prismaReadAllNotifications, prismaReadTrueNotification } from '../Models/Student_NotificationModels';
-import { GenerateCode } from '../Helper/CodeGenerator';
-import { AuthCode } from '../Models/Auth_CodeModels';
-import { cookieOptionsStudent } from '../Helper/TokenAuth';
-import { io } from '..';
-import { DenormalizeApplication } from '../Helper/ApplicationHelper';
+import {
+  changePasswordZodType,
+  downloadApplicationFileZodType,
+  getFileUrlZodType,
+  readNotificationZodType,
+  sendAuthCodeChangeAccountCredZodType,
+  updateApplicationZodType,
+  updateStudentInfoZodType,
+} from '../Validator/ZodSchemaUserUser';
+import { authHTML } from '../utils/HTML-AuthCode';
 
 export const logoutUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

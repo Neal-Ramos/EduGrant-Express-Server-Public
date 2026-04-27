@@ -1,5 +1,5 @@
 import { hashSync } from 'bcryptjs';
-import { ResponseUploadSupabase } from '../Config/Supabase';
+import { ResponseUploadSupabase } from '../Services/Supabase';
 import { AccountRelations, prismaGetAccountByIdType, prismaUpdateStaffAccountType } from '../Types/AccountTypes';
 import { Account, prisma } from '../lib/prisma';
 
